@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_dark"
+    android:windowIsFloating="@null"
+    >
+
+
+    <TextView
+        style="@style/TextView.Dialog.Head"
+        android:text="@string/dialog_title"
+        android:textSize="20sp"
+        />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="3dp">
+
+        <TextView
+            style="@style/TextView.Dialog.Title"
+            android:text="@string/headhuntersua"/>
+        <TextView
+            android:id="@+id/progress_1_text_view"
+            style="@style/TextView.Dialog"/>
+    </RelativeLayout>
+    <ProgressBar
+        android:id="@+id/progress_1"
+        style="@style/ProgressBar.Custom" />
+
+
+    <View
+        style="@style/View" />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="5dp">
+        <TextView
+            style="@style/TextView.Dialog.Title"
+            android:text="@string/workua"/>
+        <TextView
+            android:id="@+id/progress_2_text_view"
+            style="@style/TextView.Dialog" />
+    </RelativeLayout>
+    <ProgressBar
+        android:id="@+id/progress_2"
+        style="@style/ProgressBar.Custom" />
+
+
+    <View
+        style="@style/View" />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="5dp">
+        <TextView
+            style="@style/TextView.Dialog.Title"
+            android:text="@string/rabotaua" />
+        <TextView
+            android:id="@+id/progress_3_text_view"
+            style="@style/TextView.Dialog" />
+    </RelativeLayout>
+    <ProgressBar
+        android:id="@+id/progress_3"
+        style="@style/ProgressBar.Custom" />
+
+
+    <View
+        style="@style/View" />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="5dp">
+        <TextView
+            style="@style/TextView.Dialog.Title"
+            android:text="@string/jobsua" />
+        <TextView
+            android:id="@+id/progress_4_text_view"
+            style="@style/TextView.Dialog" />
+    </RelativeLayout>
+    <ProgressBar
+        android:id="@+id/progress_4"
+        style="@style/ProgressBar.Custom" />
+
+
+    <View
+        style="@style/View" />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="5dp">
+        <TextView
+            style="@style/TextView.Dialog.Title"
+            android:text="@string/worknewinfo" />
+        <TextView
+            android:id="@+id/progress_5_text_view"
+            style="@style/TextView.Dialog" />
+    </RelativeLayout>
+    <ProgressBar
+        android:id="@+id/progress_5"
+        style="@style/ProgressBar.Custom" />
+    <View
+        style="@style/View" />
+
+    <Button
+        android:id="@+id/button_ok"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+        android:gravity="center"
+        android:text="@android:string/ok"
+        android:visibility="gone"
+        />
+
+    <com.wang.avi.AVLoadingIndicatorView
+        android:id="@+id/spinner_checking"
+        android:gravity="center"
+        android:layout_gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:indicatorColor="@color/item_color"
+        app:indicatorName="LineScalePulseOutIndicator"
+        />
+</LinearLayout>

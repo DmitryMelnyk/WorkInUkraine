@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        android:title="@string/settings_messages">
+
+        <SwitchPreference
+            android:key="@string/key_sound_switcher"
+            android:defaultValue="true"
+            android:title="@string/settings_sound_enable"/>
+
+        <!--<MultiSelectListPreference-->
+            <!--android:dependency="@string/key_sound_switcher"-->
+            <!--android:key="@string/key_list_preferences"-->
+            <!--android:dialogTitle="@string/settings_sound_dialog"-->
+            <!--android:defaultValue="@array/settings_message_default"-->
+            <!--android:entries="@array/settings_message"-->
+            <!--android:entryValues="@array/settings_message_values"-->
+            <!--android:title="@string/settings_sound_settings"-->
+            <!--android:summary="@string/settings_summary_message" />-->
+
+        <ListPreference
+            android:dependency="@string/key_sound_switcher"
+            android:key="@string/key_sound_period"
+            android:title="@string/settings_sound_period"
+            android:entries="@array/settings_message_period"
+            android:entryValues="@array/settings_message_period"
+            android:defaultValue="@string/settings_sound_period_default"
+             />
+    </PreferenceCategory>
+
+    <!--<PreferenceCategory-->
+        <!--android:title="@string/settings_category_theme">-->
+
+        <!--<ListPreference-->
+            <!--android:key="@string/key_settings_theme"-->
+            <!--android:title="@string/settings_theme"-->
+            <!--android:defaultValue="@string/settings_theme_default"-->
+            <!--android:entries="@array/settings_theme"-->
+            <!--android:entryValues="@array/settings_theme"-->
+            <!--android:dialogTitle="@string/settings_sound_dialog"-->
+            <!--android:summary="@string/settings_theme_default" />-->
+
+    <!--</PreferenceCategory>-->
+</PreferenceScreen>

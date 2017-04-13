@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF9800</color>
+
+    <color name="background">#607D8B</color>
+    <color name="background_dark">#455A64</color>
+    <color name="toolbar_darker_then_dark">#37474F</color>
+    <color name="item_color">#30D1D6</color>
+
+    <!-- Colors fo smarttab_layout -->
+    <color name="white">#FFFFFFFF</color>
+    <color name="transparent">#00000000</color>
+    <color name="black_20">#33000000</color>
+</resources>

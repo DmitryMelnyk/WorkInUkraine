@@ -1,0 +1,184 @@
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Base application theme. -->
+
+    <style name="ImageButton"></style>
+
+    <style name="ImageButton.Swipe" parent="ImageButton">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:background">@color/background_dark</item>
+        <item name="android:paddingLeft">5dp</item>
+        <item name="android:paddingRight">5dp</item>
+    </style>
+
+    <style name="boldText">
+        <item name="android:textStyle">bold|italic</item>
+        <!--<item name="android:textColor">#FFFFFF</item>-->
+    </style>
+
+    <style name="normalText">
+        <item name="android:textStyle">normal</item>
+        <!--<item name="android:textColor">#C0C0C0</item>-->
+    </style>
+
+    <!-- Guillotine -->
+    <style name="Toolbar">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:minHeight">?attr/actionBarSize</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:background">@color/background</item>
+    </style>
+
+    <style name="ImageView"/>
+
+    <style name="ImageView.Hamburger" parent="Widget.AppCompat.ActionButton">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_marginBottom">
+            @dimen/abc_action_bar_overflow_padding_start_material
+        </item>
+    </style>
+
+    <style name="ImageView.GuillotineItem">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center_vertical</item>
+        <item name="android:layout_marginLeft">@dimen/guillotine_medium_margin</item>
+    </style>
+
+    <style name="ImageView.ContentItem">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="LinearLayout"/>
+
+    <style name="LinearLayout.GuillotineItem">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:layout_marginTop">@dimen/guillotine_small_margin</item>
+        <item name="android:gravity">center_vertical</item>
+    </style>
+
+    <style name="TextView"></style>
+
+    <style name="TextView.GuillotineItem">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginLeft">@dimen/guillotine_small_margin</item>
+        <item name="android:textSize">@dimen/guillotine_item_text_size</item>
+        <item name="android:layout_gravity">center_vertical</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="fontPath">fonts/FranckerCYR-ExtraBold.otf</item>
+    </style>
+
+    <style name="TextView.GuillotineItem.Selected">
+        <item name="android:textColor">@color/item_color</item>
+    </style>
+
+    <!-- DialogDownloading Style -->
+    <style name="ProgressBar" parent="Widget.AppCompat.ProgressBar.Horizontal"></style>
+
+    <style name="ProgressBar.Custom">
+        <!--<item name="app:layout_widthPercent">80%</item>-->
+        <item name="android:layout_height">10dp</item>
+        <item name="android:progress">0</item>
+        <item name="android:gravity">center</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:paddingLeft">@dimen/dialog_progress_padding_left</item>
+        <item name="android:paddingRight">@dimen/dialog_progress_padding_left</item>
+
+        <item name="android:progressDrawable">@drawable/progress_bar</item>
+    </style>
+
+    <style name="TextView.Dialog">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:gravity">center</item>
+        <item name="android:text">0</item>
+        <item name="android:textStyle">bold|italic</item>
+        <item name="fontPath">fonts/FranckerCYR-ExtraBold.otf</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:layout_alignParentRight">true</item>
+        <item name="android:paddingLeft">@dimen/dialog_progress_padding_left</item>
+        <item name="android:paddingRight">@dimen/dialog_progress_padding_left</item>
+    </style>
+
+    <style name="TextView.Dialog.Title">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_alignParentLeft">true</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textStyle">bold|italic</item>
+        <item name="fontPath">fonts/FranckerCYR-ExtraBold.otf</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:paddingLeft">@dimen/dialog_progress_padding_left</item>
+        <item name="android:paddingRight">@dimen/dialog_progress_padding_left</item>
+        <!--<item name="android:background">@color/colorAccent</item>-->
+    </style>
+
+    <style name="View">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">3dp</item>
+        <item name="android:paddingBottom">5dp</item>
+        <item name="android:paddingTop">5dp</item>
+        <item name="android:layout_marginTop">5dp</item>
+        <item name="android:background">@drawable/view_drawable</item>
+    </style>
+
+    <style name="MyDialog" parent="@android:style/Theme.Dialog">
+        <item name="android:windowFrame">@null</item>
+        <item name="android:windowBackground">@color/background</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowTitleStyle">@null</item>
+        <item name="android:colorBackgroundCacheHint">@null</item>
+        <item name="android:windowAnimationStyle">@android:style/Animation.Dialog</item>
+        <item name="android:windowSoftInputMode">stateUnspecified|adjustPan</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+    <style name="TextView.Dialog.Head" parent="TextView">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:gravity">center</item>
+        <item name="fontPath">fonts/FranckerCYR-ExtraBold.otf</item>
+        <item name="android:layout_gravity">center</item>
+    </style>
+
+    <!-- CardView -->
+    <style name="MyCardViewStyle" parent="Theme.AppCompat.NoActionBar">
+        <item name="cardCornerRadius">2dp</item>
+        <item name="cardElevation">2dp</item>
+        <!--<item name="contentPaddingBottom">24dp</item>-->
+        <!--<item name="contentPaddingTop">24dp</item>-->
+        <!--<item name="contentPaddingLeft">16dp</item>-->
+        <!--<item name="contentPaddingRight">16dp</item>-->
+        <item name="cardBackgroundColor">@color/background</item>
+    </style>
+
+    <!-- Dialog Delete -->
+    <style name="ButtonDelete" parent="Base.TextAppearance.AppCompat.Button">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:padding">10dp</item>
+        <item name="android:gravity">center</item>
+        <item name="fontPath">fonts/FranckerCYR-ExtraBold.otf</item>
+    </style>
+
+    <!-- Themes -->
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
+
+    <style name="NavDrawer" parent="Base.Widget.AppCompat.Toolbar.Button.Navigation">
+        <item name="fontPath">fonts/FranckerCYR-ExtraBold.otf</item>
+    </style>
+
+    <dimen name="dialog_progress_padding_left">10dp</dimen>
+</resources>

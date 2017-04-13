@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@color/background_dark">
+
+
+    <TextView
+        android:layout_alignParentTop="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:padding="10dp"
+        android:text="@string/dialog_delete_shore"
+        fontPath="fonts/FranckerCYR-ExtraBold.otf"
+        />
+
+    <LinearLayout
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Button
+            style="@style/ButtonDelete"
+            android:id="@+id/buttonCancel"
+            android:text="@string/dialog_delete_cancel"/>
+
+        <Button
+            style="@style/ButtonDelete"
+            android:id="@+id/buttonRemove"
+            android:text="@string/dialog_delete_remove"/>
+
+    </LinearLayout>
+</LinearLayout>

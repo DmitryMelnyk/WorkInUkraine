@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Sound preferences -->
+    <string-array name="settings_message">
+        <item>Включить звуковые уведомления</item>
+        <item>Включить вибрацию</item>
+    </string-array>
+
+    <string-array name="settings_message_values">
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+
+    <string-array name="settings_message_default">
+        <item>checked</item>
+        <item>checked</item>
+    </string-array>
+
+    <!-- Sound period preferences -->
+    <string-array name="settings_message_period">
+        <item>30 минут</item>
+        <item>1 час</item>
+        <item>3 часа</item>
+        <item>6 часов</item>
+        <item>12 часов</item>
+        <item>24 часа</item>
+    </string-array>
+
+    <string-array name="settings_period_summary">
+        <item>Каждые 30 минут</item>
+        <item>Каждый час</item>
+        <item>Каждые 3 часа</item>
+        <item>Каждые 6 часов</item>
+        <item>Каждые 12 часов</item>
+        <item>Каждые 24 часа</item>
+    </string-array>
+
+    <integer-array name="settings_period_number">
+        <item>30</item>
+        <item>1</item>
+        <item>3</item>
+        <item>6</item>
+        <item>12</item>
+        <item>24</item>
+    </integer-array>
+
+    <string-array name="settings_theme">
+        <item>Тёмная</item>
+        <item>Светлая</item>
+    </string-array>
+
+    <!-- For testing support settings library -->
+    <string-array name="pref_list_entries">
+        <item>Alpha</item>
+        <item>Bravo</item>
+        <item>Charlie</item>
+    </string-array>
+    <string-array name="pref_list_values">
+        <item>A</item>
+        <item>B</item>
+        <item>C</item>
+    </string-array>
+
+    <string-array name="planets_array">
+        <item>Mercury</item>
+        <item>Venus</item>
+        <item>Earth</item>
+        <item>Mars</item>
+        <item>Jupiter</item>
+        <item>Saturn</item>
+        <item>Uranus</item>
+        <item>Neptune</item>
+        <item>Mercury</item>
+        <item>Venus</item>
+        <item>Earth</item>
+        <item>Mars</item>
+        <item>Jupiter</item>
+        <item>Saturn</item>
+        <item>Uranus</item>
+        <item>Neptune</item>
+        <item>Mercury</item>
+        <item>Venus</item>
+        <item>Earth</item>
+        <item>Mars</item>
+        <item>Jupiter</item>
+        <item>Saturn</item>
+        <item>Uranus</item>
+        <item>Neptune</item>
+        <item>Mercury</item>
+        <item>Venus</item>
+        <item>Earth</item>
+        <item>Mars</item>
+        <item>Jupiter</item>
+        <item>Saturn</item>
+        <item>Uranus</item>
+        <item>Neptune</item>
+    </string-array>
+</resources>

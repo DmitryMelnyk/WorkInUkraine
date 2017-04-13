@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          package="com.dmelnyk.workinukraine">
+
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+
+    <application
+        android:name=".di.MyApplication"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <activity
+            android:name=".mvp.activity_splash.SplashActivity"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".mvp.activity_search.SearchActivity"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".mvp.activity_favorite_recent_new.BaseActivity"
+            android:launchMode="singleInstance"/>
+        <activity android:name=".mvp.activity_webview.WebViewActivity"/>
+        <activity
+            android:name=".mvp.activity_tabs.TabsActivity"
+            android:launchMode="singleInstance">
+        </activity>
+        <activity android:name=".mvp.activity_settings.SettingsActivity"/>
+
+        <receiver
+            android:name=".services.WakeLockBroadcastReceiver"
+            android:enabled="true"
+            android:exported="true"/>
+
+        <service android:name=".services.GetDataIntentService"/>
+
+
+    </application>
+
+</manifest>

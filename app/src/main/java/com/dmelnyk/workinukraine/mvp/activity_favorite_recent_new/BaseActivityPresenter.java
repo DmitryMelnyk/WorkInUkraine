@@ -7,6 +7,7 @@ import com.dmelnyk.workinukraine.db.JobDbSchema;
 import com.dmelnyk.workinukraine.db.JobPool;
 import com.dmelnyk.workinukraine.di.MyApplication;
 import com.dmelnyk.workinukraine.di.component.DaggerDbComponent;
+import com.dmelnyk.workinukraine.helpers.CardViewAdapter;
 import com.dmelnyk.workinukraine.mvp.activity_favorite_recent_new.BaseActivity.ActivityType;
 import com.dmelnyk.workinukraine.helpers.Job;
 
@@ -22,6 +23,7 @@ public class BaseActivityPresenter implements Contract.Presenter {
 
     private BaseActivity view;
     private Context context;
+    private CardViewAdapter.type adapterType;
 
     @Inject
     JobPool jobPool;
@@ -47,7 +49,6 @@ public class BaseActivityPresenter implements Contract.Presenter {
 
     private void updateUi(ActivityType typeActivity) {
         if (view != null) {
-            // TODO: create table RECENT
             String tableName = getTable(typeActivity);
             String titleView = getTitle(typeActivity);
             setViewContent(tableName); // must be initialize before toolbar
@@ -61,12 +62,15 @@ public class BaseActivityPresenter implements Contract.Presenter {
         switch (typeActivity) {
             case FAVORITE:
                 table = JobDbSchema.JobTable.FAVORITE;
+                adapterType = CardViewAdapter.type.FAVORITE;
                 break;
             case NEW:
                 table = JobDbSchema.JobTable.NEW;
+                adapterType = CardViewAdapter.type.TABVIEW;
                 break;
             case RECENT:
                 table = JobDbSchema.JobTable.RECENT;
+                adapterType = CardViewAdapter.type.TABVIEW;
                 break;
         }
 
@@ -100,6 +104,7 @@ public class BaseActivityPresenter implements Contract.Presenter {
             view.onSetEmptyBaseView();
         } else {
             view.onSetBaseView(jobs);
+            view.onConfigRecyclerView(jobs, adapterType);
         }
     }
 }

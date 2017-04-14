@@ -74,10 +74,10 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.MyView
         // creating PopupMenu:
         final PopupMenu popupMenu = new PopupMenu(context, menuButton);
 
-        if (popupType.equals(type.TABVIEW)) {
-            popupMenu.inflate(R.menu.card_menu_tabview); // for TabsActivity
+        if (popupType.equals(type.FAVORITE)) {
+            popupMenu.inflate(R.menu.card_menu_favorite); // for Favorite activity
         } else {
-            popupMenu.inflate(R.menu.card_menu_favorite); // for BaseActivity
+            popupMenu.inflate(R.menu.card_menu_tabview); // for Tabs, New, Recent activities
         }
         final MenuPopupHelper popupHelper = new MenuPopupHelper(
                 context, (MenuBuilder) popupMenu.getMenu(), menuButton);
@@ -110,7 +110,7 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.MyView
         text.setOnClickListener(
                 view -> {
                     Intent webActivity = WebViewActivity
-                            .newInstance(context, job.getUrlCode(), job.getTitle());
+                            .newInstance(context, job);
                     context.startActivity(webActivity);
                 });
     }
@@ -126,13 +126,13 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.MyView
     private void removeItemFromDb(Job job) {
         dataSet.remove(job);
         notifyDataSetChanged();
-        jobPool.removeJob(job);
+        jobPool.removeJobFromFavorite(job);
     }
 
     private void saveDataToDb(Job job) {
         boolean saved = jobPool.addJob(JobDbSchema.JobTable.FAVORITE, job);
         int message = saved
-                ? R.string.card_view_adapter_saved_job
+                ? R.string.card_view_adapter_job_added_to_favorite
                 : R.string.card_view_adapter_job_exists_in_table;
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
     }

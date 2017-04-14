@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -65,14 +66,13 @@ public class BaseActivity extends AppCompatActivity
     public void onSetBaseView(ArrayList<Job> jobs) {
         setContentView(R.layout.activity_base);
         ButterKnife.bind(this);
-        configRecyclerView(jobs);
         configFAB();
     }
 
-    private void configRecyclerView(ArrayList<Job> jobs) {
+    public void onConfigRecyclerView(ArrayList<Job> jobs, CardViewAdapter.type type) {
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        CardViewAdapter adapter = new CardViewAdapter(jobs, this, CardViewAdapter.type.FAVORITE);
+        CardViewAdapter adapter = new CardViewAdapter(jobs, this, type);
         recyclerView.setAdapter(adapter);
     }
 

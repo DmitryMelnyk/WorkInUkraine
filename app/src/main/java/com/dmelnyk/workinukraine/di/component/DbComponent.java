@@ -7,6 +7,7 @@ import com.dmelnyk.workinukraine.mvp.activity_splash.SplashActivityPresenter;
 import com.dmelnyk.workinukraine.mvp.activity_tabs.TabsActivityPresenter;
 import com.dmelnyk.workinukraine.di.PerActivity;
 import com.dmelnyk.workinukraine.di.module.DbModule;
+import com.dmelnyk.workinukraine.mvp.activity_webview.WebActivityPresenter;
 import com.dmelnyk.workinukraine.mvp.dialog_delete.DialogDeletePresenter;
 import com.dmelnyk.workinukraine.services.GetDataIntentService;
 import com.dmelnyk.workinukraine.services.WakeLockBroadcastReceiver;
@@ -35,4 +36,6 @@ public interface DbComponent {
     void inject(SplashActivityPresenter presenter);
 
     void inject(CardViewAdapter context);
+
+    void inject(WebActivityPresenter presenter);
 }

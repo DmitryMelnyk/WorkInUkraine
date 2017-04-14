@@ -6,12 +6,16 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.dmelnyk.workinukraine.R;
+import com.dmelnyk.workinukraine.helpers.Job;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -20,22 +24,24 @@ import butterknife.ButterKnife;
  * Created by dmitry on 22.01.17.
  */
 
-public class WebViewActivity extends AppCompatActivity {
+public class WebViewActivity extends AppCompatActivity implements Contract.View{
 
-    public static final String ARGS_URL_ADDRESS = "WebViewActivity.URL";
-    public static final String ARGS_TITLE = "WebViewActivity.TITLE";
+    public static final String ARGS = "WebViewActivity.Args";
 
     @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.fragment_vacancy_progress_bar) ProgressBar bar;
     @BindView(R.id.web_view) WebView mWebView;
 
-    private String mUrl;
+    private String url;
     private String title;
+    private WebActivityPresenter presenter;
+    private Job job;
+    private int menuView = -1; // for changing menu
 
-    public static Intent newInstance(Context context, String url, String title) {
+
+    public static Intent newInstance(Context context, Job job) {
         Intent intent = new Intent(context, WebViewActivity.class);
-        intent.putExtra(ARGS_URL_ADDRESS, url);
-        intent.putExtra(ARGS_TITLE, title);
+        intent.putExtra(ARGS, job);
         return intent;
     }
 
@@ -45,13 +51,43 @@ public class WebViewActivity extends AppCompatActivity {
         setContentView(R.layout.webview_fragment);
         ButterKnife.bind(this);
 
-        Intent args = getIntent();
-        mUrl = args.getStringExtra(ARGS_URL_ADDRESS);
-        title = args.getStringExtra(ARGS_TITLE);
+        job = getIntent().getParcelableExtra(ARGS);
+        url = job.getUrlCode();
+        title = job.getTitle();
+
+        initializePresenter();
+        presenter.onTakeView(this);
 
         configToolbar();
         configProgressBar();
-        configWebView();
+        if (savedInstanceState == null) {
+            configWebView();
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        presenter.onTakeView(null);
+        presenter = null;
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        mWebView.saveState(outState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        mWebView.restoreState(savedInstanceState);
+    }
+
+    private void initializePresenter() {
+        if (presenter == null) {
+            presenter = new WebActivityPresenter(this, job);
+        }
     }
 
     private void configToolbar() {
@@ -63,9 +99,29 @@ public class WebViewActivity extends AppCompatActivity {
                 view -> finish());
     }
 
+    public void onChangeMenu(int id) {
+        menuView = id;
+        invalidateOptionsMenu();
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(menuView, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.webview_menu_favorite:
+                presenter.onMenuItemSelected();
+                break;
+        }
+        return true;
+    }
+
     private void configProgressBar() {
         bar.setMax(100);
-
     }
 
     private void configWebView() {
@@ -90,7 +146,7 @@ public class WebViewActivity extends AppCompatActivity {
                 }
             }
         });
-        mWebView.loadUrl(mUrl);
+        mWebView.loadUrl(url);
     }
 
     @Override
@@ -102,5 +158,10 @@ public class WebViewActivity extends AppCompatActivity {
         else {
             super.onBackPressed();
         }
+    }
+
+    @Override
+    public void onShowToast(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 }

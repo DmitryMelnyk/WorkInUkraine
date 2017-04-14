@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabaseLockedException;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.dmelnyk.workinukraine.db.JobDbSchema.JobTable.Columns;
@@ -70,7 +71,7 @@ public class JobPool {
 
     }
 
-
+    @NonNull
     public ArrayList<Job> getJobs(String table) {
         Log.d(TAG, "start getJobs()");
         Cursor cursor = mDatabase.query(
@@ -149,7 +150,12 @@ public class JobPool {
         mDatabase.close();
     }
 
-    public void removeJob(Job job) {
+
+    /**
+     * Removes job from FAVORITE table
+     * @param job
+     */
+    public void removeJobFromFavorite(Job job) {
         Log.d(TAG, "removing from FAVORITE:" + job);
         try {
             mDatabase.delete(
@@ -160,5 +166,10 @@ public class JobPool {
         } catch (Exception e) {
             Log.e(TAG, "clearing item error: ", e);
         }
+    }
+
+    public boolean containsJob(String table, Job job) {
+        ArrayList jobs = getJobs(table);
+        return jobs.contains(job);
     }
 }

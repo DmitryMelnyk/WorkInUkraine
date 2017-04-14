@@ -1,13 +1,6 @@
 <resources>
     <string name="app_name">Work In Ukraine</string>
 
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="guillotine_search">Поиск вакансий</string>
-    <string name="guillotine_favorites">Избранные вакансии</string>
-    <string name="guillotine_about">О приложении</string>
-    <string name="guillotine_settings">Настройки</string>
-    <string name="guillotine_exit">Выйти</string>
-
     <!-- Settings -->
     <string name="settings_messages">Оповещения</string>
     <string name="settings_sound_enable">Использовать звуковые оповещения</string>
@@ -54,8 +47,11 @@
     <string name="dialog_delete_cancel">Отмена</string>
     <string name="dialog_delete_shore">Вы уверенны, что хотите очистить список избранных вакансий?</string>
     <string name="dialog_delete_clear_toast">Список вакансий очищено!</string>
-    <string name="card_view_adapter_saved_job">Вакансия добавлена в список избранных!</string>
+    <string name="card_view_adapter_job_added_to_favorite">Вакансия добавлена в список избранных!</string>
     <string name="card_view_adapter_job_exists_in_table">Вакансия уже существует в списке избранных!</string>
+    <string name="card_view_adapter_job_removed_from_favorite">Вакансия удалена из списка избранных!</string>
+
+    <!-- NavigationDrawer menu items -->
     <string name="navmenu_new_search">Искать вакансии</string>
     <string name="navmenu_update">Обновить список вакансий</string>
     <string name="navmenu_favorite">Избранные вакансии</string>
@@ -72,7 +68,6 @@
     <string name="base_activity_title_favorite">Список избранных вакансий</string>
     <string name="base_activity_title_recent">Список недавних вакансий</string>
     <string name="base_activity_title_new">Список новых вакансий</string>
-    <!--<string name="base_activity_favorite_empty">Вы ещё не добавили ни одной вакансии в список избранных</string>-->
     <string name="base_activity_favorite_empty">Список вакансий пуст</string>
     <string name="base_activity_recent_empty">Список недавних вакансий пуст</string>
 
@@ -82,5 +77,6 @@
     <string name="crash_dialog_comment_promt">Можете добавить свой комментарий ниже</string>
     <string name="crash_dialog_ok_toast">Благодарю!</string>
     <string name="settings_activity_title">Настройки</string>
+    <string name="webview_menu_add_to_favorite">Добавить в список избранных</string>
 
 </resources>

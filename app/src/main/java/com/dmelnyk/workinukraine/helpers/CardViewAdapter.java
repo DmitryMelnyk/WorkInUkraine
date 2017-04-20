@@ -82,10 +82,7 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.MyView
         final MenuPopupHelper popupHelper = new MenuPopupHelper(
                 context, (MenuBuilder) popupMenu.getMenu(), menuButton);
         popupHelper.setForceShowIcon(true);
-        menuButton.setOnClickListener(view -> {
-            popupHelper.show();
-            popupHelper.show();
-        });
+        menuButton.setOnClickListener(view -> popupHelper.show());
 
         popupMenu.setOnMenuItemClickListener(view -> {
             switch (view.getItemId()) {

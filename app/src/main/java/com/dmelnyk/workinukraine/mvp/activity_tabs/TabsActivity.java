@@ -1,12 +1,10 @@
 package com.dmelnyk.workinukraine.mvp.activity_tabs;
 
 import android.content.Context;
-import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.v4.content.pm.ActivityInfoCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
@@ -18,8 +16,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 
-import com.dmelnyk.workinukraine.helpers.ImageUtils;
 import com.dmelnyk.workinukraine.R;
+import com.dmelnyk.workinukraine.helpers.ImageUtils;
 import com.dmelnyk.workinukraine.helpers.Job;
 import com.ogaclejapan.smarttablayout.SmartTabLayout;
 import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItem;
@@ -113,7 +111,7 @@ public class TabsActivity extends AppCompatActivity
         for (String key : dataSet.keySet()) {
             FragmentPagerItem item = FragmentPagerItem.of(key, TabRecycler.class, dataSet.get(key));
             pages.add(item);
-            Log.e(TAG, dataSet.get(key).toString());
+//            Log.d(TAG, dataSet.get(key).toString());
         }
 
         FragmentPagerItemAdapter adapter = new FragmentPagerItemAdapter(

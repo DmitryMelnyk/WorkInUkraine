@@ -20,12 +20,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <LinearLayout
-            android:layout_centerInParent="true"
             android:layout_gravity="center"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="85"
-            android:minHeight="100dp"
+            android:layout_height="wrap_content"
             android:orientation="horizontal">
 
             <TextView
@@ -33,17 +30,17 @@
                 android:layout_gravity="center"
                 android:gravity="center_vertical"
                 android:layout_width="0dp"
-                android:layout_weight="90"
-                android:layout_height="match_parent"
-                android:layout_margin="10dp"
-                android:textSize="16sp"
+                android:layout_weight="95"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:textSize="14sp"
                 android:text="text"
                 fontPath="fonts/FranckerCYR-ExtraBold.otf"
                 tools:ignore="MissingPrefix"/>
 
             <ImageButton
                 android:id="@+id/popup"
-                android:layout_weight="10"
+                android:layout_weight="5"
                 android:layout_gravity="center_vertical"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -55,13 +52,12 @@
         <TextView
             android:id="@+id/card_date"
             android:padding="2dp"
+            android:layout_marginRight="10dp"
             android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:layout_weight="15"
+            android:layout_height="wrap_content"
             android:layout_gravity="right"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentBottom="true"
-            android:text="data"
+            android:text="date"
+            android:textSize="12sp"
             fontPath="fonts/FranckerCYR-ExtraBold.otf"
             tools:ignore="MissingPrefix"
             />

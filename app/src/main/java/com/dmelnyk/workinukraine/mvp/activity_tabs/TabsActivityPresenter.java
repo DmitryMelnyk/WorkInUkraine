@@ -74,7 +74,6 @@ public class TabsActivityPresenter implements Contract.Presenter {
                 runSearchActivity();
                 break;
             case R.id.nav_update:
-                // TODO
                 runUpdateData();
                 break;
             case R.id.nav_favorite:
@@ -84,12 +83,11 @@ public class TabsActivityPresenter implements Contract.Presenter {
                 runBaseActivity(BaseActivity.ActivityType.RECENT);
                 break;
             case R.id.nav_settings:
-                // TODO
                 runSettingsActivity();
                 break;
-            case R.id.nav_about:
-                // TODO
-                break;
+//            case R.id.nav_about:
+//                // TODO
+//                break;
             case R.id.nav_exit:
                 exitApp();
                 break;

@@ -4,7 +4,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteDatabaseLockedException;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.util.Log;
@@ -51,7 +50,6 @@ public class JobPool {
         }
         mDatabase.insert(table,
                 null, getContentValue(job));
-        Log.d(TAG, "add to db:" + table + " job: " + job);
 
         return true;
     }
@@ -89,12 +87,12 @@ public class JobPool {
         if (jobCursor != null && cursor.moveToFirst()) {
             while (!jobCursor.isAfterLast()) {
                 jobs.add(jobCursor.getJob());
-                Log.d(TAG, "extract from db:" + table + "job: " + jobCursor.getJob());
+//                Log.d(TAG, "extract from db:" + table + "job: " + jobCursor.getJob());
                 jobCursor.moveToNext();
             }
         }
         jobCursor.close();
-        Log.d(TAG, "jobs = " + jobs);
+        Log.d(TAG, String.format("TABLE = %s Extracted number of jobs from = %d", table, jobs.size()));
         return jobs;
     }
 
@@ -112,6 +110,7 @@ public class JobPool {
 
     public void writeAllJobs(Bundle args) {
         clearDb();
+        Log.d(TAG, "Calling writeAllJobs(Bundle)");
         for (String tableName : JobDbSchema.JobTable.NAMES) {
             ArrayList<Job> jobs = args.getParcelableArrayList(tableName);
             addJobs(jobs, tableName);
@@ -156,7 +155,7 @@ public class JobPool {
      * @param job
      */
     public void removeJobFromFavorite(Job job) {
-        Log.d(TAG, "removing from FAVORITE:" + job);
+//        Log.d(TAG, "removing from FAVORITE:" + job);
         try {
             mDatabase.delete(
                     JobDbSchema.JobTable.FAVORITE,

@@ -23,6 +23,7 @@ public abstract class BaseDialog extends DialogFragment {
                 .scaleX(0)
                 .scaleY(0)
                 .setInterpolator(new AccelerateInterpolator(2));
+        
         getView().postDelayed(() -> dismiss(), 300);
     }
 

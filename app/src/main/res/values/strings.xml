@@ -78,5 +78,8 @@
     <string name="crash_dialog_ok_toast">Благодарю!</string>
     <string name="settings_activity_title">Настройки</string>
     <string name="webview_menu_add_to_favorite">Добавить в список избранных</string>
+    <string name="card_view_popup_share">Поделиться</string>
+    <string name="card_view_popup_remove">Удалить</string>
+    <string name="card_view_popup_add_to_favorite">Добавить в избранные</string>
 
 </resources>

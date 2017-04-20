@@ -7,7 +7,6 @@ import com.dmelnyk.workinukraine.db.JobDbSchema;
 import com.dmelnyk.workinukraine.db.JobPool;
 import com.dmelnyk.workinukraine.di.MyApplication;
 import com.dmelnyk.workinukraine.di.component.DaggerDbComponent;
-import com.dmelnyk.workinukraine.mvp.activity_favorite_recent_new.BaseActivity;
 import com.dmelnyk.workinukraine.mvp.activity_favorite_recent_new.BaseActivity.ActivityType;
 
 import javax.inject.Inject;
@@ -44,7 +43,7 @@ public class DialogDeletePresenter implements Contract.Presenter {
             case OK:
                 clearTable();
                 view.dialogDismiss();
-                view.closeActivity();
+                view.getView().postDelayed(() -> view.closeActivity(), 300);
                 break;
         }
     }

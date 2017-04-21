@@ -6,16 +6,17 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.view.GravityCompat;
 
 import com.dmelnyk.workinukraine.R;
-import com.dmelnyk.workinukraine.helpers.NetUtils;
-import com.dmelnyk.workinukraine.mvp.activity_search.SearchActivity;
-import com.dmelnyk.workinukraine.mvp.activity_settings.SettingsActivity;
 import com.dmelnyk.workinukraine.db.JobPool;
 import com.dmelnyk.workinukraine.di.MyApplication;
 import com.dmelnyk.workinukraine.di.component.DaggerDbComponent;
+import com.dmelnyk.workinukraine.helpers.NetUtils;
 import com.dmelnyk.workinukraine.helpers.Tags;
 import com.dmelnyk.workinukraine.mvp.activity_favorite_recent_new.BaseActivity;
+import com.dmelnyk.workinukraine.mvp.activity_search.SearchActivity;
+import com.dmelnyk.workinukraine.mvp.activity_settings.SettingsActivity;
 import com.dmelnyk.workinukraine.services.GetDataIntentService;
 
 import javax.inject.Inject;
@@ -87,7 +88,6 @@ public class TabsActivityPresenter implements Contract.Presenter {
                 } else {
                     runUpdateData();
                 }
-                runSearchActivity();
                 break;
             case R.id.nav_favorite:
                 runBaseActivity(BaseActivity.ActivityType.FAVORITE);
@@ -171,7 +171,12 @@ public class TabsActivityPresenter implements Contract.Presenter {
 
     @Override
     public void onBackPressed() {
-        jobPool.closeDb();
-        view.finish();
+        if (view.drawer.isDrawerOpen(GravityCompat.START)) {
+            view.drawer.closeDrawer(GravityCompat.START);
+        }
+        else {
+            jobPool.closeDb();
+            view.finish();
+        }
     }
 }

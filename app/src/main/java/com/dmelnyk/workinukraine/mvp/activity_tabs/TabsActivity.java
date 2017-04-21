@@ -145,7 +145,6 @@ public class TabsActivity extends AppCompatActivity
     public void onShowNetworkErrorMessage() {
         Toast.makeText(this, getResources().getString(R.string.no_internet_connection), Toast.LENGTH_LONG).show();
     }
-
     private void configToolbar() {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowHomeEnabled(true);

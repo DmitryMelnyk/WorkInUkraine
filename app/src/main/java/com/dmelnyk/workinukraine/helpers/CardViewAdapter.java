@@ -110,6 +110,7 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.MyView
                             .newInstance(context, job);
                     context.startActivity(webActivity);
                 });
+
         date.setOnClickListener(
                 view -> {
                     Intent webActivity = WebViewActivity

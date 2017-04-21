@@ -63,6 +63,7 @@ public class TabsActivityPresenter implements Contract.Presenter {
 
     @Override
     public void onButtonClicked() {
+
         if (!NetUtils.isNetworkReachable(context)) {
             view.onShowNetworkErrorMessage();
         } else {
@@ -86,6 +87,7 @@ public class TabsActivityPresenter implements Contract.Presenter {
                 } else {
                     runUpdateData();
                 }
+                runSearchActivity();
                 break;
             case R.id.nav_favorite:
                 runBaseActivity(BaseActivity.ActivityType.FAVORITE);

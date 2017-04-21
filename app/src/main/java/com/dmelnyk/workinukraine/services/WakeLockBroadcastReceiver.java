@@ -65,6 +65,7 @@ public class WakeLockBroadcastReceiver extends BroadcastReceiver {
         if (!NetUtils.isNetworkReachable(context)) {
             return;
         }
+
         getDbComponent(context);
 
         String requestCity = intent.getStringExtra(KEY_CITY);

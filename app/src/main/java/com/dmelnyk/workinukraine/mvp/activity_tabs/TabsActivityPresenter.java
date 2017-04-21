@@ -8,6 +8,7 @@ import android.os.Handler;
 import android.os.Message;
 
 import com.dmelnyk.workinukraine.R;
+import com.dmelnyk.workinukraine.helpers.NetUtils;
 import com.dmelnyk.workinukraine.mvp.activity_search.SearchActivity;
 import com.dmelnyk.workinukraine.mvp.activity_settings.SettingsActivity;
 import com.dmelnyk.workinukraine.db.JobPool;
@@ -62,19 +63,29 @@ public class TabsActivityPresenter implements Contract.Presenter {
 
     @Override
     public void onButtonClicked() {
-        Intent intent = new Intent(context, SearchActivity.class);
-        context.startActivity(intent);
-        view.finish();
+        if (!NetUtils.isNetworkReachable(context)) {
+            view.onShowNetworkErrorMessage();
+        } else {
+            runSearchActivity();
+        }
     }
 
     @Override
     public void onNavigationItemSelected(int id) {
         switch (id) {
             case R.id.nav_new_request:
-                runSearchActivity();
+                if (!NetUtils.isNetworkReachable(context)) {
+                    view.onShowNetworkErrorMessage();
+                } else {
+                    runSearchActivity();
+                }
                 break;
             case R.id.nav_update:
-                runUpdateData();
+                if (!NetUtils.isNetworkReachable(context)) {
+                    view.onShowNetworkErrorMessage();
+                } else {
+                    runUpdateData();
+                }
                 break;
             case R.id.nav_favorite:
                 runBaseActivity(BaseActivity.ActivityType.FAVORITE);

@@ -41,7 +41,7 @@
             <ImageButton
                 android:id="@+id/popup"
                 android:layout_weight="5"
-                android:layout_gravity="center_vertical"
+                android:layout_gravity="center_vertical|right"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_card_view_more_white"

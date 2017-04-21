@@ -10,6 +10,8 @@ public class Contract {
 
     interface View {
         void onConfigSmartTabs(Bundle args);
+
+        void onShowNetworkErrorMessage();
     }
 
     interface Presenter {

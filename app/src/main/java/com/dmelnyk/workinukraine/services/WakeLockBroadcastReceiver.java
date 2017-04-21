@@ -22,6 +22,7 @@ import com.dmelnyk.workinukraine.db.JobPool;
 import com.dmelnyk.workinukraine.di.MyApplication;
 import com.dmelnyk.workinukraine.di.component.DaggerDbComponent;
 import com.dmelnyk.workinukraine.di.component.DbComponent;
+import com.dmelnyk.workinukraine.helpers.NetUtils;
 import com.dmelnyk.workinukraine.mvp.activity_favorite_recent_new.BaseActivity;
 import com.dmelnyk.workinukraine.helpers.Job;
 
@@ -61,6 +62,9 @@ public class WakeLockBroadcastReceiver extends BroadcastReceiver {
         this.context = context;
 
         Log.d(TAG, "onReceive()");
+        if (!NetUtils.isNetworkReachable(context)) {
+            return;
+        }
         getDbComponent(context);
 
         String requestCity = intent.getStringExtra(KEY_CITY);
@@ -82,20 +86,22 @@ public class WakeLockBroadcastReceiver extends BroadcastReceiver {
             if (msg.what == GetDataIntentService.FINISH_CODE) {
                 Bundle jobs = (Bundle) msg.obj;
 
-                ArrayList<Job> fresh = retrieveNewJobs(jobs);
-                if(fresh.size() > 0) {
+                if (jobs != null && !jobs.isEmpty()) {
+                    ArrayList<Job> fresh = retrieveNewJobs(jobs);
+                    if (fresh.size() > 0) {
 
-                    // add new vacancies to "RECENT" table
-                    jobPool.addJobs(fresh, JobDbSchema.JobTable.RECENT);
+                        // add new vacancies to "RECENT" table
+                        jobPool.addJobs(fresh, JobDbSchema.JobTable.RECENT);
 
-                    // refresh vacancies in "NEW" table
-                    jobPool.clearTable(JobDbSchema.JobTable.NEW);
-                    jobPool.addJobs(fresh, JobDbSchema.JobTable.NEW);
+                        // refresh vacancies in "NEW" table
+                        jobPool.clearTable(JobDbSchema.JobTable.NEW);
+                        jobPool.addJobs(fresh, JobDbSchema.JobTable.NEW);
 
-                    showNotification(fresh);
+                        showNotification(fresh);
 
-                    // update old data in "NAMES" tables
-                    jobPool.writeAllJobs(jobs);
+                        // update old data in "NAMES" tables
+                        jobPool.writeAllJobs(jobs);
+                    }
                 }
             }
         }

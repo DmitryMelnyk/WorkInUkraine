@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.dmelnyk.workinukraine.R;
 import com.dmelnyk.workinukraine.helpers.ImageUtils;
@@ -138,6 +139,11 @@ public class TabsActivity extends AppCompatActivity
             @Override
             public void onPageScrollStateChanged(int state) { /* NOP*/ }
         });
+    }
+
+    @Override
+    public void onShowNetworkErrorMessage() {
+        Toast.makeText(this, getResources().getString(R.string.no_internet_connection), Toast.LENGTH_LONG).show();
     }
 
     private void configToolbar() {

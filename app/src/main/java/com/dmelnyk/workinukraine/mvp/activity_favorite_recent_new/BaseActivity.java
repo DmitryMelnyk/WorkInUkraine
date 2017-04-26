@@ -5,16 +5,15 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 
-import com.dmelnyk.workinukraine.helpers.CardViewAdapter;
 import com.dmelnyk.workinukraine.R;
+import com.dmelnyk.workinukraine.helpers.CardViewAdapter;
+import com.dmelnyk.workinukraine.helpers.Job;
 import com.dmelnyk.workinukraine.mvp.activity_tabs.TabsActivity;
 import com.dmelnyk.workinukraine.mvp.dialog_delete.DialogDelete;
-import com.dmelnyk.workinukraine.helpers.Job;
 
 import java.util.ArrayList;
 
@@ -86,7 +85,13 @@ public class BaseActivity extends AppCompatActivity
         getSupportActionBar().setTitle(title);
 
         toolbar.setNavigationOnClickListener(
-                view -> onBackPressed());
+                view -> {
+                    if (typeActivity.equals(ActivityType.NEW)) {
+                        startTabsActivity();
+                    } else {
+                        onBackPressed();
+                    }
+                });
     }
 
     private void configFAB() {
@@ -97,12 +102,6 @@ public class BaseActivity extends AppCompatActivity
     @Override
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
-    }
-
-    @Override
-    public void onBackPressed() {
-        startTabsActivity();
-        finish();
     }
 
     @Override

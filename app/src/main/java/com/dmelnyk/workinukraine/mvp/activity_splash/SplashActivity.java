@@ -34,8 +34,11 @@ public class SplashActivity extends AppCompatActivity
         hTextView.postDelayed(() -> hTextView.animateText("Work In Ukraine"), 500);
         hTextView.postDelayed(() -> {
             // run new Activity
-            presenter.onSplashClosed();
-            finish();
+            // presenter will be equal null after pressing back-button
+            // before ending splash screen
+            if (presenter != null) {
+                presenter.onSplashClosed();
+            }
         }, 2500);
     }
 
@@ -50,10 +53,5 @@ public class SplashActivity extends AppCompatActivity
         if (presenter == null) {
             presenter = new SplashActivityPresenter(this);
         }
-    }
-
-    @Override
-    public void onBackPressed() {
-        // NOP
     }
 }

@@ -15,6 +15,10 @@ import java.util.ArrayList;
 
 import javax.inject.Inject;
 
+import static com.dmelnyk.workinukraine.mvp.activity_favorite_recent_new.BaseActivity.FAVORITE;
+import static com.dmelnyk.workinukraine.mvp.activity_favorite_recent_new.BaseActivity.NEW;
+import static com.dmelnyk.workinukraine.mvp.activity_favorite_recent_new.BaseActivity.RECENT;
+
 /**
  * Created by dmitry on 04.04.17.
  */
@@ -23,7 +27,7 @@ public class BaseActivityPresenter implements Contract.Presenter {
 
     private BaseActivity view;
     private Context context;
-    private CardViewAdapter.type adapterType;
+    private int adapterType;
 
     @Inject
     JobPool jobPool;
@@ -37,7 +41,7 @@ public class BaseActivityPresenter implements Contract.Presenter {
     }
 
     @Override
-    public void onTakeView(BaseActivity activity, ActivityType typeActivity) {
+    public void onTakeView(BaseActivity activity, int typeActivity) {
         view = activity;
         updateUi(typeActivity);
     }
@@ -47,7 +51,7 @@ public class BaseActivityPresenter implements Contract.Presenter {
         view.onShowDialogDelete();
     }
 
-    private void updateUi(ActivityType typeActivity) {
+    private void updateUi(@ActivityType int typeActivity) {
         if (view != null) {
             String tableName = getTable(typeActivity);
             String titleView = getTitle(typeActivity);
@@ -57,20 +61,20 @@ public class BaseActivityPresenter implements Contract.Presenter {
         }
     }
 
-    private String getTable(ActivityType typeActivity) {
+    private String getTable(@ActivityType int typeActivity) {
         String table = "";
         switch (typeActivity) {
             case FAVORITE:
                 table = JobDbSchema.JobTable.FAVORITE;
-                adapterType = CardViewAdapter.type.FAVORITE;
+                adapterType = CardViewAdapter.FAVORITE;
                 break;
             case NEW:
                 table = JobDbSchema.JobTable.NEW;
-                adapterType = CardViewAdapter.type.TABVIEW;
+                adapterType = CardViewAdapter.TABVIEW;
                 break;
             case RECENT:
                 table = JobDbSchema.JobTable.RECENT;
-                adapterType = CardViewAdapter.type.TABVIEW;
+                adapterType = CardViewAdapter.TABVIEW;
                 break;
         }
 
@@ -81,7 +85,7 @@ public class BaseActivityPresenter implements Contract.Presenter {
         view.configToolbar(title);
     }
 
-    private String getTitle(ActivityType typeActivity) {
+    private String getTitle(@ActivityType int typeActivity) {
         String title = "";
         switch (typeActivity) {
             case FAVORITE:

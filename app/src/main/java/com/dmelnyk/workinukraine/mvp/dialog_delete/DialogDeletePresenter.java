@@ -11,6 +11,10 @@ import com.dmelnyk.workinukraine.mvp.activity_favorite_recent_new.BaseActivity.A
 
 import javax.inject.Inject;
 
+import static com.dmelnyk.workinukraine.mvp.activity_favorite_recent_new.BaseActivity.FAVORITE;
+import static com.dmelnyk.workinukraine.mvp.activity_favorite_recent_new.BaseActivity.NEW;
+import static com.dmelnyk.workinukraine.mvp.activity_favorite_recent_new.BaseActivity.RECENT;
+
 /**
  * Created by dmitry on 03.04.17.
  */
@@ -22,9 +26,9 @@ public class DialogDeletePresenter implements Contract.Presenter {
     JobPool jobPool;
 
     DialogDelete view;
-    ActivityType typeActivity;
+    int typeActivity;
 
-    public DialogDeletePresenter(Context context, ActivityType typeActivity) {
+    public DialogDeletePresenter(Context context, @ActivityType int typeActivity) {
         Log.d(TAG, "creating constructor: DialogDeletePresenter(Context context)");
         this.typeActivity = typeActivity;
         // inject database dependency

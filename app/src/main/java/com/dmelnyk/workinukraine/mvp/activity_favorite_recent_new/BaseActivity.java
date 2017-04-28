@@ -3,6 +3,7 @@ package com.dmelnyk.workinukraine.mvp.activity_favorite_recent_new;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.IntDef;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -15,6 +16,8 @@ import com.dmelnyk.workinukraine.helpers.Job;
 import com.dmelnyk.workinukraine.mvp.activity_tabs.TabsActivity;
 import com.dmelnyk.workinukraine.mvp.dialog_delete.DialogDelete;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 
 import butterknife.BindView;
@@ -24,11 +27,16 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 public class BaseActivity extends AppCompatActivity
     implements Contract.View {
 
-    private ActivityType typeActivity;
+    private int typeActivity;
 
-    public enum ActivityType {
-        FAVORITE, RECENT, NEW
-    }
+    public static final int FAVORITE = -1;
+    public static final int RECENT = -2;
+    public static final int NEW = -3;
+
+    @IntDef({ FAVORITE, RECENT, NEW })
+    @Retention(RetentionPolicy.CLASS)
+    public @interface ActivityType {}
+
     public static final String ACTIVITY_TYPE = "TypeActivity";
 
     @BindView(R.id.toolbar)
@@ -44,8 +52,7 @@ public class BaseActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        typeActivity = (ActivityType)
-                getIntent().getSerializableExtra(ACTIVITY_TYPE);
+        typeActivity = getIntent().getIntExtra(ACTIVITY_TYPE, -4);
 
         initializePresenter();
         presenter.onTakeView(this, typeActivity);
@@ -68,7 +75,7 @@ public class BaseActivity extends AppCompatActivity
         configFAB();
     }
 
-    public void onConfigRecyclerView(ArrayList<Job> jobs, CardViewAdapter.type type) {
+    public void onConfigRecyclerView(ArrayList<Job> jobs, @CardViewAdapter.CardViewType int type) {
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         CardViewAdapter adapter = new CardViewAdapter(jobs, this, type);
@@ -86,7 +93,7 @@ public class BaseActivity extends AppCompatActivity
 
         toolbar.setNavigationOnClickListener(
                 view -> {
-                    if (typeActivity.equals(ActivityType.NEW)) {
+                    if (typeActivity == NEW) {
                         startTabsActivity();
                     } else {
                         onBackPressed();

@@ -37,7 +37,7 @@ public class TabRecycler extends Fragment {
         view = inflater.inflate(R.layout.recycler_view, container, false);
         recycler = (RecyclerView) view.findViewById(R.id.recycler_view);
         recycler.setLayoutManager(new LinearLayoutManager(getContext()));
-        RecyclerView.Adapter adapter = new CardViewAdapter(jobs, getContext(), CardViewAdapter.type.TABVIEW);
+        RecyclerView.Adapter adapter = new CardViewAdapter(jobs, getContext(), CardViewAdapter.TABVIEW);
         recycler.setAdapter(adapter);
 
         return view;

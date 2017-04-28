@@ -19,7 +19,7 @@ public class Contract {
     }
 
     interface Presenter {
-        void onTakeView(BaseActivity activity, BaseActivity.ActivityType typeActivity);
+        void onTakeView(BaseActivity activity, int typeActivity);
 
         void onButtonClicked();
     }

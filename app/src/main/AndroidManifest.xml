@@ -27,7 +27,6 @@
             android:screenOrientation="portrait"/>
         <activity
             android:name=".mvp.activity_favorite_recent_new.BaseActivity"
-            android:noHistory="true"
             android:launchMode="singleInstance"/>
         <activity android:name=".mvp.activity_webview.WebViewActivity"/>
         <activity

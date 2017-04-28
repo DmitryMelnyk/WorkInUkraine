@@ -90,10 +90,10 @@ public class TabsActivityPresenter implements Contract.Presenter {
                 }
                 break;
             case R.id.nav_favorite:
-                runBaseActivity(BaseActivity.ActivityType.FAVORITE);
+                runBaseActivity(BaseActivity.FAVORITE);
                 break;
             case R.id.nav_recent:
-                runBaseActivity(BaseActivity.ActivityType.RECENT);
+                runBaseActivity(BaseActivity.RECENT);
                 break;
             case R.id.nav_settings:
                 runSettingsActivity();
@@ -116,7 +116,7 @@ public class TabsActivityPresenter implements Contract.Presenter {
         view.finish();
     }
 
-    private void runBaseActivity(BaseActivity.ActivityType type) {
+    private void runBaseActivity(@BaseActivity.ActivityType int type) {
         Intent intentFavorite = new Intent(context, BaseActivity.class);
         intentFavorite.putExtra(BaseActivity.ACTIVITY_TYPE, type);
         context.startActivity(intentFavorite);
@@ -140,7 +140,6 @@ public class TabsActivityPresenter implements Contract.Presenter {
             switch (msg.what) {
                 // Message from DialogRequest
                 case FINISH_CODE:
-                    view.spinner.smoothToHide();
                     Intent i = new Intent(context, TabsActivity.class);
                     view.finish();
                     context.startActivity(i);
@@ -164,7 +163,7 @@ public class TabsActivityPresenter implements Contract.Presenter {
         Intent intent = new Intent(context, GetDataIntentService.class);
         intent.putExtra(KEY_CITY, requestCity);
         intent.putExtra(KEY_REQUEST, requestText);
-        intent.putExtra(KEY_MODE, GetDataIntentService.Mode.SEARCH);
+        intent.putExtra(KEY_MODE, GetDataIntentService.SEARCH);
         context.startService(intent);
     }
 

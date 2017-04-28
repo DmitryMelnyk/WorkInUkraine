@@ -5,13 +5,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.annotation.IntDef;
 import android.util.Log;
 
 import com.dmelnyk.workinukraine.db.JobDbSchema;
 import com.dmelnyk.workinukraine.db.JobPool;
 import com.dmelnyk.workinukraine.di.MyApplication;
 import com.dmelnyk.workinukraine.di.component.DaggerDbComponent;
-import com.dmelnyk.workinukraine.di.component.DbComponent;
 import com.dmelnyk.workinukraine.helpers.Job;
 import com.dmelnyk.workinukraine.parsing.ParserHeadHunters;
 import com.dmelnyk.workinukraine.parsing.ParserJobsUa;
@@ -19,6 +19,8 @@ import com.dmelnyk.workinukraine.parsing.ParserRabotaUa;
 import com.dmelnyk.workinukraine.parsing.ParserWorkNewInfo;
 import com.dmelnyk.workinukraine.parsing.ParserWorkUa;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -35,9 +37,12 @@ import javax.inject.Inject;
 public class GetDataIntentService extends IntentService {
 
     // SEARCH - for DialogDownloading, SERVICE - for BroadcastReceiver
-    public enum Mode {
-        SEARCH, SERVICE;
-    }
+    public static final int SEARCH = -1;
+    public static final int SERVICE = -2;
+
+    @IntDef({ SEARCH, SERVICE })
+    @Retention(RetentionPolicy.CLASS)
+    public @interface Mode {}
 
     public static final String TAG = "GT.GetDataIs";
     public static final String KEY_CITY = "city";
@@ -53,7 +58,7 @@ public class GetDataIntentService extends IntentService {
     static Handler mainHandler;
     String city;
     String search;
-    Mode mode;
+    int mode;
 
     @Inject
     JobPool jobPool;
@@ -81,10 +86,10 @@ public class GetDataIntentService extends IntentService {
         city = intent.getStringExtra(KEY_CITY);
         search = intent.getStringExtra(KEY_REQUEST);
 
-        mode = (Mode) intent.getSerializableExtra(KEY_MODE);
-        if (mode.equals(Mode.SEARCH)) {
+        mode = intent.getIntExtra(KEY_MODE, -2);
+        if (mode == SEARCH) {
             jobPool.clearDb();
-            jobPool.clearTable(JobDbSchema.JobTable.RECENT);
+//            jobPool.clearTable(JobDbSchema.JobTable.RECENT);
         }
 
         Bundle jobs = new Bundle();
@@ -118,7 +123,7 @@ public class GetDataIntentService extends IntentService {
                             jobs.putParcelableArrayList(JobDbSchema.JobTable.NAMES[finalI], list);
 
                             Message message;
-                            if (mode.equals(Mode.SEARCH)) { // sending data for updating DialogDownloading
+                            if (mode == SEARCH) { // sending data for updating DialogDownloading
                                 message = mainHandler.obtainMessage(finalI, list.size(), -1); // -1 is needed for creating Message(int, int, int)
                                 mainHandler.sendMessage(message);
                                 // write list to DB

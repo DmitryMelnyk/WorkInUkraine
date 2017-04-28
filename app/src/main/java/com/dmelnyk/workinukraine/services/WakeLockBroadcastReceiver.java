@@ -75,7 +75,7 @@ public class WakeLockBroadcastReceiver extends BroadcastReceiver {
         Intent searchJobsIntent = new Intent(context, GetDataIntentService.class);
         searchJobsIntent.putExtra(KEY_CITY, requestCity);
         searchJobsIntent.putExtra(KEY_REQUEST, requestKeyWords);
-        searchJobsIntent.putExtra(KEY_MODE, Mode.SERVICE);
+        searchJobsIntent.putExtra(KEY_MODE, SERVICE);
         WakefulBroadcastReceiver.startWakefulService(context, searchJobsIntent);
     }
 
@@ -167,7 +167,7 @@ public class WakeLockBroadcastReceiver extends BroadcastReceiver {
     @NonNull
     private PendingIntent createPendingIntent() {
         Intent intent = new Intent(context, BaseActivity.class);
-        intent.putExtra(BaseActivity.ACTIVITY_TYPE, BaseActivity.ActivityType.NEW);
+        intent.putExtra(BaseActivity.ACTIVITY_TYPE, BaseActivity.NEW);
 
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent,
                 PendingIntent.FLAG_UPDATE_CURRENT);

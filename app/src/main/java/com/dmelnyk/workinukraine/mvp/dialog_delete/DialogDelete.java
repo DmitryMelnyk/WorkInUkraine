@@ -31,9 +31,9 @@ public class DialogDelete extends BaseDialog implements
     private View dialogView;
     private static DialogDelete dialog;
     private DialogDeletePresenter presenter;
-    private static ActivityType typeActivity;
+    private static int typeActivity;
 
-    public static DialogDelete getInstance(ActivityType type) {
+    public static DialogDelete getInstance(@ActivityType int type) {
         typeActivity = type;
         if (null == dialog) {
             dialog = new DialogDelete();

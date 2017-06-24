@@ -5,10 +5,9 @@ import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.v7.preference.Preference;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.dmelnyk.workinukraine.R;
-import com.dmelnyk.workinukraine.di.MyApplication;
+import com.dmelnyk.workinukraine.application.WorkInUaApplication;
 import com.dmelnyk.workinukraine.di.component.DaggerRepeatingSearchComponent;
 import com.dmelnyk.workinukraine.helpers.RepeatingSearch;
 
@@ -44,7 +43,7 @@ public class FragmentSettingsPresenter implements Contract.Presenter {
 
     private void initializeDependency(Context context) {
         DaggerRepeatingSearchComponent.builder()
-                .applicationComponent(MyApplication.get(context).getAppComponent())
+                .applicationComponent(WorkInUaApplication.get(context).getAppComponent())
                 .build()
                 .inject(this);
     }

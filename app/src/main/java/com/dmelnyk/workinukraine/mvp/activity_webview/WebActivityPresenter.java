@@ -5,7 +5,7 @@ import android.content.Context;
 import com.dmelnyk.workinukraine.R;
 import com.dmelnyk.workinukraine.db.JobDbSchema;
 import com.dmelnyk.workinukraine.db.JobPool;
-import com.dmelnyk.workinukraine.di.MyApplication;
+import com.dmelnyk.workinukraine.application.WorkInUaApplication;
 import com.dmelnyk.workinukraine.di.component.DaggerDbComponent;
 import com.dmelnyk.workinukraine.helpers.Job;
 
@@ -31,7 +31,7 @@ public class WebActivityPresenter implements Contract.Presenter {
         this.job = job;
 
         DaggerDbComponent.builder()
-                .applicationComponent(MyApplication.get(context).getAppComponent())
+                .applicationComponent(WorkInUaApplication.get(context).getAppComponent())
                 .build()
                 .inject(this);
     }

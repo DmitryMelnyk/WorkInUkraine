@@ -49,50 +49,24 @@
         <item>Светлая</item>
     </string-array>
 
-    <!-- For testing support settings library -->
-    <string-array name="pref_list_entries">
-        <item>Alpha</item>
-        <item>Bravo</item>
-        <item>Charlie</item>
-    </string-array>
-    <string-array name="pref_list_values">
-        <item>A</item>
-        <item>B</item>
-        <item>C</item>
+    <string-array name="nav_titles">
+        <item>Искать вакансиии</item>
+        <item>Обновить вакансии</item>
+        <item>Избранные вакансии</item>
+        <item>Черный список</item>
+        <item>Настройки</item>
+        <item />
+        <item>Выйти</item>
     </string-array>
 
-    <string-array name="planets_array">
-        <item>Mercury</item>
-        <item>Venus</item>
-        <item>Earth</item>
-        <item>Mars</item>
-        <item>Jupiter</item>
-        <item>Saturn</item>
-        <item>Uranus</item>
-        <item>Neptune</item>
-        <item>Mercury</item>
-        <item>Venus</item>
-        <item>Earth</item>
-        <item>Mars</item>
-        <item>Jupiter</item>
-        <item>Saturn</item>
-        <item>Uranus</item>
-        <item>Neptune</item>
-        <item>Mercury</item>
-        <item>Venus</item>
-        <item>Earth</item>
-        <item>Mars</item>
-        <item>Jupiter</item>
-        <item>Saturn</item>
-        <item>Uranus</item>
-        <item>Neptune</item>
-        <item>Mercury</item>
-        <item>Venus</item>
-        <item>Earth</item>
-        <item>Mars</item>
-        <item>Jupiter</item>
-        <item>Saturn</item>
-        <item>Uranus</item>
-        <item>Neptune</item>
-    </string-array>
+    <array name="nav_titles_icon">
+        <item>@drawable/ic_nav_search_vacancies</item>
+        <item>@drawable/ic_nav_refresh</item>
+        <item>@drawable/ic_nav_favorites</item>
+        <item>@drawable/ic_nav_black_list</item>
+        <item>@drawable/ic_nav_settings</item>
+        <item>0</item>
+        <item>@drawable/ic_nav_exit</item>
+    </array>
+
 </resources>

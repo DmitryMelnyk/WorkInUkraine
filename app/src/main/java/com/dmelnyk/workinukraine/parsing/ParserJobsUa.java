@@ -4,7 +4,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
-import com.dmelnyk.workinukraine.di.MyApplication;
+import com.dmelnyk.workinukraine.application.WorkInUaApplication;
 import com.dmelnyk.workinukraine.di.component.DaggerUtilComponent;
 import com.dmelnyk.workinukraine.helpers.CityUtils;
 import com.dmelnyk.workinukraine.helpers.Job;
@@ -34,7 +34,7 @@ public class ParserJobsUa {
 
     public ParserJobsUa(Context context) {
         DaggerUtilComponent.builder()
-                .applicationComponent(MyApplication.get(context).getAppComponent())
+                .applicationComponent(WorkInUaApplication.get(context).getAppComponent())
                 .build()
                 .inject(this);
     }

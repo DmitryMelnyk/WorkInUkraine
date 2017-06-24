@@ -1,10 +1,10 @@
-package com.dmelnyk.workinukraine.di.module;
+package com.dmelnyk.workinukraine.application;
 
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import com.dmelnyk.workinukraine.di.MyApplication;
+import com.dmelnyk.workinukraine.application.WorkInUaApplication;
 
 import javax.inject.Singleton;
 
@@ -18,9 +18,9 @@ import dagger.Provides;
 @Module
 public class ApplicationModule {
 
-    private final MyApplication app;
+    private final WorkInUaApplication app;
 
-    public ApplicationModule(MyApplication application) {
+    public ApplicationModule(WorkInUaApplication application) {
         app = application;
     }
 

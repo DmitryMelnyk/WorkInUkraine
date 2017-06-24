@@ -2,13 +2,12 @@ package com.dmelnyk.workinukraine.mvp.activity_search;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.Fragment;
 
 import com.dmelnyk.workinukraine.db.JobPool;
-import com.dmelnyk.workinukraine.di.MyApplication;
+import com.dmelnyk.workinukraine.application.WorkInUaApplication;
 import com.dmelnyk.workinukraine.di.component.DaggerDbComponent;
 import com.dmelnyk.workinukraine.mvp.activity_tabs.TabsActivity;
 import com.dmelnyk.workinukraine.mvp.dialog_downloading.DialogDownloading;
@@ -37,7 +36,7 @@ public class SearchActivityPresenter implements Contract.Presenter {
         this.context = context;
 
         DaggerDbComponent.builder()
-                .applicationComponent(MyApplication.get(context).getAppComponent())
+                .applicationComponent(WorkInUaApplication.get(context).getAppComponent())
                 .build()
                 .inject(this);
     }

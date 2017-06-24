@@ -9,7 +9,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
-import com.dmelnyk.workinukraine.di.MyApplication;
+import com.dmelnyk.workinukraine.application.WorkInUaApplication;
 import com.dmelnyk.workinukraine.di.component.DaggerRepeatingSearchComponent;
 import com.dmelnyk.workinukraine.helpers.RepeatingSearch;
 import com.dmelnyk.workinukraine.mvp.activity_tabs.TabsActivityPresenter;
@@ -58,7 +58,7 @@ public class DialogDownloadPresenter
 
     private void injectDependency(Context context) {
         DaggerRepeatingSearchComponent.builder()
-                .applicationComponent(MyApplication.get(context).getAppComponent())
+                .applicationComponent(WorkInUaApplication.get(context).getAppComponent())
                 .build()
                 .inject(this);
     }

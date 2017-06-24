@@ -4,8 +4,10 @@ import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import com.dmelnyk.workinukraine.di.module.ApplicationModule;
+import com.dmelnyk.workinukraine.application.ApplicationModule;
 import com.dmelnyk.workinukraine.helpers.RepeatingSearch;
+import com.dmelnyk.workinukraine.ui.navigation.di.NavigationComponent;
+import com.dmelnyk.workinukraine.ui.navigation.di.NavigationModule;
 
 import javax.inject.Singleton;
 
@@ -26,4 +28,6 @@ public interface ApplicationComponent {
     Context getContext();
 
     void inject(RepeatingSearch context);
+
+    NavigationComponent add(NavigationModule navigationModule);
 }

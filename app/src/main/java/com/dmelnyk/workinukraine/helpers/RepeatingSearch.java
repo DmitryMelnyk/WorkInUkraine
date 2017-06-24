@@ -9,9 +9,9 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.dmelnyk.workinukraine.R;
-import com.dmelnyk.workinukraine.di.MyApplication;
+import com.dmelnyk.workinukraine.application.WorkInUaApplication;
 import com.dmelnyk.workinukraine.di.component.DaggerApplicationComponent;
-import com.dmelnyk.workinukraine.di.module.ApplicationModule;
+import com.dmelnyk.workinukraine.application.ApplicationModule;
 import com.dmelnyk.workinukraine.services.WakeLockBroadcastReceiver;
 
 import javax.inject.Inject;
@@ -47,7 +47,7 @@ public class RepeatingSearch {
 
     private void injectDependency(Context context) {
         DaggerApplicationComponent.builder().
-                applicationModule(new ApplicationModule(MyApplication.get(context)))
+                applicationModule(new ApplicationModule(WorkInUaApplication.get(context)))
                 .build()
                 .inject(this);
     }

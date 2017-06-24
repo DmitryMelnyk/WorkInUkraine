@@ -1,4 +1,4 @@
-package com.dmelnyk.workinukraine.di;
+package com.dmelnyk.workinukraine.application;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -11,5 +11,5 @@ import javax.inject.Scope;
 
 @Scope
 @Retention(RetentionPolicy.RUNTIME)
-public @interface PerActivity {
+public @interface ApplicationScope {
 }

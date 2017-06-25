@@ -6,7 +6,7 @@ import android.os.Bundle;
 
 import com.dmelnyk.workinukraine.mvp.activity_search.SearchActivity;
 import com.dmelnyk.workinukraine.db.JobPool;
-import com.dmelnyk.workinukraine.di.MyApplication;
+import com.dmelnyk.workinukraine.application.WorkInUaApplication;
 import com.dmelnyk.workinukraine.di.component.DaggerDbComponent;
 import com.dmelnyk.workinukraine.mvp.activity_tabs.TabsActivity;
 
@@ -30,7 +30,7 @@ public class SplashActivityPresenter implements Contract.Presenter {
     public SplashActivityPresenter(Context context) {
         this.context = context;
         DaggerDbComponent.builder()
-                .applicationComponent(MyApplication.get(context).getAppComponent())
+                .applicationComponent(WorkInUaApplication.get(context).getAppComponent())
                 .build()
                 .inject(this);
     }

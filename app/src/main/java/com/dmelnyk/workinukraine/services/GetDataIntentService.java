@@ -10,7 +10,7 @@ import android.util.Log;
 
 import com.dmelnyk.workinukraine.db.JobDbSchema;
 import com.dmelnyk.workinukraine.db.JobPool;
-import com.dmelnyk.workinukraine.di.MyApplication;
+import com.dmelnyk.workinukraine.application.WorkInUaApplication;
 import com.dmelnyk.workinukraine.di.component.DaggerDbComponent;
 import com.dmelnyk.workinukraine.helpers.Job;
 import com.dmelnyk.workinukraine.parsing.ParserHeadHunters;
@@ -65,7 +65,7 @@ public class GetDataIntentService extends IntentService {
 
     private void injectDependency() {
         DaggerDbComponent.builder()
-                .applicationComponent(MyApplication.get(this).getAppComponent())
+                .applicationComponent(WorkInUaApplication.get(this).getAppComponent())
                 .build()
                 .inject(this);
     }

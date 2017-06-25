@@ -3,9 +3,7 @@ package com.dmelnyk.workinukraine.di.module;
 import android.content.Context;
 
 import com.dmelnyk.workinukraine.db.JobPool;
-import com.dmelnyk.workinukraine.di.PerActivity;
-
-import javax.inject.Singleton;
+import com.dmelnyk.workinukraine.application.ApplicationScope;
 
 import dagger.Module;
 import dagger.Provides;
@@ -17,7 +15,7 @@ import dagger.Provides;
 @Module
 public class DbModule {
 
-    @PerActivity
+    @ApplicationScope
     @Provides
     JobPool provideJobPool(Context context) {
         return new JobPool(context);

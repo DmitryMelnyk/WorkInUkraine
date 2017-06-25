@@ -10,7 +10,7 @@ import android.support.v4.view.GravityCompat;
 
 import com.dmelnyk.workinukraine.R;
 import com.dmelnyk.workinukraine.db.JobPool;
-import com.dmelnyk.workinukraine.di.MyApplication;
+import com.dmelnyk.workinukraine.application.WorkInUaApplication;
 import com.dmelnyk.workinukraine.di.component.DaggerDbComponent;
 import com.dmelnyk.workinukraine.helpers.NetUtils;
 import com.dmelnyk.workinukraine.helpers.Tags;
@@ -49,7 +49,7 @@ public class TabsActivityPresenter implements Contract.Presenter {
         this.context = context;
 
         DaggerDbComponent.builder()
-                .applicationComponent(MyApplication.get(context).getAppComponent())
+                .applicationComponent(WorkInUaApplication.get(context).getAppComponent())
                 .build()
                 .inject(this);
     }

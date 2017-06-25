@@ -18,7 +18,7 @@ import android.widget.Toast;
 import com.dmelnyk.workinukraine.R;
 import com.dmelnyk.workinukraine.db.JobDbSchema;
 import com.dmelnyk.workinukraine.db.JobPool;
-import com.dmelnyk.workinukraine.di.MyApplication;
+import com.dmelnyk.workinukraine.application.WorkInUaApplication;
 import com.dmelnyk.workinukraine.di.component.DaggerDbComponent;
 import com.dmelnyk.workinukraine.mvp.activity_webview.WebViewActivity;
 
@@ -57,7 +57,7 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.MyView
 
     private void injectDependency(Context context) {
         DaggerDbComponent.builder()
-                .applicationComponent(MyApplication.get(context).getAppComponent())
+                .applicationComponent(WorkInUaApplication.get(context).getAppComponent())
                 .build()
                 .inject(this);
     }

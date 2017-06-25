@@ -75,4 +75,7 @@ dependencies {
 
     // acra - for bug reports
     compile 'ch.acra:acra:4.9.0'
+
+    // SlidingRootNav
+    compile 'com.yarolegovich:sliding-root-nav:1.0.2'
 }

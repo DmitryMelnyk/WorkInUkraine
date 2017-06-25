@@ -1,0 +1,38 @@
+package com.dmelnyk.workinukraine.ui.navigation.di;
+
+import android.content.Context;
+
+import com.dmelnyk.workinukraine.model.navigation.INavigationRepository;
+import com.dmelnyk.workinukraine.model.navigation.NavigationRepository;
+import com.dmelnyk.workinukraine.ui.navigation.Contract;
+import com.dmelnyk.workinukraine.ui.navigation.NavUtil;
+import com.dmelnyk.workinukraine.ui.navigation.NavigationPresenter;
+
+import dagger.Module;
+import dagger.Provides;
+
+/**
+ * Created by d264 on 6/11/17.
+ */
+
+@Module
+public class NavigationModule {
+
+    @Provides
+    @NavigationScope
+    INavigationRepository providesITimeRepository(Context context) {
+        return new NavigationRepository(context);
+    }
+
+    @Provides
+    @NavigationScope
+    Contract.INavigationPresenter providesINavigationPresenter(INavigationRepository repository) {
+        return new NavigationPresenter(repository);
+    }
+
+    @Provides
+    @NavigationScope
+    NavUtil providesNavUtils(Context context) {
+        return new NavUtil(context);
+    }
+}

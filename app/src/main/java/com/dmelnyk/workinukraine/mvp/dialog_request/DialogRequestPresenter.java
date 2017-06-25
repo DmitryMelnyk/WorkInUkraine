@@ -8,7 +8,7 @@ import android.util.Log;
 
 import com.dmelnyk.workinukraine.helpers.Tags;
 import com.dmelnyk.workinukraine.db.JobPool;
-import com.dmelnyk.workinukraine.di.MyApplication;
+import com.dmelnyk.workinukraine.application.WorkInUaApplication;
 import com.dmelnyk.workinukraine.di.component.DaggerRequestDialogComponent;
 import com.dmelnyk.workinukraine.mvp.activity_tabs.TabsActivityPresenter;
 import com.dmelnyk.workinukraine.helpers.CityUtils;
@@ -40,7 +40,7 @@ public class DialogRequestPresenter implements Contract.Presenter {
         activityHandler = handler;
 
         DaggerRequestDialogComponent.builder()
-                .applicationComponent(MyApplication.get(context).getAppComponent())
+                .applicationComponent(WorkInUaApplication.get(context).getAppComponent())
                 .build()
                 .inject(this);
     }

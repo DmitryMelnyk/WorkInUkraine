@@ -1,24 +1,32 @@
 package com.dmelnyk.workinukraine.mvp.dialog_request;
 
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.support.design.widget.TextInputLayout;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.AppCompatEditText;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.dmelnyk.workinukraine.R;
 import com.dmelnyk.workinukraine.helpers.BaseDialog;
+import com.dmelnyk.workinukraine.utils.MyBounceInterpolator;
 
 import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 /**
  * Created by dmitry on 15.03.17.
@@ -26,12 +34,19 @@ import butterknife.ButterKnife;
 
 
 public class DialogRequest extends BaseDialog
-        implements View.OnClickListener, Contract.View {
-    private static final String TAG = "GT.DialogRequest";
+        implements Contract.View {
+    private static final String TAG = "GT.DialogDownloading";
 
-    @BindView(R.id.search_dialog_keywords) EditText searchRequest;
-    @BindView(R.id.search_dialog_spinner) Spinner spinner;
-    @BindView(R.id.button_ok) Button button;
+    @BindView(R.id.closeButton)
+    ImageView closeButton;
+    @BindView(R.id.textInputLayout)
+    TextInputLayout textInputLayout;
+    @BindView(R.id.search_dialog_keywords)
+    AppCompatEditText searchRequest;
+    @BindView(R.id.search_dialog_spinner)
+    Spinner spinner;
+    @BindView(R.id.button_ok)
+    Button button;
 
     private View dialogView;
     private static Handler mainActivityHandler;
@@ -49,10 +64,10 @@ public class DialogRequest extends BaseDialog
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        dialogView = inflater.inflate(R.layout.dialog_request, container, false);
+        dialogView = inflater.inflate(R.layout.dialog_request2, container, false);
         ButterKnife.bind(this, dialogView);
 
-        configButton();
+//        configButton();
         initializePresenter();
         presenter.onTakeView(this);
 
@@ -72,34 +87,59 @@ public class DialogRequest extends BaseDialog
         }
     }
 
-    private void configButton() {
-        button.setOnClickListener(this);
-    }
+//    private void configButton() {
+//        button.setOnClickListener(this);
+//    }
 
     @Override
     public void showErrorMessage() {
         Toast.makeText(getActivity(), getResources().getString
                 (R.string.minimal_request_length), Toast.LENGTH_SHORT).show();
+        startSearchRequestAnimation();
+    }
+
+    private void startSearchRequestAnimation() {
+        // initialize animations;
+        Animation scaleAnimation = AnimationUtils.loadAnimation(getContext(), R.anim.scale_anim);
+        MyBounceInterpolator interpolator = new MyBounceInterpolator(0.5, 20);
+        scaleAnimation.setInterpolator(interpolator);
+        textInputLayout.startAnimation(scaleAnimation);
     }
 
     @Override
     public void configSpinner(ArrayList<String> items) {
         spinner.setSelection(0);
+        spinner.getBackground().setColorFilter(
+                ContextCompat.getColor(getContext(), R.color.violet_lighter),
+                PorterDuff.Mode.SRC_ATOP);
+
         ArrayAdapter<CharSequence> adapter = new ArrayAdapter(getContext(),
                 R.layout.spinner_item, items);
         adapter.setDropDownViewResource(R.layout.dropdown_item);
         spinner.setAdapter(adapter);
     }
 
-    @Override
-    public void onClick(View v) {
-        String textRequest = String.valueOf(searchRequest.getText());
-        String cityRequest = String.valueOf(spinner.getSelectedItem());
-        presenter.onButtonClicked(textRequest, cityRequest);
-    }
+//    @Override
+//    public void onClick(View v) {
+//
+//    }
 
     @Override
     public void dialogDismiss() {
         animateDismissDialog();
+    }
+
+    @OnClick({R.id.closeButton, R.id.button_ok})
+    public void onViewClicked(View view) {
+        switch (view.getId()) {
+            case R.id.closeButton:
+                dialogDismiss();
+                break;
+            case R.id.button_ok:
+                String textRequest = String.valueOf(searchRequest.getText());
+                String cityRequest = String.valueOf(spinner.getSelectedItem());
+                presenter.onButtonClicked(textRequest, cityRequest);
+                break;
+        }
     }
 }

@@ -3,8 +3,8 @@
     <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/background</item>
-        <item name="colorPrimaryDark">@color/background_dark</item>
-        <item name="colorAccent">@color/item_color</item>
+        <item name="colorPrimaryDark">@color/violet_lighter</item>
+        <item name="colorAccent">@color/green</item>
         <item name="android:windowContentOverlay">@null</item>
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowActionBar">true</item>

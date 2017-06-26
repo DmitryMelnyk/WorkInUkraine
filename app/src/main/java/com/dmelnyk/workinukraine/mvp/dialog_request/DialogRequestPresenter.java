@@ -36,7 +36,7 @@ public class DialogRequestPresenter implements Contract.Presenter {
     SharedPreferences sharedPreferences;
 
     public DialogRequestPresenter(Context context, Handler handler) {
-        Log.d(TAG, "creating constructor: DialogRequestPresenter(Context context)");
+        Log.d(TAG, "creating constructor: DialogDownloadingPresenter(Context context)");
         activityHandler = handler;
 
         DaggerRequestDialogComponent.builder()
@@ -48,6 +48,9 @@ public class DialogRequestPresenter implements Contract.Presenter {
     @Override
     public void onButtonClicked(String textRequest, String cityRequest) {
         boolean correct = checkRequestSize(textRequest);
+
+        Log.d(TAG, "correct = " + correct);
+
         if (correct) {
             view.dialogDismiss();
             jobPool.clearDb();

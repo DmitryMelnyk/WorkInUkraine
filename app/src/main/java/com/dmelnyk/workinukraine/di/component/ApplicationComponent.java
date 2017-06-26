@@ -8,6 +8,8 @@ import com.dmelnyk.workinukraine.application.ApplicationModule;
 import com.dmelnyk.workinukraine.helpers.RepeatingSearch;
 import com.dmelnyk.workinukraine.ui.navigation.di.NavigationComponent;
 import com.dmelnyk.workinukraine.ui.navigation.di.NavigationModule;
+import com.dmelnyk.workinukraine.ui.search.di.SearchComponent;
+import com.dmelnyk.workinukraine.ui.search.di.SearchModule;
 
 import javax.inject.Singleton;
 
@@ -30,4 +32,6 @@ public interface ApplicationComponent {
     void inject(RepeatingSearch context);
 
     NavigationComponent add(NavigationModule navigationModule);
+
+    SearchComponent add(SearchModule searchModule);
 }

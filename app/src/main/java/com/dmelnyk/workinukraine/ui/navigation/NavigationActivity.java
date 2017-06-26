@@ -2,6 +2,7 @@ package com.dmelnyk.workinukraine.ui.navigation;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.ColorInt;
 import android.support.annotation.ColorRes;
@@ -23,6 +24,8 @@ import com.dmelnyk.workinukraine.ui.navigation.menu.DrawerAdapter;
 import com.dmelnyk.workinukraine.ui.navigation.menu.DrawerItem;
 import com.dmelnyk.workinukraine.ui.navigation.menu.SimpleItem;
 import com.dmelnyk.workinukraine.ui.navigation.menu.SpaceItem;
+import com.dmelnyk.workinukraine.ui.search.SearchFragment;
+import com.yarolegovich.slidingrootnav.SlidingRootNav;
 import com.yarolegovich.slidingrootnav.SlidingRootNavBuilder;
 
 import java.util.Arrays;
@@ -33,7 +36,9 @@ import butterknife.BindView;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class NavigationActivity extends AppCompatActivity implements
-        DrawerAdapter.OnItemSelectedListener, Contract.INavigationView {
+        DrawerAdapter.OnItemSelectedListener, Contract.INavigationView,
+        SearchFragment.OnFragmentInteractionListener
+{
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -56,6 +61,7 @@ public class NavigationActivity extends AppCompatActivity implements
 
     private String[] screenTitles;
     private Drawable[] screenIcons;
+    private SlidingRootNav navigator;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -69,7 +75,7 @@ public class NavigationActivity extends AppCompatActivity implements
         WorkInUaApplication.get(this).getAppComponent()
                 .add(new NavigationModule()).inject(this);
 
-        new SlidingRootNavBuilder(this)
+        navigator = new SlidingRootNavBuilder(this)
 //                .withToolbarMenuToggle(toolbar)
                 .withMenuOpened(true)
                 .withSavedState(savedInstanceState)
@@ -109,9 +115,9 @@ public class NavigationActivity extends AppCompatActivity implements
         switch (position) {
             case NAV_EXIT_POSITION:
                 finish();
-                break;
+                return;
             case NAV_SEARCH_POSITION:
-//                fragment = new AlarmFragment();
+                fragment = new SearchFragment();
                 break;
             case NAV_REFRESH_POSITION:
                 // TODO
@@ -128,17 +134,18 @@ public class NavigationActivity extends AppCompatActivity implements
         }
         // TODO: remove string below after implementing TODOs above
 //        fragment = new Fragment();
-//        getSupportFragmentManager().beginTransaction()
-//                .replace(R.id.container, fragment)
-//                .commit();
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.container, fragment)
+                .commit();
+        navigator.closeMenu();
     }
 
     private DrawerItem createItemFor(int position) {
         return new SimpleItem(screenIcons[position], screenTitles[position])
                 .withIconTint(color(R.color.textColorSecondary))
                 .withTextTint(color(R.color.textColorPrimary))
-                .withSelectedIconTint(color(R.color.textSelected))
-                .withSelectedTextTint(color(R.color.textSelected));
+                .withSelectedIconTint(color(R.color.violet))
+                .withSelectedTextTint(color(R.color.violet));
     }
 
     @ColorInt
@@ -160,5 +167,10 @@ public class NavigationActivity extends AppCompatActivity implements
     @Override
     public void restoreSavedState(String time) {
         // TODO
+    }
+
+    @Override
+    public void onFragmentInteraction() {
+        navigator.openMenu();
     }
 }

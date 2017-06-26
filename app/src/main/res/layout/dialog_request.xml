@@ -3,45 +3,74 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_dark"
+    android:padding="16dp"
+    android:background="@drawable/dialog_request_bg"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <LinearLayout
+        android:focusableInTouchMode="true"
         android:orientation="vertical"
+        android:gravity="center_horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <Spinner
-            android:id="@+id/search_dialog_spinner"
-            android:layout_marginBottom="10dp"
-            android:prompt="@string/dialog_search_spinner_prompt"
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/fragment_search_search_violet"/>
+
+        <TextView
+            android:layout_margin="5dp"
+            android:text="Выберите город из списка ниже"
+            android:textColor="@color/textColorSecondary"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <RelativeLayout
+            android:background="@drawable/spinner_bg"
+            android:gravity="center"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
-        </Spinner>
+            <Spinner
+                android:paddingTop="5dp"
+                android:paddingLeft="10dp"
+                android:id="@+id/search_dialog_spinner"
+                android:layout_marginBottom="10dp"
+                android:prompt="@string/dialog_search_spinner_prompt"
+                android:textAlignment="center"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                />
+        </RelativeLayout>
+
 
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
             android:orientation="vertical"
+            android:theme="@style/TextLabelInputLayout"
+            android:backgroundTint="@color/background_dark"
+            android:textAlignment="center"
             android:layout_height="wrap_content">
-            <EditText
+            <android.support.v7.widget.AppCompatEditText
                 android:id="@+id/search_dialog_keywords"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/dialog_search_edittext_hint"
-                android:textColor="@android:color/white"
-                android:textColorHint="@color/background_dark"
-                android:singleLine="true"
-                app:theme="@style/AlertDialog.AppCompat"
+                android:textColor="@color/textColorSecondary"
+                android:textSize="18sp"
+                android:gravity="center_horizontal"
                 />
         </android.support.design.widget.TextInputLayout>
 
         <Button
+            android:layout_gravity="center"
             android:id="@+id/button_ok"
-            android:layout_width="match_parent"
+            android:layout_width="150dp"
             android:layout_height="wrap_content"
-            android:padding="10dp"
+            android:layout_margin="5dp"
             android:gravity="center"
             android:text="@android:string/ok"
+            android:background="@drawable/button_bg"
             />
     </LinearLayout>
 

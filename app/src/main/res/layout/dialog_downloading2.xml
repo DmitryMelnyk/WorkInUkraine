@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/dialog_request_bg"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <LinearLayout
+        android:focusableInTouchMode="true"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:paddingTop="@dimen/activity_horizontal_margin"
+            android:paddingLeft="@dimen/dialog_horizontal_margin"
+            android:paddingRight="@dimen/dialog_horizontal_margin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:id="@+id/downloadingStartedLayout"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal">
+
+                <com.victor.loading.rotate.RotateLoading
+                    android:id="@+id/rotateLoading"
+                    android:layout_width="@dimen/dialog_downloading_image_size"
+                    android:layout_height="@dimen/dialog_downloading_image_size"
+                    app:loading_color="@color/violet_lighter"
+                    app:loading_speed="11"
+                    app:loading_width="5dp" />
+
+                <TextView
+                    android:layout_margin="5dp"
+                    android:text="Идет поиск ..."
+                    android:textColor="@color/textColorSecondary"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/downloadingFinishedLayout"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:visibility="gone"
+                >
+                <ImageView
+                    android:layout_width="@dimen/dialog_downloading_image_size"
+                    android:layout_height="@dimen/dialog_downloading_image_size"
+                    android:src="@mipmap/dialog_downloading_search_checked" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/textColorSecondary"
+                    android:text="Найдено вакансий:"/>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_nav_vacancy"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/violet_lighter"
+                        android:text="76"
+                        android:textStyle="bold"
+                        android:textSize="42sp"/>
+                </LinearLayout>
+
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <RelativeLayout
+            android:background="@drawable/dialog_request_relativelayout_bg"
+            android:layout_width="match_parent"
+            android:layout_height="100dp">
+
+            <Button
+                android:layout_centerInParent="true"
+                android:id="@+id/button_ok"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/dialog_horizontal_margin"
+                android:layout_marginRight="@dimen/dialog_horizontal_margin"
+                android:gravity="center"
+                android:text="@android:string/ok"
+                android:textColor="@color/textColorSecondary"
+                android:background="@drawable/button_bg2"
+                android:enabled="false"
+                />
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
+
+</android.support.design.widget.CoordinatorLayout>

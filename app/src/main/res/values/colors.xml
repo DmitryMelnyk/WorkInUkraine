@@ -19,4 +19,10 @@
     <color name="textColorSecondary">#757575</color>
     <color name="textSelected">@color/item_color</color>
     <color name="textColor">#424242</color>
+
+    <!-- card view colors -->
+    <color name="violet">#675df7</color>
+    <color name="green">#71ece2</color>
+    <color name="violet_light">#e4e2ec</color>
+    <color name="violet_lighter">#a09fed</color>
 </resources>

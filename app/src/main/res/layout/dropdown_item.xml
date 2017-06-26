@@ -2,9 +2,8 @@
 <CheckedTextView
     xmlns:android="http://schemas.android.com/apk/res/android"
     style="?android:attr/spinnerDropDownItemStyle"
-    android:background="@color/background"
-    android:textColor="@android:color/white"
-    android:singleLine="true"
+    android:background="@color/white"
+    android:textColor="@color/textColorSecondary"
     android:textSize="20sp"
     android:layout_marginBottom="10dp"
     android:layout_width="match_parent"

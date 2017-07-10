@@ -12,11 +12,19 @@
     <!-- Colors fo smarttab_layout -->
     <color name="white">#FFFFFFFF</color>
     <color name="transparent">#00000000</color>
-    <color name="black_20">#33000000</color>
+    <color name="grey_light">#33000000</color>
 
     <!-- Navigation Activity -->
     <color name="textColorPrimary">#212121</color>
     <color name="textColorSecondary">#757575</color>
     <color name="textSelected">@color/item_color</color>
     <color name="textColor">#424242</color>
+
+    <!-- card view colors -->
+    <color name="violet">#675df7</color>
+    <color name="green">#71ece2</color>
+    <color name="violet_light">#e4e2ec</color>
+    <color name="violet_middle">#cfc8ef</color>
+    <color name="violet_lighter">#a09fed</color>
+    <color name="green_light">#adeae5</color>
 </resources>

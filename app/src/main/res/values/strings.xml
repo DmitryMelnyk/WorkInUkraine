@@ -84,5 +84,26 @@
     <string name="no_internet_connection">Нет доступа к интернету. Проверьте подключение и повторите попытку позже!</string>
     <string name="nav_founded_vacancies">Найдено вакансий</string>
 
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="search_item_edit">Редактировать</string>
+    <string name="search_item_remove">Удалить</string>
+    <string name="search_item_blacklist">Исключить</string>
+
+    <!-- Settings Fragment -->
+    <string name="settings_toolbar">Настройки</string>
+    <string name="settings_notification">УВЕДОМЛЕНИЯ</string>
+    <string name="settings_item_period">Проверять наличие новых вакансий</string>
+    <string name="settings_sound_notification">Использовать звуковые оповещения</string>
+    <string name="settings_vibro_notification">Использовать вибрацию</string>
+    <string name="settings_dont_disturb">Не беспокоить</string>
+    <string name="settings_support">ПОДДЕРЖКА</string>
+    <string name="settings_send_feedback">Отправить отзыв</string>
+    <string name="settings_about">О приложении</string>
+    <string name="settings_cheched_on">Включено</string>
+    <string name="settings_cheched_of">Выключено</string>
+    <string name="time_picker_from">С</string>
+    <string name="time_picker_to">До</string>
+
 
 </resources>

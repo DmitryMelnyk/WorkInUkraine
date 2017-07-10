@@ -1,28 +1,314 @@
-<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:app="http://schemas.android.com/apk/res-auto"
-              android:orientation="vertical"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-    >
-<!--              app:layout_behavior="@string/appbar_scrolling_view_behavior"
--->
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
 
-    <Button
-        android:id="@+id/button"
-        android:text="Click"
-        android:textAllCaps="false"
-        android:layout_gravity="center"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        style="@style/TextView.GuillotineItem"
-        />
+    tools:context="com.dmelnyk.workinukraine.ui.settings.SettingsFragment">
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="@dimen/fab_margin"
-        app:srcCompat="@android:drawable/ic_dialog_email"/>
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        >
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/fragment_toolbar_height"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingRight="@dimen/activity_horizontal_margin"
+            android:layout_marginBottom="10dp"
+            android:background="@color/violet_lighter"
+            >
+            <ImageView
+                android:id="@+id/backImageView"
+                android:layout_centerVertical="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@mipmap/search_fragment_back_arrow" />
+
+            <TextView
+                android:id="@+id/text_view_balance"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="3dp"
+                android:text="@string/settings_toolbar"
+                android:textSize="20sp"
+                android:textColor="@android:color/white"
+                />
+        </RelativeLayout>
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:paddingLeft="@dimen/activity_horizontal_margin"
+                android:paddingRight="@dimen/activity_horizontal_margin"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/settings_notification"
+                    android:textColor="@color/textColorSecondary"
+                    android:padding="@dimen/settings_title_margin"
+                    />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="2dp"
+                    android:background="@color/grey_light" />
+
+                <!-- Period -->
+                <LinearLayout
+                    android:id="@+id/periodItem"
+                    style="@style/LinearLayout.SettingsItem">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/settings_period"
+                        />
+                    <LinearLayout
+                        style="@style/LinearLayout.SettingsItem.TextViews">
+                        <TextView
+                            style="@style/TextView.SettingsItem.First"
+                            android:text="@string/settings_item_period"
+                            />
+                        <TextView
+                            android:id="@+id/updatePeriod"
+                            style="@style/TextView.SettingsItem.Second"
+                            android:text="Каждый 6 часов"
+                            />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- Sound -->
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/grey_light" />
+
+                <LinearLayout
+                    android:id="@+id/soundItem"
+                    style="@style/LinearLayout.SettingsItem">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/settings_sound_notification"
+                        />
+
+                    <LinearLayout
+                        android:gravity="center_vertical"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_weight="85"
+                            style="@style/LinearLayout.SettingsItem.TextViews">
+                            <TextView
+                                style="@style/TextView.SettingsItem.First"
+                                android:text="@string/settings_sound_notification"
+                                />
+                            <TextView
+                                android:id="@+id/soundSwitcherText"
+                                style="@style/TextView.SettingsItem.Second"
+                                android:text="Включено"
+                                />
+                        </LinearLayout>
+
+                        <Switch
+                            android:id="@+id/soundSwitcher"
+                            style="@style/Switcher"
+                            />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- Vibration -->
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/grey_light" />
+
+                <LinearLayout
+                    android:id="@+id/vibroItem"
+                    style="@style/LinearLayout.SettingsItem">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/settings_vibration"
+                        />
+
+                    <LinearLayout
+                        android:gravity="center_vertical"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_weight="85"
+                            style="@style/LinearLayout.SettingsItem.TextViews">
+                            <TextView
+                                style="@style/TextView.SettingsItem.First"
+                                android:text="@string/settings_vibro_notification"
+                                />
+                            <TextView
+                                android:id="@+id/vibroSwitcherText"
+                                style="@style/TextView.SettingsItem.Second"
+                                android:text="Включено"
+                                />
+                        </LinearLayout>
+
+                        <Switch
+                            android:id="@+id/vibroSwitcher"
+                            style="@style/Switcher"
+                            />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- Don't disturb -->
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/grey_light" />
+
+                <LinearLayout
+                    style="@style/LinearLayout.SettingsItem">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/settings_nightmode"
+                        />
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_weight="85"
+                        style="@style/LinearLayout.SettingsItem.TextViews">
+                        <TextView
+                            style="@style/TextView.SettingsItem.First"
+                            android:text="@string/settings_dont_disturb"
+                            />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+                            <TextView
+                                android:id="@+id/text_view_from"
+                                style="@style/TextView.SettingsItem.Second"
+                                android:text="@string/time_picker_from"
+                                />
+                            <TextView
+                                android:id="@+id/text_view_to"
+                                style="@style/TextView.SettingsItem.Second"
+                                android:layout_marginLeft="20dp"
+                                android:text="@string/time_picker_to"
+                                />
+                        </LinearLayout>
+
+                    </LinearLayout>
+                    <Switch
+                        android:id="@+id/disturbSwitcher"
+                        style="@style/Switcher"
+                        />
+                </LinearLayout>
+
+                <!-- SUPPORT -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/settings_support"
+                    android:textColor="@color/textColorSecondary"
+                    android:padding="@dimen/settings_title_margin"
+                    />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="2dp"
+                    android:background="@color/grey_light" />
+
+                <!-- Feedback  -->
+                <LinearLayout
+                    android:id="@+id/sendFeedback"
+                    style="@style/LinearLayout.SettingsItem">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/settings_feedback"
+                        />
+                    <TextView
+                        android:layout_margin="@dimen/settings_between_image_item_margin"
+                        style="@style/TextView.SettingsItem.First"
+                        android:text="@string/settings_send_feedback"
+                        />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/grey_light" />
+
+                <!-- About  -->
+                <LinearLayout
+                    android:id="@+id/about"
+                    style="@style/LinearLayout.SettingsItem">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/settings_about"
+                        />
+                    <TextView
+                        android:layout_margin="@dimen/settings_between_image_item_margin"
+                        style="@style/TextView.SettingsItem.First"
+                        android:text="@string/settings_about"
+                        />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/grey_light" />
+            </LinearLayout>
+        </ScrollView>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_margin="@dimen/settings_item_margin"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/thumbUp"
+            android:src="@mipmap/settings_thumb_up"
+            android:layout_margin="@dimen/settings_item_support_vertical_margin"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent" />
+
+        <ImageView
+            android:id="@+id/male"
+            android:layout_margin="@dimen/settings_item_support_vertical_margin"
+            android:src="@mipmap/settings_mail"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent" />
+
+        <ImageView
+            android:id="@+id/share"
+            android:layout_margin="@dimen/settings_item_support_vertical_margin"
+            android:src="@mipmap/settings_share"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent" />
+
+    </LinearLayout>
+
 </LinearLayout>

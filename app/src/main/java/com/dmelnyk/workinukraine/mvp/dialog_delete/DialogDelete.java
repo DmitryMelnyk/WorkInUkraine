@@ -44,7 +44,7 @@ public class DialogDelete extends BaseDialog implements
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        dialogView = inflater.inflate(R.layout.dialog_delete, container, false);
+        dialogView = inflater.inflate(R.layout.dialog_delete2, container, false);
         ButterKnife.bind(this, dialogView);
 
         configButtons();

@@ -4,8 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:textSize="20sp"
-    android:gravity="left"
+    android:gravity="center"
     android:background="@android:color/transparent"
-    android:textColor="@android:color/white"
+    android:textColor="@color/textColorSecondary"
     android:padding="5dip"
 />

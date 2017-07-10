@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@drawable/dialog_request_bg"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <LinearLayout
+        android:focusableInTouchMode="true"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:paddingTop="@dimen/activity_horizontal_margin"
+            android:paddingLeft="@dimen/dialog_horizontal_margin"
+            android:paddingRight="@dimen/dialog_horizontal_margin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:src="@drawable/dialog_delete_delete_violet_lighter"
+                />
+
+            <TextView
+                android:layout_alignParentTop="true"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:padding="10dp"
+                android:textColor="@color/textColorSecondary"
+                android:text="@string/dialog_delete_shore"
+                fontPath="fonts/FranckerCYR-ExtraBold.otf"
+                tools:ignore="MissingPrefix" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:background="@drawable/dialog_request_relativelayout_bg"
+            android:gravity="center_vertical"
+            android:layout_width="match_parent"
+            android:layout_height="100dp">
+
+            <Button
+                style="@style/ButtonDelete"
+                android:id="@+id/buttonCancel"
+                android:layout_margin="10dp"
+                android:textColor="@color/textColorSecondary"
+                android:background="@drawable/button_bg2"
+                android:text="@string/dialog_delete_cancel"/>
+
+            <Button
+                style="@style/ButtonDelete"
+                android:id="@+id/buttonRemove"
+                android:layout_margin="10dp"
+                android:textColor="@color/textColorSecondary"
+                android:background="@drawable/button_bg2"
+                android:text="@string/dialog_delete_remove"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+</android.support.design.widget.CoordinatorLayout>

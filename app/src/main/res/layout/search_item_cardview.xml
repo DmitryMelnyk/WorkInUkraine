@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+
+    android:layout_marginLeft="@dimen/activity_horizontal_margin"
+    android:layout_marginRight="@dimen/activity_horizontal_margin"
+    android:layout_marginBottom="10dp"
+    app:cardCornerRadius="10dp"
+    >
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        android:paddingLeft="@dimen/search_item_padding_horizontal"
+        android:paddingRight="@dimen/search_item_padding_horizontal"
+        android:gravity="center_horizontal">
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:id="@+id/avatarImage"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:adjustViewBounds="true"
+                android:layout_gravity="left"
+                android:src="@mipmap/search_item_add_photo"
+                />
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/requestTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textStyle="bold|italic"
+                    android:text="Менеджер продаж"
+                    android:textSize="24sp"
+                    android:textColor="@color/textColorSecondary"
+                    />
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginTop="10dp"
+                    android:background="@color/textColorSecondary" />
+                <TextView
+                    android:id="@+id/cityTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textStyle="italic"
+                    android:text="Киев"
+                    android:textSize="24sp"
+                    android:textColor="@color/textColorSecondary"
+                    />
+            </LinearLayout>
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_alignParentLeft="true"
+                android:orientation="vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/textColorSecondary"
+                    android:text="Найдено вакансий:"/>
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_nav_vacancy"
+                        />
+                    <TextView
+                        android:id="@+id/jobCountTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/textColorSecondary"
+                        android:textSize="30sp"
+                        android:text="73"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_alignParentRight="true"
+                android:gravity="right"
+                android:orientation="vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/textColorSecondary"
+                    android:text="Обновлено:"/>
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/search_item_last_update"
+                        />
+                    <TextView
+                        android:id="@+id/dataTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/textColorSecondary"
+                        android:textSize="30sp"
+                        android:text="16:40"/>
+                </LinearLayout>
+            </LinearLayout>
+        </RelativeLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="@color/textColorSecondary" />
+
+        <!-- Edit / remove / blacklist / play buttons -->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:id="@+id/editLayout"
+                android:layout_centerHorizontal="true"
+                android:layout_margin="@dimen/search_item_horizontal_margin"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:layout_width="@dimen/search_item_button_layout"
+                android:layout_height="@dimen/search_item_button_layout">
+
+                <ImageView
+                    android:id="@+id/editButton"
+                    style="@style/ImageButton.SearchItem"
+                    android:layout_marginTop="0dp"
+                    android:src="@drawable/search_item_edit"/>
+                <TextView
+                    android:id="@+id/editText"
+                    android:layout_below="@id/editButton"
+                    android:layout_centerHorizontal="true"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/search_item_edit"
+                    android:textSize="12sp"
+                    android:textColor="@color/textColorSecondary" />
+            </LinearLayout>
+
+
+            <ImageView
+                android:id="@+id/playButton"
+                android:layout_below="@id/editLayout"
+                android:layout_centerHorizontal="true"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_marginBottom="@dimen/search_item_horizontal_margin"
+                android:src="@drawable/cardview_play"/>
+
+            <LinearLayout
+                android:layout_width="@dimen/search_item_button_layout"
+                android:layout_height="@dimen/search_item_button_layout"
+                android:orientation="vertical"
+                android:layout_margin="@dimen/search_item_horizontal_margin"
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
+                android:gravity="center"
+                >
+
+                <ImageView
+                    android:id="@+id/removeButton"
+                    style="@style/ImageButton.SearchItem"
+                    android:src="@drawable/search_item_remove"/>
+
+                <TextView
+                    android:id="@+id/removeText"
+                    android:layout_below="@id/removeButton"
+                    android:layout_toLeftOf="@id/playButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/search_item_remove"
+                    android:textSize="12sp"
+                    android:textColor="@color/textColorSecondary" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="@dimen/search_item_button_layout"
+                android:layout_height="@dimen/search_item_button_layout"
+                android:orientation="vertical"
+                android:layout_margin="@dimen/search_item_horizontal_margin"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:gravity="center">
+
+                <ImageView
+                    android:id="@+id/blacklistButton"
+                    style="@style/ImageButton.SearchItem"
+                    android:src="@drawable/search_item_black_list" />
+
+                <TextView
+                    android:layout_toRightOf="@id/playButton"
+                    android:layout_below="@id/blacklistButton"
+                    android:layout_centerVertical="true"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/search_item_blacklist"
+                    android:textColor="@color/textColorSecondary"
+                    android:textSize="12sp"
+                    />
+            </LinearLayout>
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
+</android.support.v7.widget.CardView>

@@ -1,0 +1,91 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/cardview_bg"
+    tools:context="com.dmelnyk.workinukraine.ui.search.SearchFragment">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@drawable/cardview_bg_light"
+        >
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/fragment_toolbar_height"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingRight="@dimen/activity_horizontal_margin"
+            android:layout_marginBottom="10dp"
+            >
+
+            <ImageView
+                android:id="@+id/backImageView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@mipmap/search_fragment_back_arrow" />
+
+            <TextView
+                android:id="@+id/text_view_balance"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="3dp"
+                android:text="Search jobs"
+                android:textSize="20sp"
+                android:textColor="@android:color/white"
+                />
+
+            <ImageView
+                android:id="@+id/addImageView"
+                android:layout_alignParentRight="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@mipmap/search_fragment_add" />
+
+        </RelativeLayout>
+
+        <!--TODO: padding-->
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            />
+    </LinearLayout>
+
+    <LinearLayout
+        android:background="@android:color/white"
+        android:gravity="center_vertical"
+        android:layout_marginTop="5dp"
+        android:layout_width="match_parent"
+        android:layout_height="50dp">
+
+        <ImageView
+            android:id="@+id/buttonAdd"
+            android:layout_weight="49.5"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:padding="5dp"
+            android:src="@drawable/fragment_search_add_white"
+            android:background="@drawable/search_fragment_button_bg2"
+            />
+        <View
+            android:background="@color/violet_light"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent" />
+        <ImageView
+            android:id="@+id/buttonSearch"
+            android:layout_weight="49.5"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:padding="5dp"
+            android:src="@drawable/fragment_search_search_white"
+            android:background="@drawable/search_fragment_button_bg2"
+            />
+    </LinearLayout>
+
+</LinearLayout>

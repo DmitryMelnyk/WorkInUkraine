@@ -43,7 +43,7 @@ class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.MyViewHolder> {
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.search_item_cardview, parent, false);
+                .inflate(R.layout.search_item_cardview2, parent, false);
 
         return new MyViewHolder(view);
     }

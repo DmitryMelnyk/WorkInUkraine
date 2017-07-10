@@ -25,6 +25,7 @@ import com.dmelnyk.workinukraine.ui.navigation.menu.DrawerItem;
 import com.dmelnyk.workinukraine.ui.navigation.menu.SimpleItem;
 import com.dmelnyk.workinukraine.ui.navigation.menu.SpaceItem;
 import com.dmelnyk.workinukraine.ui.search.SearchFragment;
+import com.dmelnyk.workinukraine.ui.settings.SettingsFragment;
 import com.yarolegovich.slidingrootnav.SlidingRootNav;
 import com.yarolegovich.slidingrootnav.SlidingRootNavBuilder;
 
@@ -129,7 +130,7 @@ public class NavigationActivity extends AppCompatActivity implements
                 // TODO
                 break;
             case NAV_SETTINGS_POSITION:
-                // TODO
+                fragment = new SettingsFragment();
                 break;
         }
         // TODO: remove string below after implementing TODOs above

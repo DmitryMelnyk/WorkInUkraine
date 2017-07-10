@@ -39,4 +39,17 @@
     <dimen name="dialog_horizontal_margin">36dp</dimen>
     <dimen name="dialog_downloading_image_size">100dp</dimen>
 
+
+    <dimen name="fragment_toolbar_height">50dp</dimen>
+    <dimen name="settings_title_margin">5dp</dimen>
+    <dimen name="settings_item_margin">5dp</dimen>
+    <dimen name="settings_item_first_textsize">14dp</dimen>
+    <dimen name="settings_item_second_textsize">10dp</dimen>
+    <dimen name="settings_between_image_item_margin">10dp</dimen>
+
+    <dimen name="dialog_progress_padding_left">10dp</dimen>
+    <dimen name="search_item_button_padding">10dp</dimen>
+    <dimen name="settings_item_support_vertical_margin">10dp</dimen>
+    <dimen name="dialog_frame_margin">5dp</dimen>
+
 </resources>

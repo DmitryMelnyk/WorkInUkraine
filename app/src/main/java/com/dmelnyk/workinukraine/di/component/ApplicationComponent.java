@@ -10,6 +10,8 @@ import com.dmelnyk.workinukraine.ui.navigation.di.NavigationComponent;
 import com.dmelnyk.workinukraine.ui.navigation.di.NavigationModule;
 import com.dmelnyk.workinukraine.ui.search.di.SearchComponent;
 import com.dmelnyk.workinukraine.ui.search.di.SearchModule;
+import com.dmelnyk.workinukraine.ui.settings.di.SettingsComponent;
+import com.dmelnyk.workinukraine.ui.settings.di.SettingsModule;
 
 import javax.inject.Singleton;
 
@@ -34,4 +36,6 @@ public interface ApplicationComponent {
     NavigationComponent add(NavigationModule navigationModule);
 
     SearchComponent add(SearchModule searchModule);
+
+    SettingsComponent add(SettingsModule settingsModule);
 }

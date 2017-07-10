@@ -18,11 +18,11 @@
             android:layout_height="wrap_content">
 
             <ImageView
-                android:paddingTop="@dimen/activity_horizontal_margin"
+                android:layout_marginTop="@dimen/activity_horizontal_margin"
                 android:layout_centerHorizontal="true"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:src="@drawable/fragment_search_search_violet"/>
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:src="@mipmap/custom_magnifier"/>
 
             <ImageView
                 android:id="@+id/closeButton"

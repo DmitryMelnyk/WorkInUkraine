@@ -180,8 +180,6 @@
         <item name="fontPath">fonts/FranckerCYR-ExtraBold.otf</item>
     </style>
 
-    <dimen name="dialog_progress_padding_left">10dp</dimen>
-    <dimen name="search_item_button_padding">10dp</dimen>
 
     <style name="ImageButton.SearchItem" parent="ImageView">
         <item name="android:layout_width">@dimen/search_item_button_size</item>
@@ -200,4 +198,43 @@
         <item name="colorControlHighlight">@color/textColorSecondary</item>
         <item name="backgroundTint">@color/violet_lighter</item>
     </style>
+
+    <!-- Settings styles -->
+    <style name="LinearLayout.SettingsItem">
+        <item name="android:layout_marginLeft">@dimen/settings_item_margin</item>
+        <item name="android:layout_marginTop">@dimen/settings_item_margin</item>
+        <item name="android:layout_marginBottom">@dimen/settings_item_margin</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="LinearLayout.SettingsItem.TextViews" parent="LinearLayout.SettingsItem">
+        <item name="android:layout_marginLeft">@dimen/settings_between_image_item_margin</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+
+    <style name="LinearLayout.SettingsItem.Support" parent="LinearLayout.SettingsItem">
+        <item name="android:layout_marginTop">@dimen/settings_item_support_vertical_margin</item>
+    </style>
+    <style name="TextView.SettingsItem">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/textColorSecondary</item>
+    </style>
+
+    <style name="TextView.SettingsItem.First" parent="TextView.SettingsItem">
+        <item name="android:textSize">@dimen/settings_item_first_textsize</item>
+    </style>
+
+    <style name="TextView.SettingsItem.Second" parent="TextView.SettingsItem">
+        <item name="android:textSize">@dimen/settings_item_second_textsize</item>
+    </style>
+
+    <style name="Switcher">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_weight">18</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
 </resources>

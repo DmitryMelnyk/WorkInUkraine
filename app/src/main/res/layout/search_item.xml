@@ -28,7 +28,7 @@
             android:textStyle="bold|italic"
             android:text="web development"
             android:textSize="24sp"
-            android:textColor="@color/background_dark"
+            android:textColor="@color/colorBackground"
             />
     </LinearLayout>
 

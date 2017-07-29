@@ -1,31 +1,39 @@
 package com.dmelnyk.workinukraine.business.search;
 
-import com.dmelnyk.workinukraine.business.search.model.SearchRequestModel;
+import com.dmelnyk.workinukraine.data.RequestModel;
 import com.dmelnyk.workinukraine.model.search.ISearchRepository;
+
+import java.util.List;
+
+import io.reactivex.Completable;
+import io.reactivex.Observable;
 
 /**
  * Created by d264 on 6/25/17.
  */
 
 public class SearchInteractor implements ISearchInteractor {
+    ISearchRepository repository;
+
     public SearchInteractor(ISearchRepository repository) {
-        super();
+        this.repository = repository;
     }
 
     @Override
-    public SearchRequestModel[] getRequestsData() {
-        SearchRequestModel[] models = new SearchRequestModel[4];
-        SearchRequestModel item = SearchRequestModel.Builder()
-                .withAvatar(null)
-                .withRequest("android development")
-                .withCity("Киев")
-                .withJobCount(75)
-                .withLastUpdate("17:34")
-                .build();
-        for (int i = 0; i < 4; i++) {
-            models[i] = item;
-        }
-
-        return models;
+    public Observable<List<RequestModel>> getRequests() {
+        return repository.loadRequestList();
     }
+
+    @Override
+    public void removeRequest(String request) {
+        repository.removeRequest(request);
+        repository.removeDataFromTables(request);
+    }
+
+    @Override
+    public Completable saveRequest(String request) {
+        return repository.saveRequest(request);
+    }
+
+
 }

@@ -85,7 +85,7 @@ public class DialogDelete extends BaseDialog implements
 
     @Override
     public void dialogDismiss() {
-        animateDismissDialog();
+        dismiss();
     }
 
     public void closeActivity() {

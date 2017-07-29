@@ -6,6 +6,8 @@ import android.content.Context;
 import com.dmelnyk.workinukraine.di.component.ApplicationComponent;
 import com.dmelnyk.workinukraine.di.component.DaggerApplicationComponent;
 
+import timber.log.Timber;
+
 /**
  * Created by dmitry on 30.03.17.
  */
@@ -27,6 +29,13 @@ public class WorkInUaApplication extends Application {
                 .applicationModule(new ApplicationModule(this))
                 .build();
         appComponent.inject(this);
+
+        Timber.plant(new Timber.DebugTree(){
+            @Override
+            protected String createStackElementTag(StackTraceElement element) {
+                return element.getLineNumber() + ": " + element;
+            }
+        });
     }
 
     public ApplicationComponent getAppComponent() {

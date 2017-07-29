@@ -13,7 +13,7 @@ public class JobDbSchema {
                 "WORKNEWINFO",
                 "WORKUA" };
 
-        public static final String FAVORITE = "FAVORITE";
+        public static final String FAVORITE = "MENU_TYPE_FAVORITE";
         public static final String RECENT = "RECENT";
         public static final String NEW = "FRESH";
 

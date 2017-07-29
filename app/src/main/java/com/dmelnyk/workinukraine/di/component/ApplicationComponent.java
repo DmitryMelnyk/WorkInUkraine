@@ -35,7 +35,7 @@ public interface ApplicationComponent {
 
     NavigationComponent add(NavigationModule navigationModule);
 
-    SearchComponent add(SearchModule searchModule);
+//    SearchComponent add(SearchModule searchModule);
 
     SettingsComponent add(SettingsModule settingsModule);
 }

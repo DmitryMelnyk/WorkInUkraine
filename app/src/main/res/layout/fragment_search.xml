@@ -3,7 +3,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/cardview_bg"
+    android:background="@drawable/kiev_bg"
     tools:context="com.dmelnyk.workinukraine.ui.search.SearchFragment">
 
     <LinearLayout
@@ -11,14 +11,14 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:background="@drawable/cardview_bg_light"
+
         >
+        <!-- Toolbar -->
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="@dimen/fragment_toolbar_height"
             android:paddingLeft="@dimen/activity_horizontal_margin"
             android:paddingRight="@dimen/activity_horizontal_margin"
-            android:layout_marginBottom="10dp"
             >
 
             <ImageView
@@ -34,7 +34,7 @@
                 android:layout_centerHorizontal="true"
                 android:layout_centerVertical="true"
                 android:layout_marginRight="3dp"
-                android:text="Search jobs"
+                android:text="Искать вакансии"
                 android:textSize="20sp"
                 android:textColor="@android:color/white"
                 />
@@ -48,6 +48,37 @@
 
         </RelativeLayout>
 
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            >
+
+            <ImageView
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:src="@mipmap/ic_vacancy"
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:text="20"
+                android:textSize="50sp"
+                android:textColor="@color/white"
+                />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="Найдено вакансий"
+            android:textColor="@android:color/white"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            />
+
         <!--TODO: padding-->
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recyclerView"
@@ -58,10 +89,8 @@
 
     <LinearLayout
         android:background="@android:color/white"
-        android:gravity="center_vertical"
-        android:layout_marginTop="5dp"
         android:layout_width="match_parent"
-        android:layout_height="50dp">
+        android:layout_height="30dp">
 
         <ImageView
             android:id="@+id/buttonAdd"

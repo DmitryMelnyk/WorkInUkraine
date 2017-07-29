@@ -5,9 +5,9 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.dmelnyk.workinukraine.application.WorkInUaApplication;
+import com.dmelnyk.workinukraine.data.VacancyModel;
 import com.dmelnyk.workinukraine.di.component.DaggerUtilComponent;
 import com.dmelnyk.workinukraine.helpers.CityUtils;
-import com.dmelnyk.workinukraine.helpers.Job;
 import com.dmelnyk.workinukraine.helpers.NetUtils;
 
 import org.jsoup.Jsoup;
@@ -40,15 +40,16 @@ public class ParserWorkUa {
 
     /**
      * Parse page with given jobRequest parameters.
-     * @param city - city field.
-     * @param jobRequest - search parameter
-     * @return list of Job elements or empty ArrayList
+     * @param request - Request in format "search request / city".
+     * @return list of VacancyModule's or empty ArrayList
      */
     @NonNull
-    public ArrayList<Job> getJobs(String city, String jobRequest) {
+    public ArrayList<VacancyModel> getJobs(String request) {
+        String jobRequest = request.split(" / ")[0];
+        String city = request.split(" / ")[1];
         Log.d(TAG, "started getJobs(). City = " + city + " request = " + jobRequest);
 
-        ArrayList<Job> jobs = new ArrayList<>();
+        ArrayList<VacancyModel> vacancies = new ArrayList<>();
 
         String cityId = cities.getCityId(CityUtils.SITE.WORKUA, city);
         String correctedRequest = netUtils.replaceSpacesWithPlus(jobRequest);
@@ -58,7 +59,7 @@ public class ParserWorkUa {
         String response = netUtils.getHtmlPage(urlRequest);
         if (response == null) {
             Log.e(TAG, "Server not response!");
-            return jobs;
+            return vacancies;
         }
 
         Document doc = Jsoup.parse(response);
@@ -68,11 +69,17 @@ public class ParserWorkUa {
             String url = "https://www.work.ua" + link.attr("href");
             String date = link.attr("title")
                     .substring(title.length() + ", вакансия от ".length());
-            Job job = new Job(title, date, url);
-            jobs.add(job);
-        }
-        Log.d(TAG, "found " + jobs.size() + " vacancies");
 
-        return jobs;
+            VacancyModel vacancyModel = VacancyModel.builder()
+                    .setDate(date)
+                    .setRequest(request)
+                    .setTitle(title)
+                    .setUrl(url)
+                    .build();
+            vacancies.add(vacancyModel);
+        }
+        Log.d(TAG, "found " + vacancies.size() + " vacancies");
+
+        return vacancies;
     }
 }

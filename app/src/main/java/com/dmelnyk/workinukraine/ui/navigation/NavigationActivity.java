@@ -37,9 +37,10 @@ import butterknife.BindView;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class NavigationActivity extends AppCompatActivity implements
-        DrawerAdapter.OnItemSelectedListener, Contract.INavigationView,
-        SearchFragment.OnFragmentInteractionListener
-{
+        Contract.INavigationView,
+        DrawerAdapter.OnItemSelectedListener,
+        SearchFragment.OnFragmentInteractionListener,
+        SettingsFragment.OnFragmentInteractionListener {
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;

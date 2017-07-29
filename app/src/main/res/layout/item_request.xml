@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:cardCornerRadius="5dp"
+    android:layout_margin="5dp"
+    app:cardElevation="10dp"
+    >
+    <LinearLayout
+        android:id="@+id/item_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="10dp"
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <!-- TODO: remove android:text="android developer / Каменец-Подольский"-->
+            <TextView
+                android:id="@+id/text_view_title"
+                android:layout_width="0dp"
+                android:layout_weight="90"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:text="android developer / Каменец-Подольский"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                />
+            <ImageView
+                android:id="@+id/button_remove"
+                android:layout_width="0dp"
+                android:layout_weight="10"
+                android:layout_height="wrap_content"
+                android:src="@mipmap/search_request_close_button"
+                />
+        </LinearLayout>
+
+        <RelativeLayout
+            android:padding="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/vacancy"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_alignParentLeft="true"
+                android:src="@drawable/ic_nav_vacancy"/>
+
+            <TextView
+                android:id="@+id/text_view_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@id/vacancy"
+                android:layout_marginLeft="5dp"
+                android:text="-"
+                android:textSize="30sp"
+                android:textStyle="bold"
+                />
+
+            <TextView
+                android:layout_below="@id/vacancy"
+                android:text="Найдено вакансий"
+                style="@style/ItemRequestText"
+                />
+
+            <ImageView
+                android:id="@+id/go"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_alignParentRight="true"
+                android:src="@mipmap/ic_arrow_right"/>
+
+            <ImageView
+                android:id="@+id/updated"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_toLeftOf="@id/go"
+                android:layout_marginRight="15dp"
+                android:src="@drawable/search_item_last_update"
+                />
+
+            <TextView
+                android:layout_below="@id/updated"
+                android:layout_toLeftOf="@id/go"
+                android:layout_marginRight="20dp"
+                android:text="Обновлено"
+                style="@style/ItemRequestText"
+                />
+
+            <TextView
+                android:id="@+id/text_view_updated"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toLeftOf="@id/updated"
+                android:layout_marginRight="5dp"
+                android:text="-"
+                android:textSize="30sp"
+                />
+        </RelativeLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:background="@drawable/request_item_bg"
+            />
+    </LinearLayout>
+
+</android.support.v7.widget.CardView>

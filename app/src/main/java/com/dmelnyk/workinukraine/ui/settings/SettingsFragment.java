@@ -1,5 +1,6 @@
 package com.dmelnyk.workinukraine.ui.settings;
 
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -41,29 +42,19 @@ public class SettingsFragment extends Fragment implements
 
     private static final String DIALOG_PERIOD_TAG = "dialog period tag";
     private static final String WEBSTORE_APP_ADDRESS = "http://www.example.com";
-    @BindView(R.id.updatePeriod)
-    TextView mUpdatePeriod;
-    @BindView(R.id.soundSwitcherText)
-    TextView mSoundSwitcherText;
-    @BindView(R.id.soundSwitcher)
-    Switch mSoundSwitcher;
-    @BindView(R.id.vibroSwitcherText)
-    TextView mVibroSwitcherText;
-    @BindView(R.id.vibroSwitcher)
-    Switch mVibroSwitcher;
-    @BindView(R.id.disturbSwitcher)
-    Switch mDisturbSwitcher;
-    @BindView(R.id.sendFeedback)
-    LinearLayout mSendFeedback;
-    @BindView(R.id.about)
-    LinearLayout mAbout;
+
+    @BindView(R.id.updatePeriod) TextView mUpdatePeriod;
+    @BindView(R.id.soundSwitcherText) TextView mSoundSwitcherText;
+    @BindView(R.id.soundSwitcher) Switch mSoundSwitcher;
+    @BindView(R.id.vibroSwitcherText) TextView mVibroSwitcherText;
+    @BindView(R.id.vibroSwitcher) Switch mVibroSwitcher;
+    @BindView(R.id.disturbSwitcher) Switch mDisturbSwitcher;
+    @BindView(R.id.sendFeedback) LinearLayout mSendFeedback;
+    @BindView(R.id.about) LinearLayout mAbout;
+    @BindView(R.id.vibroItem) LinearLayout mVibroItem;
+    @BindView(R.id.text_view_from) TextView mTextViewFrom;
+    @BindView(R.id.text_view_to) TextView mTextViewTo;
     Unbinder unbinder;
-    @BindView(R.id.vibroItem)
-    LinearLayout mVibroItem;
-    @BindView(R.id.text_view_from)
-    TextView mTextViewFrom;
-    @BindView(R.id.text_view_to)
-    TextView mTextViewTo;
 
     private OnFragmentInteractionListener mListener;
 
@@ -101,16 +92,16 @@ public class SettingsFragment extends Fragment implements
         });
     }
 
-//    @Override
-//    public void onAttach(Context context) {
-//        super.onAttach(context);
-//        if (context instanceof OnDialogPeriodInteractionListener) {
-//            mListener = (OnDialogPeriodInteractionListener) context;
-//        } else {
-//            throw new RuntimeException(context.toString()
-//                    + " must implement OnDialogPeriodInteractionListener");
-//        }
-//    }
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof OnFragmentInteractionListener) {
+            mListener = (OnFragmentInteractionListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnDialogPeriodInteractionListener");
+        }
+    }
 
     @Override
     public void onDetach() {
@@ -144,6 +135,8 @@ public class SettingsFragment extends Fragment implements
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.backImageView:
+                // opens navigation drawer
+                mListener.onFragmentInteraction();
                 break;
             case R.id.periodItem:
                 presenter.onPeriodItemClicked();
@@ -240,7 +233,6 @@ public class SettingsFragment extends Fragment implements
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
+        void onFragmentInteraction();
     }
 }

@@ -2,8 +2,8 @@
 <resources>
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/background</item>
-        <item name="colorPrimaryDark">@color/violet_lighter</item>
+        <item name="colorPrimary">@color/violet_dark</item>
+        <item name="colorPrimaryDark">@color/violet_dark</item>
         <item name="colorAccent">@color/violet_lighter</item>
         <item name="android:windowContentOverlay">@null</item>
         <item name="android:windowNoTitle">true</item>
@@ -12,14 +12,14 @@
 
         <!-- Color of the drawer arrow -->
         <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
-        <item name="colorControlNormal">@color/item_color</item>
+        <item name="colorControlNormal">@color/colorItem</item>
 
         <!-- FragmentSettings-->
         <!--<item name="preferenceTheme">@style/PreferenceThemeOverlay</item>-->
         <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
 
         <!-- Popup menu -->
-        <item name="android:itemBackground">@color/background_dark</item>
+        <item name="android:itemBackground">@color/colorBackground</item>
         <item name="android:popupMenuStyle">@style/PopupMenu</item>
 
     </style>
@@ -32,12 +32,12 @@
 
     <style name="DrawerArrowStyle" parent="Widget.AppCompat.DrawerArrowToggle">
         <item name="spinBars">true</item>
-        <item name="color">@color/item_color</item>
+        <item name="color">@color/colorItem</item>
     </style>
 
     <style name="PopupMenu" parent="Widget.AppCompat.PopupMenu.Overflow">
-        <item name="android:popupBackground">@color/background_dark</item>
-        <item name="android:itemBackground">@color/item_color</item>
+        <item name="android:popupBackground">@color/colorBackground</item>
+        <item name="android:itemBackground">@color/colorItem</item>
     </style>
 
 

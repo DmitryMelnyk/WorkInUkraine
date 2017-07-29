@@ -17,6 +17,6 @@ public class CityModule {
 
     @Provides
     CityUtils provideCityUtils(Context context) {
-        return new CityUtils(context);
+        return new CityUtils(context.getApplicationContext());
     }
 }

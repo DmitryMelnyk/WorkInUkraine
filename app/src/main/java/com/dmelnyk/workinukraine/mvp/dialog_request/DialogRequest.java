@@ -33,9 +33,12 @@ import butterknife.OnClick;
  */
 
 
-public class DialogRequest extends BaseDialog
-        implements Contract.View {
+public class DialogRequest extends BaseDialog implements
+        Contract.View
+{
     private static final String TAG = "GT.DialogDownloading";
+    public static String REQUEST;
+    private DialogRequestCallbackListener mCallbackInterface;
 
     @BindView(R.id.closeButton)
     ImageView closeButton;
@@ -67,7 +70,6 @@ public class DialogRequest extends BaseDialog
         dialogView = inflater.inflate(R.layout.dialog_request2, container, false);
         ButterKnife.bind(this, dialogView);
 
-//        configButton();
         initializePresenter();
         presenter.onTakeView(this);
 
@@ -81,15 +83,16 @@ public class DialogRequest extends BaseDialog
         presenter = null;
     }
 
+    @Override
+    public void dialogDismiss() {
+        dismiss();
+    }
+
     private void initializePresenter() {
         if (presenter == null) {
             presenter = new DialogRequestPresenter(getActivity(), mainActivityHandler);
         }
     }
-
-//    private void configButton() {
-//        button.setOnClickListener(this);
-//    }
 
     @Override
     public void showErrorMessage() {
@@ -119,27 +122,41 @@ public class DialogRequest extends BaseDialog
         spinner.setAdapter(adapter);
     }
 
-//    @Override
-//    public void onClick(View v) {
-//
-//    }
-
     @Override
-    public void dialogDismiss() {
-        animateDismissDialog();
+    public void dismiss() {
+        mCallbackInterface.onDismissDialogRequest();
+        super.dismiss();
     }
 
     @OnClick({R.id.closeButton, R.id.button_ok})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.closeButton:
-                dialogDismiss();
+                dismiss();
                 break;
             case R.id.button_ok:
                 String textRequest = String.valueOf(searchRequest.getText());
                 String cityRequest = String.valueOf(spinner.getSelectedItem());
+                if (REQUEST == null) {
+                    REQUEST = new String();
+                }
+                REQUEST = textRequest + " / " + cityRequest;
+
+                if (mCallbackInterface != null) {
+                    mCallbackInterface.onTakeRequest(REQUEST);
+                }
+
                 presenter.onButtonClicked(textRequest, cityRequest);
                 break;
         }
+    }
+
+    public interface DialogRequestCallbackListener {
+        void onTakeRequest(String request);
+        void onDismissDialogRequest();
+    }
+
+    public void setCallbackInterface(DialogRequestCallbackListener callbackInterface) {
+        mCallbackInterface = callbackInterface;
     }
 }

@@ -151,11 +151,11 @@ public class JobPool {
 
 
     /**
-     * Removes job from FAVORITE table
+     * Removes job from MENU_TYPE_FAVORITE table
      * @param job
      */
     public void removeJobFromFavorite(Job job) {
-//        Log.d(TAG, "removing from FAVORITE:" + job);
+//        Log.d(TAG, "removing from MENU_TYPE_FAVORITE:" + job);
         try {
             mDatabase.delete(
                     JobDbSchema.JobTable.FAVORITE,

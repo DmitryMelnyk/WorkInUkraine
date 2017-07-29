@@ -1,7 +1,7 @@
 package com.dmelnyk.workinukraine.ui.dialogs.downloading;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,67 +16,60 @@ import com.victor.loading.rotate.RotateLoading;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.Unbinder;
+import timber.log.Timber;
 
 /**
  * Created by dmitry on 15.03.17.
  */
 
 
-public class DialogDownloading extends BaseDialog
-        implements Contract.View {
-    private static final String TAG = "GT.DialogDownloading";
+public class DialogDownloading extends BaseDialog {
 
+    @BindView(R.id.button_ok) Button buttonOk;
+    @BindView(R.id.rotateLoading) RotateLoading rotateLoading;
+    @BindView(R.id.downloadingStartedLayout) LinearLayout downloadingStartedLayout;
+    @BindView(R.id.downloadingFinishedLayout) LinearLayout downloadingFinishedLayout;
+    Unbinder unbinder;
 
-    @BindView(R.id.button_ok)
-    Button buttonOk;
-    @BindView(R.id.rotateLoading)
-    RotateLoading rotateLoading;
-    @BindView(R.id.downloadingStartedLayout)
-    LinearLayout downloadingStartedLayout;
-    @BindView(R.id.downloadingFinishedLayout)
-    LinearLayout downloadingFinishedLayout;
+    private DialogDownloadCallbackListener mDialogDownloadCallbackListener;
 
-    private View dialogView;
-    private static Handler mainActivityHandler;
-    private static DialogDownloading dialog;
-    private DialogDownloadingPresenter presenter;
-
-    public static DialogDownloading getInstance(Handler handler) {
-        mainActivityHandler = handler;
-        if (null == dialog) {
-            dialog = new DialogDownloading();
-        }
+    public static DialogDownloading newInstance() {
+        DialogDownloading dialog = new DialogDownloading();
         return dialog;
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        dialogView = inflater.inflate(R.layout.dialog_downloading2, container, false);
-        ButterKnife.bind(this, dialogView);
+        View view = inflater.inflate(R.layout.dialog_downloading2, container, false);
+        unbinder = ButterKnife.bind(this, view);
 
-//        initializePresenter();
-//        presenter.onTakeView(this);
         rotateLoading.start();
-        return dialogView;
+        return view;
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        presenter.onTakeView(null);
-        presenter = null;
+        unbinder.unbind();
     }
 
-    private void initializePresenter() {
-        if (presenter == null) {
-            presenter = new DialogDownloadingPresenter(getActivity(), mainActivityHandler);
-        }
+    // TODO: add (String, int) and create new view to show how much vacancies has founded.
+    public void downloadingFinished() {
+        Timber.d("downloadingFinished()");
+        if (rotateLoading == null) return;
+
+        rotateLoading.stop();
+        downloadingStartedLayout.setVisibility(View.GONE);
+        downloadingFinishedLayout.setVisibility(View.VISIBLE);
+        buttonOk.setEnabled(true);
     }
 
     @Override
-    public void dialogDismiss() {
-        animateDismissDialog();
+    public void onDismiss(DialogInterface dialog) {
+        mDialogDownloadCallbackListener.onDismissDialogDownloading();
+        super.onDismiss(dialog);
     }
 
     // TODO: replace downloading implementation
@@ -84,15 +77,16 @@ public class DialogDownloading extends BaseDialog
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.button_ok:
-                rotateLoading.stop();
-                rotateLoading.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        downloadingStartedLayout.setVisibility(View.GONE);
-                        downloadingFinishedLayout.setVisibility(View.VISIBLE);
-                        buttonOk.setEnabled(true);
-                    }
-                }, 600);
+                dismiss();
+                break;
         }
+    }
+
+    public interface DialogDownloadCallbackListener {
+        void onDismissDialogDownloading();
+    }
+
+    public void setDialogDownloadingCallbackListener(DialogDownloadCallbackListener listener) {
+        mDialogDownloadCallbackListener = listener;
     }
 }

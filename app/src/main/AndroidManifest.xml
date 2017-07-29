@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.dmelnyk.workinukraine">
+    package="com.dmelnyk.workinukraine">
 
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
         android:name=".application.WorkInUaApplication"
@@ -17,42 +17,50 @@
             android:name=".mvp.activity_splash.SplashActivity"
             android:noHistory="true"
             android:screenOrientation="portrait">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
-        </activity>
 
+            <!-- <intent-filter> -->
+            <!-- <action android:name="android.intent.action.MAIN"/> -->
+            <!-- <category android:name="android.intent.category.LAUNCHER"/> -->
+            <!-- </intent-filter> -->
+        </activity>
         <activity android:name=".ui.navigation.NavigationActivity">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".mvp.activity_search.SearchActivity"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".mvp.activity_favorite_recent_new.BaseActivity"
-            android:launchMode="singleInstance"/>
-        <activity android:name=".mvp.activity_webview.WebViewActivity"/>
+            android:launchMode="singleInstance" />
+        <activity android:name=".mvp.activity_webview.WebViewActivity" />
         <activity
             android:name=".mvp.activity_tabs.TabsActivity"
-            android:launchMode="singleInstance"
-            android:exported="true">
-        </activity>
-        <activity android:name=".mvp.activity_settings.SettingsActivity"/>
+            android:exported="true"
+            android:launchMode="singleInstance"></activity>
+        <activity android:name=".mvp.activity_settings.SettingsActivity" />
 
         <receiver
             android:name=".services.WakeLockBroadcastReceiver"
             android:enabled="true"
-            android:exported="true"/>
+            android:exported="true" />
 
-        <service android:name=".services.GetDataIntentService"/>
+        <!-- <service android:name=".services.GetDataIntentService"/> -->
+        <service android:name=".services.SearchVacanciesService" />
 
+        <activity
+            android:name=".ui.vacancy.ScrollingActivity"
+            android:label="@string/title_activity_scrolling"
+            android:theme="@style/AppTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
-
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

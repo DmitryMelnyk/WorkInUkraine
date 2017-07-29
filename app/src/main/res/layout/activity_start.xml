@@ -10,7 +10,7 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     android:orientation="vertical"
     android:gravity="center"
-    android:background="@color/background"
+    android:background="@color/colorPrimaryDark"
     tools:context="com.dmelnyk.workinukraine.mvp.activity_search.SearchActivity">
 
     <TextView
@@ -37,7 +37,7 @@
         android:layout_height="wrap_content"
         android:text="Искать новые вакансии"
         fontPath="fonts/FranckerCYR-ExtraBold.otf"
-        android:background="@color/background_dark"
+        android:background="@color/colorPrimaryDark"
         />
 
 </LinearLayout>

@@ -58,7 +58,7 @@ public class DialogDeletePresenter implements Contract.Presenter {
     }
 
     private void clearTable() {
-        Log.d(TAG, "Clearing FAVORITE table");
+        Log.d(TAG, "Clearing MENU_TYPE_FAVORITE table");
         String table = "";
         switch (typeActivity) {
             case RECENT:

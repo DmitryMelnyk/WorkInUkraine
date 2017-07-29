@@ -79,7 +79,7 @@ public class DialogDownloading extends BaseDialog
 
     @Override
     public void dialogDismiss() {
-        animateDismissDialog();
+        dismiss();
     }
 
     // TODO: remove

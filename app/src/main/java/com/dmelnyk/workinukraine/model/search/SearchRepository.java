@@ -1,13 +1,70 @@
 package com.dmelnyk.workinukraine.model.search;
 
-import android.content.Context;
+import android.support.annotation.NonNull;
+
+import com.dmelnyk.workinukraine.data.RequestModel;
+import com.dmelnyk.workinukraine.db.DbItems;
+import com.dmelnyk.workinukraine.db.Tables;
+import com.squareup.sqlbrite2.BriteDatabase;
+
+import java.util.List;
+
+import io.reactivex.Completable;
+import io.reactivex.Observable;
+import timber.log.Timber;
 
 /**
  * Created by d264 on 6/25/17.
  */
 
-public class SearchRepository extends ISearchRepository {
-    public SearchRepository(Context context) {
-        super();
+public class SearchRepository implements ISearchRepository {
+
+    private static final String REQUEST_TABLE = Tables.SearchRequest.TABLE;
+    private final BriteDatabase bd;
+
+    public SearchRepository(BriteDatabase bd) {
+        this.bd = bd;
+    }
+
+    @Override
+    public Observable<List<RequestModel>> loadRequestList() {
+        Timber.d("\nloadRequestList()");
+        return bd.createQuery(REQUEST_TABLE, "SELECT * FROM " + REQUEST_TABLE)
+                .mapToList(RequestModel.MAPPER);
+    }
+
+    @Override
+    public void removeDataFromTables(String request) {
+        Timber.d("\nRemoving data with request=%s from all tables", request);
+        for (String table : Tables.SearchSites.SITES) {
+            bd.delete(table, Tables.SearchSites.Columns.REQUEST + " = '" + request +"'");
+        }
+        bd.delete(Tables.SearchSites.NEW, Tables.SearchSites.Columns.REQUEST + " = '" + request +"'");
+        bd.delete(Tables.SearchSites.FAVORITE, Tables.SearchSites.Columns.REQUEST + " = '" + request +"'");
+        bd.delete(Tables.SearchSites.RECENT, Tables.SearchSites.Columns.REQUEST + " = '" + request +"'");
+    }
+
+    @Override
+    public void removeRequest(@NonNull String request) {
+        Timber.d("\nremoveRequest: " + request);
+        bd.delete(REQUEST_TABLE, where(request));
+    }
+
+    @Override
+    public Completable saveRequest(String request) {
+        Timber.d("\nsaveRequest: " + request);
+        return Completable.fromCallable(() ->
+            bd.insert(REQUEST_TABLE, DbItems.createRequestItem(request, 0, -1l)));
+    }
+
+    @Override
+    // TODO: add vacancies count and time of last update
+    public void updateRequest(@NonNull String oldRequest, String newRequest) {
+        Timber.d("\nupdateRequest");
+        removeRequest(oldRequest);
+        saveRequest(newRequest);
+    }
+    private String where(String request) {
+        return Tables.SearchRequest.Columns.REQUEST + " = '" + request + "'";
     }
 }

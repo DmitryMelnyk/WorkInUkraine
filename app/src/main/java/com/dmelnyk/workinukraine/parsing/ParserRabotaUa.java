@@ -5,9 +5,9 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.dmelnyk.workinukraine.application.WorkInUaApplication;
+import com.dmelnyk.workinukraine.data.VacancyModel;
 import com.dmelnyk.workinukraine.di.component.DaggerUtilComponent;
 import com.dmelnyk.workinukraine.helpers.CityUtils;
-import com.dmelnyk.workinukraine.helpers.Job;
 import com.dmelnyk.workinukraine.helpers.NetUtils;
 
 import org.jsoup.Jsoup;
@@ -43,15 +43,17 @@ public class ParserRabotaUa {
 
     /**
      * Parse page with given jobRequest parameters.
-     * @param city - city field.
-     * @param jobRequest - search parameter
-     * @return list of Job elements or empty ArrayList
+     * @param request - Request in format "search request / city".
+     * @return list of VacancyModule's or empty ArrayList
      */
     @NonNull
-    public ArrayList<Job> getJobs(String city, String jobRequest) {
+    public ArrayList<VacancyModel> getJobs(String request) {
+        String jobRequest = request.split(" / ")[0];
+        String city = request.split(" / ")[1];
+
         Log.d(TAG, "started getJobs(). City = " + city + " request = " + jobRequest);
 
-        ArrayList<Job> jobs = new ArrayList<>();
+        ArrayList<VacancyModel> vacancies = new ArrayList<>();
 
         String cityId = cities.getCityId(CityUtils.SITE.RABOTAUA, city);
         String correctedRequest = netUtils.replaceSpacesWithPlus(jobRequest);
@@ -62,7 +64,7 @@ public class ParserRabotaUa {
         String response = netUtils.getHtmlPage(urlRequest);
         if (response == null) {
             Log.e(TAG, "Server not response!");
-            return jobs;
+            return vacancies;
         }
 
         Document doc = Jsoup.parse(response);
@@ -71,15 +73,21 @@ public class ParserRabotaUa {
 
             String date = link.select("p[class=\"f-vacancylist-agotime f-text-light-gray fd-craftsmen\"]").text();
             String title = link.select("a[href]").text();
-            String url = link.select("a[href]").attr("href");
-            if (url.contains("/vacancy") && url.contains("/company")) {
-                String fullUrl = "https://rabota.ua" + url;
-                Job job = new Job(title, date, fullUrl);
-                jobs.add(job);
+            String shortUrl = link.select("a[href]").attr("href");
+            if (shortUrl.contains("/vacancy") && shortUrl.contains("/company")) {
+                String url = "https://rabota.ua" + shortUrl;
+
+                VacancyModel vacancyModel = VacancyModel.builder()
+                        .setDate(date)
+                        .setRequest(request)
+                        .setTitle(title)
+                        .setUrl(url)
+                        .build();
+                vacancies.add(vacancyModel);
             }
         }
 
-        Log.d(TAG, "found " + jobs.size() + " vacancies");
-        return jobs;
+        Log.d(TAG, "found " + vacancies.size() + " vacancies");
+        return vacancies;
     }
 }

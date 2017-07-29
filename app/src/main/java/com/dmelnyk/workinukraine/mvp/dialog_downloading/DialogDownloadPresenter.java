@@ -116,7 +116,7 @@ public class DialogDownloadPresenter
         Intent intent = new Intent(context, GetDataIntentService.class);
         intent.putExtra(KEY_CITY, requestCity);
         intent.putExtra(KEY_REQUEST, requestText);
-        intent.putExtra(KEY_MODE, GetDataIntentService.SEARCH);
+        intent.putExtra(KEY_MODE, GetDataIntentService.MODE_SEARCH);
         context.startService(intent);
     }
 }

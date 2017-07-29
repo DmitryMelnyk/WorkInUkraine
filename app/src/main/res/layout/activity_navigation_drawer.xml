@@ -17,7 +17,7 @@
         android:fitsSystemWindows="true"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:background="@color/background_dark"
+        android:background="@color/colorPrimaryDark"
         app:headerLayout="@layout/nav_header_main"
         app:menu="@menu/activity_main_drawer"/>
 

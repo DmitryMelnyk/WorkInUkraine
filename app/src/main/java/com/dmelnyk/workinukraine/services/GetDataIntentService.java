@@ -34,13 +34,14 @@ import javax.inject.Inject;
  * Created by dmitry on 09.03.17.
  */
 
+// TODO: remove
 public class GetDataIntentService extends IntentService {
 
-    // SEARCH - for DialogDownloading, SERVICE - for BroadcastReceiver
-    public static final int SEARCH = -1;
+    // MODE_SEARCH - for DialogDownloading, SERVICE - for BroadcastReceiver
+    public static final int MODE_SEARCH = -1;
     public static final int SERVICE = -2;
 
-    @IntDef({ SEARCH, SERVICE })
+    @IntDef({MODE_SEARCH, SERVICE })
     @Retention(RetentionPolicy.CLASS)
     public @interface Mode {}
 
@@ -87,7 +88,7 @@ public class GetDataIntentService extends IntentService {
         search = intent.getStringExtra(KEY_REQUEST);
 
         mode = intent.getIntExtra(KEY_MODE, -2);
-        if (mode == SEARCH) {
+        if (mode == MODE_SEARCH) {
             jobPool.clearDb();
 //            jobPool.clearTable(JobDbSchema.JobTable.RECENT);
         }
@@ -104,26 +105,26 @@ public class GetDataIntentService extends IntentService {
                         public ArrayList<Job> call() throws Exception {
                             ArrayList<Job> list = new ArrayList<>();
                             switch (finalI) {
-                                case HEADHUNTERSUA:
-                                    list = new ParserHeadHunters(getApplicationContext()).getJobs(city, search);
-                                    break;
-                                case JOBSUA:
-                                    list = new ParserJobsUa(getApplicationContext()).getJobs(city, search);
-                                    break;
-                                case RABOTAUA:
-                                    list = new ParserRabotaUa(getApplicationContext()).getJobs(city, search);
-                                    break;
-                                case WORKNEWINFO:
-                                    list = new ParserWorkNewInfo(getApplicationContext()).getJobs(city, search);
-                                    break;
-                                case WORKUA:
-                                    list = new ParserWorkUa(getApplicationContext()).getJobs(city, search);
-                                    break;
+//                                case HEADHUNTERSUA:
+//                                    list = new ParserHeadHunters(getApplicationContext()).getJobs(city, search);
+//                                    break;
+//                                case JOBSUA:
+//                                    list = new ParserJobsUa(getApplicationContext()).getJobs(city, search);
+//                                    break;
+//                                case RABOTAUA:
+//                                    list = new ParserRabotaUa(getApplicationContext()).getJobs(city, search);
+//                                    break;
+//                                case WORKNEWINFO:
+//                                    list = new ParserWorkNewInfo(getApplicationContext()).getJobs(city, search);
+//                                    break;
+//                                case WORKUA:
+//                                    list = new ParserWorkUa(getApplicationContext()).getJobs(city, search);
+//                                    break;
                             }
                             jobs.putParcelableArrayList(JobDbSchema.JobTable.NAMES[finalI], list);
 
                             Message message;
-                            if (mode == SEARCH) { // sending data for updating DialogDownloading
+                            if (mode == MODE_SEARCH) { // sending data for updating DialogDownloading
                                 message = mainHandler.obtainMessage(finalI, list.size(), -1); // -1 is needed for creating Message(int, int, int)
                                 mainHandler.sendMessage(message);
                                 // write list to DB

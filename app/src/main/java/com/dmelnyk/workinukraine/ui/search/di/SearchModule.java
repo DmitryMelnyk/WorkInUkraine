@@ -9,6 +9,7 @@ import com.dmelnyk.workinukraine.model.search.ISearchRepository;
 import com.dmelnyk.workinukraine.model.search.SearchRepository;
 import com.dmelnyk.workinukraine.ui.search.Contract;
 import com.dmelnyk.workinukraine.ui.search.SearchPresenter;
+import com.squareup.sqlbrite2.BriteDatabase;
 
 import dagger.Module;
 import dagger.Provides;
@@ -22,8 +23,8 @@ public class SearchModule {
 
     @Provides
     @SearchScope
-    ISearchRepository providesISearchRepository(Context context) {
-        return new SearchRepository(context);
+    ISearchRepository providesISearchRepository(BriteDatabase bd) {
+        return new SearchRepository(bd);
     }
 
     @Provides

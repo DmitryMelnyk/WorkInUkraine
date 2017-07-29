@@ -18,13 +18,15 @@ public abstract class BaseDialog extends DialogFragment {
     }
 
     // View-to-point reduction animation
-    public void animateDismissDialog() {
+
+
+    @Override
+    public void dismiss() {
         getView().animate()
                 .scaleX(0)
                 .scaleY(0)
                 .setInterpolator(new AccelerateInterpolator(2));
-        
-        getView().postDelayed(() -> dismiss(), 300);
-    }
 
+        getView().postDelayed(() -> super.dismiss(), 300);
+    }
 }

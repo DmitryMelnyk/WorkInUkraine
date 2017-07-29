@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="errors_db_request_already_exists">Данный запрос уже существует в базе данных!</string>
+</resources>

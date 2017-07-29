@@ -94,12 +94,12 @@ public class DialogPeriodChooser extends BaseDialog {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.closeButton:
-                animateDismissDialog();
+                dismiss();
                 break;
             case R.id.button_ok:
                 int checkedId = radioGroup.getCheckedRadioButtonId();
                 mListener.onRadioItemChecked(checkedId);
-                animateDismissDialog();
+                dismiss();
                 break;
         }
     }

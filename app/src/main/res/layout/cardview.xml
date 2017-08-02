@@ -27,7 +27,7 @@
             android:orientation="horizontal">
 
             <TextView
-                android:id="@+id/card_text_view"
+                android:id="@+id/body_text_view"
                 android:layout_gravity="center"
                 android:gravity="center_vertical"
                 android:layout_width="0dp"
@@ -40,7 +40,7 @@
                 tools:ignore="MissingPrefix"/>
 
             <ImageButton
-                android:id="@+id/popup"
+                android:id="@+id/popup_menu"
                 android:layout_weight="5"
                 android:layout_gravity="center_vertical"
                 android:layout_width="0dp"

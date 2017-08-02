@@ -14,14 +14,12 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.dmelnyk.workinukraine.R;
@@ -63,7 +61,6 @@ public class ButtonTabs extends View {
     private Drawable mBackgroundDrawable;
     private boolean miSanimating = false;
 
-    private static int sPreviousClickedPosition;
     private int mGlobalAlpha = 255;
 
     public ButtonTabs(Context context, @Nullable AttributeSet attrs) {
@@ -148,7 +145,6 @@ public class ButtonTabs extends View {
     public void animHide() {
         if (miSanimating) return;
         miSanimating = true;
-        Toast.makeText(getContext(), "hide!", Toast.LENGTH_SHORT).show();
 
         ValueAnimator animatorHide = new ValueAnimator().ofFloat(1f, 0.1f);
         animatorHide.setDuration(ANIMATION_HIDE_DURATION);
@@ -156,8 +152,8 @@ public class ButtonTabs extends View {
         animatorHide.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
-                float curretValue = (float) animation.getAnimatedValue();
-                setAlpha(curretValue);
+                float currentValue = (float) animation.getAnimatedValue();
+                setAlpha(currentValue);
                 invalidate();
             }
         });
@@ -178,7 +174,6 @@ public class ButtonTabs extends View {
         if (miSanimating) return;
         miSanimating = true;
 
-        Toast.makeText(getContext(), "show!", Toast.LENGTH_SHORT).show();
         setVisibility(View.VISIBLE);
 
         ValueAnimator animatorShow = new ValueAnimator().ofFloat(0, 1f);
@@ -268,19 +263,15 @@ public class ButtonTabs extends View {
                 float tapX = event.getX();
                 int buttonPosition = (int) (tapX / mHeight);
 
-                if (buttonPosition != sPreviousClickedPosition) {
-                    sPreviousClickedPosition = buttonPosition;
-                    for (int i = 0; i < mButtonsState.size(); i++) {
-                        if (i == buttonPosition) {
-                            mButtonsState.set(i, true);
-                            mCallback.tabSelected(i);
-                        } else {
-                            mButtonsState.set(i, false);
-                        }
+                for (int i = 0; i < mButtonsState.size(); i++) {
+                    if (i == buttonPosition) {
+                        mButtonsState.set(i, true);
+                        mCallback.tabSelected(i);
+                    } else {
+                        mButtonsState.set(i, false);
                     }
-
-                    onAnimate();
                 }
+                onAnimate();
             }
         }
         return super.onTouchEvent(event);

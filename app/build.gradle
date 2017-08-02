@@ -56,6 +56,9 @@ dependencies {
     compile 'com.android.support:design:25.2.0'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
 
+    // ScalebleLayout
+    compile 'com.ssomai:android.scalablelayout:2.1.0'
+
     // ButterKnife
     compile 'com.jakewharton:butterknife:8.5.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
@@ -109,4 +112,6 @@ dependencies {
 
     // Timber
     compile 'com.jakewharton.timber:timber:4.5.1'
+
+
 }

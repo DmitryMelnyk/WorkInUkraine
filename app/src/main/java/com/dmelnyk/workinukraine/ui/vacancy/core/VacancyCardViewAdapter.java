@@ -1,16 +1,14 @@
-package com.dmelnyk.workinukraine.ui.vacancy;
+package com.dmelnyk.workinukraine.ui.vacancy.core;
 
 import android.content.Context;
 import android.support.annotation.IntDef;
-import android.support.v7.view.menu.MenuBuilder;
-import android.support.v7.view.menu.MenuPopupHelper;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.PopupMenu;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.dmelnyk.workinukraine.R;
@@ -19,7 +17,6 @@ import com.dmelnyk.workinukraine.data.VacancyModel;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 
@@ -28,31 +25,34 @@ import timber.log.Timber;
 /**
  * Created by dmitry on 14.03.17.
  */
-public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.MyViewHolder> {
 
-    public static final int MENU_TYPE_TABVIEW = -1;
-    public static final int MENU_TYPE_FAVORITE = -2;
-    public static final int SAVE = -3;
-    public static final int REMOVE = -4;
-    public static final int SHARE = -5;
+public class VacancyCardViewAdapter extends RecyclerView.Adapter<VacancyCardViewAdapter.MyViewHolder> {
+
+    public static final int TYPE_TABVIEW = 1;
+    public static final int TYPE_FAVORITE = 2;
+    public static final int MENU_SAVE = 3;
+    public static final int MENU_REMOVE = 4;
+    public static final int MENU_SHARE = 5;
+
     private static String PARENT_CLASS = "";
-    private Context mContext;
     private OnAdapterInteractionListener mListener;
+    private Context mContext;
 
     @Retention(RetentionPolicy.SOURCE)
-    @IntDef(value = {MENU_TYPE_TABVIEW, MENU_TYPE_FAVORITE})
-    public @interface PopupMenuType { }
-
-    @Retention(RetentionPolicy.SOURCE)
-    @IntDef(value = { SAVE, REMOVE, SHARE })
+    @IntDef(value = {MENU_SAVE, MENU_REMOVE, MENU_SHARE})
     public @interface VacancyPopupMenuType { }
 
-    private ArrayList<VacancyModel> mDataSet;
-    private int mPopupType;
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef(value = { TYPE_FAVORITE, TYPE_TABVIEW })
+    public @interface CardViewType {}
 
-    public CardViewAdapter(ArrayList<VacancyModel> vacancies, @PopupMenuType int popupMenuType) {
+    private ArrayList<VacancyModel> mDataSet;
+    private int mCardViewType;
+
+    public VacancyCardViewAdapter(ArrayList<VacancyModel> vacancies,
+                                  int cardViewType) {
         mDataSet = vacancies;
-        mPopupType = popupMenuType;
+        mCardViewType = cardViewType;
     }
 
     @Override
@@ -60,7 +60,7 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.MyView
         mContext = parent.getContext();
         PARENT_CLASS = parent.getClass().getSimpleName();
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.cardview, parent, false);
+                .inflate(R.layout.vacancy_item, parent, false);
 
         return new MyViewHolder(view);
     }
@@ -84,7 +84,7 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.MyView
             Timber.e(e);
         }
 
-        if (mPopupType == MENU_TYPE_FAVORITE) {
+        if (mCardViewType == TYPE_FAVORITE) {
             popupMenu.getMenuInflater().inflate(R.menu.card_menu_favorite, popupMenu.getMenu()); // for Favorite activity
         } else {
             popupMenu.getMenuInflater().inflate(R.menu.card_menu_tabview, popupMenu.getMenu()); // for Tabs, New, Recent activities
@@ -93,13 +93,13 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.MyView
         popupMenu.setOnMenuItemClickListener(view -> {
             switch (view.getItemId()) {
                 case R.id.popup_add_item:
-                    popupClicked(position, SAVE);
+                    popupClicked(position, MENU_SAVE);
                     break;
                 case R.id.popup_share_item:
-                   popupClicked(position, SHARE);
+                   popupClicked(position, MENU_SHARE);
                     break;
                 case R.id.popup_remove_item:
-                    popupClicked(position, REMOVE);
+                    popupClicked(position, MENU_REMOVE);
                     break;
             }
             return true;
@@ -108,7 +108,7 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.MyView
         holder.mMenuButton.setOnClickListener(view -> popupMenu.show());
 
         holder.mCardviewLayout.setOnClickListener( view -> {
-            if (view.getId() != R.id.popup) {
+            if (view.getId() != R.id.popup_menu) {
                 itemClicked(position);
             }
         });
@@ -123,20 +123,20 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.MyView
         TextView mTextView;
         TextView mDateTextView;
         ImageButton mMenuButton;
-        LinearLayout mCardviewLayout;
+        RelativeLayout mCardviewLayout;
 
         public MyViewHolder(final View itemView) {
             super(itemView);
-            mTextView = (TextView) itemView.findViewById(R.id.card_text_view);
+            mTextView = (TextView) itemView.findViewById(R.id.body_text_view);
             mDateTextView = (TextView) itemView.findViewById(R.id.card_date);
-            mMenuButton = (ImageButton) itemView.findViewById(R.id.popup);
-            mCardviewLayout = (LinearLayout) itemView.findViewById(R.id.cardview_layout);
+            mMenuButton = (ImageButton) itemView.findViewById(R.id.popup_menu);
+            mCardviewLayout = (RelativeLayout) itemView.findViewById(R.id.item_layout);
         }
     }
 
     public interface OnAdapterInteractionListener {
-        void onAdapterInteractionItemClicked(int position);
-        void onAdapterInteractionPopupMenuClicked(int position, @VacancyPopupMenuType int type);
+        void onAdapterInteractionItemClicked(VacancyModel vacancyClicked);
+        void onAdapterInteractionPopupMenuClicked(VacancyModel vacancyClicked, @VacancyPopupMenuType int type);
     }
 
     public void setOnAdapterInteractionListener(OnAdapterInteractionListener listener) {
@@ -147,14 +147,14 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.MyView
         if (mListener == null) {
             throw new ClassCastException(PARENT_CLASS
                     + " must implement " + OnAdapterInteractionListener.class);
-        } else mListener.onAdapterInteractionPopupMenuClicked(position, action);
+        } else mListener.onAdapterInteractionPopupMenuClicked(mDataSet.get(position), action);
     }
 
     private void itemClicked(int position) {
         if (mListener == null) {
             throw new ClassCastException(PARENT_CLASS
                     + " must implement " + OnAdapterInteractionListener.class);
-        } else mListener.onAdapterInteractionItemClicked(position);
+        } else mListener.onAdapterInteractionItemClicked(mDataSet.get(position));
     }
 
 }

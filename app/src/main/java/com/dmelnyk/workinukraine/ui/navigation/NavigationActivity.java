@@ -136,9 +136,11 @@ public class NavigationActivity extends AppCompatActivity implements
         }
         // TODO: remove string below after implementing TODOs above
 //        fragment = new Fragment();
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.container, fragment)
-                .commit();
+        if (fragment != null) {
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.container, fragment)
+                    .commit();
+        }
         navigator.closeMenu();
     }
 

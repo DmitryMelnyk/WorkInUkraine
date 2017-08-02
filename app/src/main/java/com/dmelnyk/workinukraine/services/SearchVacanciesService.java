@@ -1,6 +1,5 @@
 package com.dmelnyk.workinukraine.services;
 
-import android.app.AlarmManager;
 import android.app.IntentService;
 import android.content.Intent;
 import android.support.annotation.IntDef;
@@ -22,7 +21,9 @@ import com.dmelnyk.workinukraine.parsing.ParserWorkUa;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -62,15 +63,17 @@ public class SearchVacanciesService extends IntentService {
     private final static int WORKNEWINFO   = 3;
     private final static int WORKUA        = 4;
 
+    private Map<String, Integer> vacancyInfos;
+
     public SearchVacanciesService() {
         super(SearchVacanciesService.class.getName());
     }
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        AlarmManager alarmManager = (AlarmManager) getApplicationContext().getSystemService(ALARM_SERVICE);
-
         Timber.d("\nSearching vacancies started!");
+        vacancyInfos = new HashMap<>();
+
         long startTime = System.currentTimeMillis();
 
         DaggerDbComponent
@@ -88,6 +91,7 @@ public class SearchVacanciesService extends IntentService {
         repository.clearNewTable();
 
         ExecutorService pool = Executors.newCachedThreadPool();
+        // Creating parallel search tasks for each search request
         List<Future> futures = new ArrayList<>();
         for (RequestModel request : requests) {
             CallableSearchTask[] callables = new CallableSearchTask[5];
@@ -101,6 +105,7 @@ public class SearchVacanciesService extends IntentService {
         for (Future future : futures) {
             try {
                 List<VacancyModel> vacancies = (List<VacancyModel>) future.get();
+                addVacancyInfo(vacancies);
                 Timber.d(" Found vacancies: " + vacancies.size());
             } catch (Exception e) {
                 Timber.e(e);
@@ -109,8 +114,29 @@ public class SearchVacanciesService extends IntentService {
 
 //        repository.closeDb();
         sendBroadcastMessage(ACTION_FINISHED, null, -1);
+        updateRequestVacancyInfo();
+        repository.saveRecentVacancies();
         long endTime = System.currentTimeMillis();
         Timber.d("\nSearch completed at %d seconds", (endTime - startTime) / 1000);
+    }
+
+    private void updateRequestVacancyInfo() {
+        for (String request : vacancyInfos.keySet()) {
+            repository.updateRequestTable(request, vacancyInfos.get(request),
+                    System.currentTimeMillis());
+        }
+    }
+
+    private void addVacancyInfo(List<VacancyModel> vacancies) {
+        if (!vacancies.isEmpty()) {
+            String request = vacancies.get(0).request();
+            int count = vacancies.size();
+            if (vacancyInfos.get(request) != null) {
+                vacancyInfos.put(request, vacancyInfos.get(request) + count);
+            } else {
+                vacancyInfos.put(request, count);
+            }
+        }
     }
 
     private void sendBroadcastMessage(String action, String request, int vacanciesCount) {

@@ -5,6 +5,7 @@ import com.dmelnyk.workinukraine.data.RequestModel;
 import com.dmelnyk.workinukraine.ui.search.Contract.ISearchView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
@@ -29,9 +30,20 @@ public class SearchPresenter implements Contract.ISearchPresenter {
         if (view != null) {
             disposableRequests = interactor.getRequests()
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(requestsList ->
-                            view.updateData((ArrayList<RequestModel>) requestsList));
+                    .subscribe(requestsList -> {
+                        view.updateData((ArrayList<RequestModel>) requestsList);
+                        view.updateVacanciesCount(countAllVacancies(requestsList));
+                    }
+                            );
         }
+    }
+
+    private int countAllVacancies(List<RequestModel> requestsList) {
+        int allVacancies = 0;
+        for (RequestModel requestModel : requestsList) {
+            allVacancies += requestModel.vacanciesCount();
+        }
+        return allVacancies;
     }
 
     @Override
@@ -43,8 +55,7 @@ public class SearchPresenter implements Contract.ISearchPresenter {
     @Override
     public void addNewRequest(String request) {
         interactor.saveRequest(request).observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        () -> { },
+                .subscribe(() -> { },
                         throwable -> view.showErrorMessage());
     }
 

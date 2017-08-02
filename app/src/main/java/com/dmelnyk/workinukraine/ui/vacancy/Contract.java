@@ -1,8 +1,10 @@
 package com.dmelnyk.workinukraine.ui.vacancy;
 
 import com.dmelnyk.workinukraine.data.VacancyModel;
+import com.dmelnyk.workinukraine.ui.vacancy.core.VacancyCardViewAdapter;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by d264 on 7/28/17.
@@ -10,29 +12,31 @@ import java.util.List;
 
 public class Contract {
     public interface IVacancyView {
-        void onChangeData(List<VacancyModel> vacancies);
-
         void openVacancyInWeb(String url);
 
         void createShareIntent(VacancyModel vacancy);
 
-        void showResultingMessage(@CardViewAdapter.VacancyPopupMenuType int type);
+        void showResultingMessage(@VacancyCardViewAdapter.VacancyPopupMenuType int type);
 
         void showErrorMessage(String message);
 
         void displayLoadingProcess();
 
-        void displayFragment(String type, List<VacancyModel> vacanciesList);
-
         void hideLoadingProcess();
+
+        void displayTabFragment(Map<String, Map<String, List<VacancyModel>>> vacanciesMap);
+
+        void updateFavoriteTab(List<VacancyModel> vacancies);
     }
 
     public interface IVacancyPresenter {
-        void bindView(IVacancyView view, String request, String table);
+        void bindView(IVacancyView view, String request);
 
         void unbindView();
 
-        void onItemPopupMenuClicked(String request, VacancyModel vacancy,
-                                    @CardViewAdapter.VacancyPopupMenuType int type);
+        void onItemPopupMenuClicked(
+                VacancyModel vacancy, @VacancyCardViewAdapter.VacancyPopupMenuType int type);
+
+        void clear();
     }
 }

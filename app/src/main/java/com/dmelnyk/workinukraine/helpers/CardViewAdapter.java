@@ -114,7 +114,7 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.MyView
 
         cardviewLayout.setOnClickListener(
                 view -> {
-                    if (view.getId() != R.id.popup) {
+                    if (view.getId() != R.id.popup_menu) {
                         Intent webActivity = WebViewActivity
                                 .newInstance(context, job);
                         context.startActivity(webActivity);
@@ -158,9 +158,9 @@ public class CardViewAdapter extends RecyclerView.Adapter<CardViewAdapter.MyView
 
         public MyViewHolder(final View itemView) {
             super(itemView);
-            textView = (TextView) itemView.findViewById(R.id.card_text_view);
+            textView = (TextView) itemView.findViewById(R.id.body_text_view);
             dateView = (TextView) itemView.findViewById(R.id.card_date);
-            menuButton = (ImageButton) itemView.findViewById(R.id.popup);
+            menuButton = (ImageButton) itemView.findViewById(R.id.popup_menu);
             cardviewLayout = (LinearLayout) itemView.findViewById(R.id.cardview_layout);
         }
     }

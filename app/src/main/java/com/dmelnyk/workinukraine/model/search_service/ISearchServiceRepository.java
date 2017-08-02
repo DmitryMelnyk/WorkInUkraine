@@ -27,4 +27,18 @@ public interface ISearchServiceRepository {
      * Closes database
      */
     void closeDb();
+
+    /**
+     * Updates REQUEST table
+     * @param request
+     * @param integer
+     * @param updateTime
+     */
+    void updateRequestTable(String request, Integer integer, long updateTime);
+
+    /**
+     * Says to Repository that downloading tasks are finished to perform
+     * saving data to RECENT tables;
+     */
+    void saveRecentVacancies();
 }

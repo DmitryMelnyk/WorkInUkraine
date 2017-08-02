@@ -78,4 +78,25 @@
         <item>@drawable/ic_nav_exit</item>
     </array>
 
+    <string-array name="vacancy_tabfragment_tabs">
+        <item>hedhunters.ua</item>
+        <item>jobs.ua</item>
+        <item>rabota.ua</item>
+        <item>worknew.info</item>
+        <item>work.ua</item>
+    </string-array>
+
+    <string-array name="tab_titles">
+        <item>Все</item>
+        <item>Новые</item>
+        <item>Недавние</item>
+        <item>Избранные</item>
+    </string-array>
+
+    <string-array name="vacancy_titles">
+        <item>Найдено вакансий</item>
+        <item>Новые вакансии</item>
+        <item>Недавние вакансии</item>
+        <item>Избранные вакансии</item>
+    </string-array>
 </resources>

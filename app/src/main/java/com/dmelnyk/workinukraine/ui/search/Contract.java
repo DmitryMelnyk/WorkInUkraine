@@ -17,6 +17,8 @@ public class Contract {
 
         void updateData(ArrayList<RequestModel> data);
 
+        void updateVacanciesCount(int allVacanciesCount);
+
         void showErrorMessage();
     }
 

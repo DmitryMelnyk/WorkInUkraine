@@ -45,10 +45,11 @@ class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.MyViewHolder> {
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_request, parent, false);
-//                .inflate(R.layout.search_item_cardview2, parent, false);
 
         return new MyViewHolder(view);
     }
+
+
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, final int position) {
@@ -73,6 +74,7 @@ class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.MyViewHolder> {
     public int getItemCount() {
         return mRequestModels.size();
     }
+
 
     class MyViewHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.text_view_title)

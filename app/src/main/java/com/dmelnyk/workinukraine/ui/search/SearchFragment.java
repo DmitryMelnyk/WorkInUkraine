@@ -9,13 +9,13 @@ import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
-import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.dmelnyk.workinukraine.R;
@@ -28,7 +28,7 @@ import com.dmelnyk.workinukraine.ui.dialogs.downloading.DialogDownloading;
 import com.dmelnyk.workinukraine.ui.search.Contract.ISearchPresenter;
 import com.dmelnyk.workinukraine.ui.search.di.DaggerSearchComponent;
 import com.dmelnyk.workinukraine.ui.search.di.SearchModule;
-import com.dmelnyk.workinukraine.ui.vacancy.ScrollingActivity;
+import com.dmelnyk.workinukraine.ui.vacancy.VacancyActivity;
 
 import java.util.ArrayList;
 
@@ -66,15 +66,15 @@ public class SearchFragment extends Fragment implements
 
     @Inject
     ISearchPresenter presenter;
+    @BindView(R.id.vacancies_count_text_view)
+    TextView mVacanciesCountTextView;
 
     private OnFragmentInteractionListener mListener;
     private static String sItemClickedRequest = "";
-    private static boolean sIsDialogDownloadingOpen = false;
-    private static boolean sIsDialogRequestOpen = false;
 
     private DialogDownloading mDialogDownloading;
-    private DialogRequest mDialogRequest;
     private ArrayList<RequestModel> mRequestsList;
+    private SearchAdapter mAdapter;
 
     private final BroadcastReceiver mDownloadingBroadcastReceiver = new BroadcastReceiver() {
         @Override
@@ -86,13 +86,14 @@ public class SearchFragment extends Fragment implements
                 case SearchVacanciesService.ACTION_FINISHED:
                     mDialogDownloading.downloadingFinished();
                     Toast.makeText(context, "Download finished!", Toast.LENGTH_SHORT).show();
+                    presenter.bindView(SearchFragment.this);
                     break;
 
                 case SearchVacanciesService.ACTION_DOWNLOADING_IN_PROGRESS:
                     int vacanciesCount = intent.getIntExtra(
                             SearchVacanciesService.KEY_VACANCIES_COUNT, -1);
 
-                    Toast.makeText(context, request +vacanciesCount, Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(context, request + vacanciesCount, Toast.LENGTH_SHORT).show();
             }
         }
     };
@@ -105,6 +106,8 @@ public class SearchFragment extends Fragment implements
                 .searchModule(new SearchModule())
                 .build()
                 .inject(this);
+
+        mRequestsList = new ArrayList<>();
     }
 
     @Override
@@ -112,10 +115,17 @@ public class SearchFragment extends Fragment implements
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_search, container, false);
+
         unbinder = ButterKnife.bind(this, view);
+
+        mAdapter = new SearchAdapter(mRequestsList);
+        mAdapter.setAdapterListener(this);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        mRecyclerView.setAdapter(mAdapter);
 
         presenter.bindView(this);
 
+        // TODO: show updating dialog
         return view;
     }
 
@@ -144,22 +154,24 @@ public class SearchFragment extends Fragment implements
     }
 
     private void restoreDialogs() {
-        if (sIsDialogDownloadingOpen) {
-            mDialogDownloading = (DialogDownloading) getFragmentManager()
-                    .findFragmentByTag(TAG_DIALOG_DOWNLOADING);
-            // initialize callbackListener
+        mDialogDownloading = (DialogDownloading) getFragmentManager()
+                .findFragmentByTag(TAG_DIALOG_DOWNLOADING);
+        // initialize callbackListener
+        if (mDialogDownloading != null) {
             mDialogDownloading.setDialogDownloadingCallbackListener(this);
             mButtonAdd.postDelayed(() -> {
                 mDialogDownloading.downloadingFinished();
-                sIsDialogDownloadingOpen = false;
             }, 1000);
         }
 
-        if (sIsDialogRequestOpen) {
-            mDialogRequest = (DialogRequest) getFragmentManager()
-                    .findFragmentByTag(TAG_DIALOG_REQUEST);
-            // restore callback interface
-            mDialogRequest.setCallbackInterface(this);
+        mDialogDownloading = (DialogDownloading) getFragmentManager()
+                .findFragmentByTag(TAG_DIALOG_DOWNLOADING);
+        // initialize callbackListener
+        if (mDialogDownloading != null) {
+            mDialogDownloading.setDialogDownloadingCallbackListener(this);
+            mButtonAdd.postDelayed(() -> {
+                mDialogDownloading.downloadingFinished();
+            }, 1000);
         }
     }
 
@@ -212,14 +224,12 @@ public class SearchFragment extends Fragment implements
                 DialogRequest.getInstance(new Handler());
         dialog.setCallbackInterface(this);
         dialog.show(getFragmentManager(), TAG_DIALOG_REQUEST);
-        sIsDialogRequestOpen = true;
     }
 
     private void showDialogDownloading() {
         mDialogDownloading = DialogDownloading.newInstance();
         mDialogDownloading.setDialogDownloadingCallbackListener(this);
         mDialogDownloading.show(getFragmentManager(), TAG_DIALOG_DOWNLOADING);
-        sIsDialogDownloadingOpen = true;
     }
 
 
@@ -234,14 +244,14 @@ public class SearchFragment extends Fragment implements
     @Override
     public void updateData(ArrayList<RequestModel> data) {
         Timber.d(" updateData(ArrayList<RequestModel> data)");
-        mRequestsList = data;
+        mRequestsList.clear();
+        mRequestsList.addAll(data);
+        mAdapter.notifyDataSetChanged();
+    }
 
-        SearchAdapter adapter = new SearchAdapter(data);
-        adapter.setAdapterListener(this);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        mRecyclerView.addItemDecoration(new DividerItemDecoration(getActivity(),
-                DividerItemDecoration.VERTICAL));
-        mRecyclerView.setAdapter(adapter);
+    @Override
+    public void updateVacanciesCount(int allVacanciesCount) {
+        mVacanciesCountTextView.setText("" + allVacanciesCount);
     }
 
     @Override
@@ -251,7 +261,7 @@ public class SearchFragment extends Fragment implements
 
     @Override
     public void restoreSavedState(String time) {
-        // Todo:
+        // Todo: remove
     }
 
     // SearchAdapter.AdapterCallback for open DialogDelete
@@ -268,10 +278,8 @@ public class SearchFragment extends Fragment implements
     @Override
     public void onItemClicked(String itemRequestTitle) {
         Timber.d("SearchAdapter.AdapterCallback.onItemClicked. Item = " + itemRequestTitle);
-        //TODO: open ItemFragment
         sItemClickedRequest = itemRequestTitle;
-        Toast.makeText(getContext(), "item clicked: " + itemRequestTitle, Toast.LENGTH_SHORT).show();
-        Intent i = new Intent(getContext(), ScrollingActivity.class);
+        Intent i = new Intent(getContext(), VacancyActivity.class);
         i.setAction(itemRequestTitle);
         startActivity(i);
     }
@@ -284,7 +292,8 @@ public class SearchFragment extends Fragment implements
 
     @Override
     public void onDismissDialogRequest() {
-        sIsDialogRequestOpen = false;
+        // TODO remove this method
+//        sIsDialogRequestOpen = false;
     }
 
     // DialogRequestCallbackListener remove item
@@ -297,7 +306,9 @@ public class SearchFragment extends Fragment implements
     // DialogDownloadCallbackListener dismiss dialog
     @Override
     public void onDismissDialogDownloading() {
-        sIsDialogDownloadingOpen = false;
+        // TODO: remove this method
+//        sIsDialogDownloadingOpen = false;
+
     }
 
     public interface OnFragmentInteractionListener {

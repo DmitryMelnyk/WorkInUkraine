@@ -25,8 +25,11 @@ public class SearchServiceRepository implements ISearchServiceRepository {
     private static final String WHERE_REQUEST_EQUALS = " WHERE "
             + Tables.SearchSites.Columns.REQUEST + " = ";
 
+    private List<VacancyModel> recentVacancies;
+
     public SearchServiceRepository(BriteDatabase db) {
         this.db = db;
+        recentVacancies = new ArrayList<>();
     }
 
     @Override
@@ -51,17 +54,21 @@ public class SearchServiceRepository implements ISearchServiceRepository {
                 .mapToList(VacancyModel.MAPPER)
                 .subscribe(
                         oldVacancies -> {
-                            Log.e("!!!", "old vacancies = " + oldVacancies);
+//                            Log.e("!!!", "old vacancies = " + oldVacancies);
                             if (!oldVacancies.isEmpty()) {
                                 List<VacancyModel> newVacancies = extractNewVacancy(oldVacancies, list);
                                 // write new vacancies to Tables.SearchSites.NEW
-                                Log.e("!!!", "new vacancies = " + newVacancies);
+//                                Log.e("!!!", "new vacancies = " + newVacancies);
                                 if (!newVacancies.isEmpty()) {
                                     // write new vacancies to NEW and RECENT tables;
                                     writeVacanciesToDb(Tables.SearchSites.NEW, newVacancies);
                                     clearOldVacancies(Tables.SearchSites.RECENT, REQUEST);
                                     writeVacanciesToDb(Tables.SearchSites.RECENT, newVacancies);
                                 }
+                            } else {
+                                // no old vacancies means that it's first search
+                                // all vacancies are new
+                                recentVacancies.addAll(list);
                             }
                             // clear previous vacancies
                             clearOldVacancies(table, REQUEST);
@@ -70,6 +77,22 @@ public class SearchServiceRepository implements ISearchServiceRepository {
                         },
                         throwable -> Timber.e(throwable)
                 );
+    }
+
+    @Override
+    public void saveRecentVacancies() {
+        writeVacanciesToDb(Tables.SearchSites.RECENT, recentVacancies);
+    }
+
+    @Override
+    public void updateRequestTable(String request, Integer vacancyCount, long lastUpdateTime) {
+        Timber.d("\nUpdating request info. Request=%s, vacancyCount=%d, lastUpdateTime=%d",
+                request, vacancyCount, lastUpdateTime);
+
+        db.update(Tables.SearchRequest.TABLE,
+                DbItems.createRequestItem(request, vacancyCount, lastUpdateTime),
+                Tables.SearchRequest.Columns.REQUEST + " ='"
+                + request + "'");
     }
 
     private void clearOldVacancies(String table, String request) {

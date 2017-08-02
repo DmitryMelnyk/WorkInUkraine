@@ -39,11 +39,11 @@ public class ButtonTabBehavior extends CoordinatorLayout.Behavior<ButtonTabs> {
         appBarLayout.getGlobalVisibleRect(appRectangle);
 //        Log.d(TAG, "appBarLayout.getMinimumHeight = " + appRectangle.height());
 
-        if (appRectangle.height() <= child.getHeight() && child.getVisibility() == VISIBLE) {
+        if (appRectangle.height() <= child.getHeight() + 50 && child.getVisibility() == VISIBLE) {
             // If the anchor's bottom is below the seam, we'll animate our FAB out
             child.animHide();
 
-        } else if (appRectangle.height() >= child.getHeight() && child.getVisibility() == GONE){
+        } else if (appRectangle.height() >= child.getHeight() +50 && child.getVisibility() == GONE){
             // Else, we'll animate our FAB back in
             child.animShow();
         }

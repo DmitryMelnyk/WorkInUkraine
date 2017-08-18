@@ -2,9 +2,9 @@ package com.dmelnyk.workinukraine.di.module;
 
 import android.content.Context;
 
-import com.dmelnyk.workinukraine.helpers.ImageUtils;
-import com.dmelnyk.workinukraine.helpers.CityUtils;
-import com.dmelnyk.workinukraine.helpers.NetUtils;
+import com.dmelnyk.workinukraine.utils.ImageUtils;
+import com.dmelnyk.workinukraine.utils.CityUtils;
+import com.dmelnyk.workinukraine.utils.NetUtils;
 
 import dagger.Module;
 import dagger.Provides;

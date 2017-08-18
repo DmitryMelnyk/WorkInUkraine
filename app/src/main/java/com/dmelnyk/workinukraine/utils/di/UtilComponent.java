@@ -1,5 +1,6 @@
 package com.dmelnyk.workinukraine.di.component;
 
+import com.dmelnyk.workinukraine.application.ApplicationComponent;
 import com.dmelnyk.workinukraine.application.ApplicationScope;
 import com.dmelnyk.workinukraine.di.module.UtilModule;
 import com.dmelnyk.workinukraine.parsing.ParserHeadHunters;

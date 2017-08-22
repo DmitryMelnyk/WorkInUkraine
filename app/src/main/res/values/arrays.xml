@@ -86,9 +86,14 @@
         <item>work.ua</item>
     </string-array>
 
-    <string-array name="tab_titles">
+    <string-array name="tab_titles_with_new">
         <item>Все</item>
         <item>Новые</item>
+        <item>Избранные</item>
+    </string-array>
+
+    <string-array name="tab_titles_with_recent">
+        <item>Все</item>
         <item>Недавние</item>
         <item>Избранные</item>
     </string-array>
@@ -98,5 +103,37 @@
         <item>Новые вакансии</item>
         <item>Недавние вакансии</item>
         <item>Избранные вакансии</item>
+    </string-array>
+
+    <string-array name="cities">
+        <item>Житомир</item>
+        <item>Луганск</item>
+        <item>Ужгород</item>
+        <item>Черновцы</item>
+        <item>Луцк</item>
+        <item>Полтава</item>
+        <!--<item>Киев</item>-->
+        <item>Хмельницкий</item>
+        <item>Мариуполь</item>
+        <item>Одесса</item>
+        <item>Винница</item>
+        <item>Черкассы</item>
+        <item>Тернополь</item>
+        <item>Днепр (Днепропетровск)</item>
+        <item>Сумы</item>
+        <item>Кривой Рог</item>
+        <item>Львов</item>
+        <item>Ровно</item>
+        <item>Кропивницкий (Кировоград)</item>
+        <item>Николаев</item>
+        <item>Никополь</item>
+        <item>Харьков</item>
+        <item>Ивано-Франковск</item>
+        <item>Севастополь</item>
+        <item>Чернигов</item>
+        <item>Херсон</item>
+        <item>Запорожье</item>
+        <item>Донецк</item>
+        <item>Симферополь</item>
     </string-array>
 </resources>

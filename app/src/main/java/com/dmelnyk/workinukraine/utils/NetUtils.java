@@ -1,4 +1,4 @@
-package com.dmelnyk.workinukraine.helpers;
+package com.dmelnyk.workinukraine.utils;
 
 import android.content.Context;
 import android.net.ConnectivityManager;

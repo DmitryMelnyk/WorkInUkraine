@@ -1,8 +1,7 @@
-package com.dmelnyk.workinukraine.di.component;
+package com.dmelnyk.workinukraine.utils.di;
 
 import com.dmelnyk.workinukraine.application.ApplicationComponent;
 import com.dmelnyk.workinukraine.application.ApplicationScope;
-import com.dmelnyk.workinukraine.di.module.UtilModule;
 import com.dmelnyk.workinukraine.parsing.ParserHeadHunters;
 import com.dmelnyk.workinukraine.parsing.ParserJobsUa;
 import com.dmelnyk.workinukraine.parsing.ParserRabotaUa;

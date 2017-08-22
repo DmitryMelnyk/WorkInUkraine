@@ -62,6 +62,8 @@ public class ButtonTabs extends View {
     private boolean miSanimating = false;
 
     private int mGlobalAlpha = 255;
+    private Bitmap[][] icons;
+    private boolean mSizeIsInitialized;
 
     public ButtonTabs(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -120,13 +122,12 @@ public class ButtonTabs extends View {
         if (!mAnimationEnabled) return;
 
         ValueAnimator animator = new ValueAnimator().ofFloat(1f, 0);
-        animator.setDuration(500);
+        animator.setDuration(300);
         animator.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
                 super.onAnimationEnd(animation);
                 mAnimatedRadius = 0f;
-//                mAnimationEnabled = false;
             }
         });
 
@@ -202,31 +203,18 @@ public class ButtonTabs extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
+        if (!mSizeIsInitialized) initializeNewWidth();
 
         int itemCount = resource.length;
-        if (mHeight == DEFAULT_HEIGHT) {
-            mHeight = getLayoutParams().height;
-            mInitialHeight = mHeight;
-            mInitialWidth = mHeight * itemCount;
-        }
-        mWidth = mHeight * itemCount;
-        mRadius = mHeight / 2;
-
-        CoordinatorLayout.LayoutParams lp = (CoordinatorLayout.LayoutParams) getLayoutParams();
-        lp.width = (int) mWidth;
-        lp.setBehavior(new ButtonTabBehavior());
-        setLayoutParams(lp);
-
-        setBackground(mBackgroundDrawable);
         // Draw images
-        if (resource != null) {
+        if (icons != null) {
             for (int i = 0; i < itemCount; i++) {
                 Bitmap image;
                 float shift = i * 2 * mRadius;
                 boolean isSelected = mButtonsState.get(i);
                 // activated state
                 if (isSelected) {
-                    image = BitmapFactory.decodeResource(getResources(), resource[i][0]);
+                    image = icons[i][0];
                     if (mAnimatedRadius != 0f) {
                         canvas.drawCircle(shift + mRadius, mRadius, mAnimatedRadius, mCircleAnimationPaint);
                     } else {
@@ -234,13 +222,12 @@ public class ButtonTabs extends View {
                     }
                     // default state
                 } else {
-                    image = BitmapFactory.decodeResource(getResources(), resource[i][1]);
+                    image = icons[i][1];
                 }
-
-                Bitmap icon = scaleImage(image, mHeight, true);
-                canvas.drawBitmap(icon, shift, 0, mCircleLightPaint);
+                canvas.drawBitmap(image, shift, 0, mCircleLightPaint);
             }
         }
+
     }
 
     @Override
@@ -252,6 +239,51 @@ public class ButtonTabs extends View {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             setOutlineProvider(new ButtonTabOutline(w, h));
         }
+
+        // saving Bitmap to array icons[][]
+        int height = getHeight();
+        icons = new Bitmap[resource.length][2];
+        for (int i = 0; i < 2; i++) {
+            for (int j = 0; j < resource.length; j++) {
+                Bitmap image = BitmapFactory.decodeResource(getResources(), resource[j][i]);
+                Bitmap icon = scaleImage(image, height, true);
+                icons[j][i] = icon;
+            }
+        }
+
+//        // setting image size
+//        if (mHeight == DEFAULT_HEIGHT) {
+//            mHeight = getLayoutParams().height;
+//            mInitialHeight = mHeight;
+//            mInitialWidth = mHeight * resource.length;
+//        }
+//
+//        mWidth = mHeight * resource.length;
+//        mRadius = mHeight / 2;
+//
+//        CoordinatorLayout.LayoutParams lp = (CoordinatorLayout.LayoutParams) getLayoutParams();
+//        lp.width = (int) mWidth;
+//        lp.setBehavior(new ButtonTabBehavior());
+//        setLayoutParams(lp);
+
+        setBackground(mBackgroundDrawable);
+    }
+
+    private void initializeNewWidth() {
+        if (mHeight == DEFAULT_HEIGHT) {
+            mHeight = getLayoutParams().height;
+            mInitialHeight = mHeight;
+            mInitialWidth = mHeight * resource.length;
+        }
+
+        mWidth = mHeight * resource.length;
+        mRadius = mHeight / 2;
+
+        CoordinatorLayout.LayoutParams lp = (CoordinatorLayout.LayoutParams) getLayoutParams();
+        lp.width = (int) mWidth;
+        lp.setBehavior(new ButtonTabBehavior());
+        setLayoutParams(lp);
+        mSizeIsInitialized = true;
     }
 
     @Override
@@ -263,18 +295,22 @@ public class ButtonTabs extends View {
                 float tapX = event.getX();
                 int buttonPosition = (int) (tapX / mHeight);
 
-                for (int i = 0; i < mButtonsState.size(); i++) {
-                    if (i == buttonPosition) {
-                        mButtonsState.set(i, true);
-                        mCallback.tabSelected(i);
-                    } else {
-                        mButtonsState.set(i, false);
-                    }
-                }
+                setButtonSelected(buttonPosition);
                 onAnimate();
             }
         }
         return super.onTouchEvent(event);
+    }
+
+    private void setButtonSelected(int buttonPosition) {
+        for (int i = 0; i < mButtonsState.size(); i++) {
+            if (i == buttonPosition) {
+                mButtonsState.set(i, true);
+                mCallback.tabSelected(i);
+            } else {
+                mButtonsState.set(i, false);
+            }
+        }
     }
 
     private class TapListener extends GestureDetector.SimpleOnGestureListener {
@@ -302,6 +338,9 @@ public class ButtonTabs extends View {
         return Bitmap.createScaledBitmap(image, width, height, filter);
     }
 
+    public void selectTab(int selectedTab) {
+        setButtonSelected(selectedTab);
+    }
     /**
      * Class that uses ButtonTabs must implement this callback interface
      */

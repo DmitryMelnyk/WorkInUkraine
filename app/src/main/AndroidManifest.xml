@@ -14,7 +14,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".mvp.activity_splash.SplashActivity"
+            android:name=".ui.activity_splash.SplashActivity"
             android:noHistory="true"
             android:screenOrientation="portrait">
 
@@ -30,18 +30,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".mvp.activity_search.SearchActivity"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".mvp.activity_favorite_recent_new.BaseActivity"
-            android:launchMode="singleInstance" />
-        <activity android:name=".mvp.activity_webview.WebViewActivity" />
-        <activity
-            android:name=".mvp.activity_tabs.TabsActivity"
-            android:exported="true"
-            android:launchMode="singleInstance" />
-        <activity android:name=".mvp.activity_settings.SettingsActivity" />
 
         <receiver
             android:name=".services.WakeLockBroadcastReceiver"
@@ -61,8 +49,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.vacancy.MainActivity"
-            android:exported="true"></activity>
     </application>
 
 </manifest>

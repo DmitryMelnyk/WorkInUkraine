@@ -1,8 +1,11 @@
 package com.dmelnyk.workinukraine.model.search_service;
 
+import android.database.Cursor;
 import android.util.Log;
 
+import com.dmelnyk.workinukraine.data.VacancyContainer;
 import com.dmelnyk.workinukraine.data.VacancyModel;
+import com.dmelnyk.workinukraine.db.Db;
 import com.dmelnyk.workinukraine.db.DbItems;
 import com.dmelnyk.workinukraine.db.Tables;
 import com.squareup.sqlbrite2.BriteDatabase;
@@ -21,21 +24,11 @@ public class SearchServiceRepository implements ISearchServiceRepository {
     private final BriteDatabase db;
 
     private static final String SELECT_ALL_FROM = "SELECT * FROM ";
-    private static final String DELETE_FROM_TABLE = "DELETE FROM ";
-    private static final String WHERE_REQUEST_EQUALS = " WHERE "
+    private static final String WHERE_ = " WHERE "
             + Tables.SearchSites.Columns.REQUEST + " = ";
-
-    private List<VacancyModel> recentVacancies;
 
     public SearchServiceRepository(BriteDatabase db) {
         this.db = db;
-        recentVacancies = new ArrayList<>();
-    }
-
-    @Override
-    public void clearNewTable() {
-        Timber.d("\nClearing NEW table");
-        db.execute(DELETE_FROM_TABLE + Tables.SearchSites.NEW);
     }
 
     @Override
@@ -45,43 +38,72 @@ public class SearchServiceRepository implements ISearchServiceRepository {
     }
 
     @Override
-    public void saveVacancies(String table, List<VacancyModel> list) {
-        Timber.d("\nSaving vacancies into table %s", table);
-        if (list.isEmpty() || list == null) return;
+    public void saveVacancies(List<VacancyContainer> allVacancies) {
+        Log.e("!!!", "map=" + allVacancies);
+        // don't do any changes if no vacancies has found
+        if (allVacancies.isEmpty()) return;
 
-        String REQUEST = list.get(0).request();
-        db.createQuery(table, SELECT_ALL_FROM + table + WHERE_REQUEST_EQUALS + "'" + REQUEST + "'")
-                .mapToList(VacancyModel.MAPPER)
-                .subscribe(
-                        oldVacancies -> {
-//                            Log.e("!!!", "old vacancies = " + oldVacancies);
-                            if (!oldVacancies.isEmpty()) {
-                                List<VacancyModel> newVacancies = extractNewVacancy(oldVacancies, list);
-                                // write new vacancies to Tables.SearchSites.NEW
-//                                Log.e("!!!", "new vacancies = " + newVacancies);
-                                if (!newVacancies.isEmpty()) {
-                                    // write new vacancies to NEW and RECENT tables;
-                                    writeVacanciesToDb(Tables.SearchSites.NEW, newVacancies);
-                                    clearOldVacancies(Tables.SearchSites.RECENT, REQUEST);
-                                    writeVacanciesToDb(Tables.SearchSites.RECENT, newVacancies);
-                                }
-                            } else {
-                                // no old vacancies means that it's first search
-                                // all vacancies are new
-                                recentVacancies.addAll(list);
-                            }
-                            // clear previous vacancies
-                            clearOldVacancies(table, REQUEST);
-                            // write all vacancies to corresponding table
-                            writeVacanciesToDb(table, list);
-                        },
-                        throwable -> Timber.e(throwable)
-                );
+        String table = Tables.SearchSites.TABLE_ALL_SITES;
+        String request = allVacancies.get(0).getVacancy().request();
+
+        Cursor cursor = db.query(SELECT_ALL_FROM + table + WHERE_ + "'" + request + "'");
+        List<VacancyContainer> oldVacancies = new ArrayList<>();
+
+        if (cursor.moveToFirst()) {
+            do {
+                String type = Db.getString(cursor, Tables.SearchSites.Columns.TYPE);
+                String title = Db.getString(cursor, Tables.SearchSites.Columns.TITLE);
+                String date = Db.getString(cursor, Tables.SearchSites.Columns.DATE);
+                String url = Db.getString(cursor, Tables.SearchSites.Columns.URL);
+
+                VacancyModel vacancy = VacancyModel.builder()
+                        .setRequest(request)
+                        .setTitle(title)
+                        .setDate(date)
+                        .setUrl(url)
+                        .build();
+
+                 oldVacancies.add(VacancyContainer.create(vacancy, type));
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+
+        Log.e("!!!", "old vacancies = " + oldVacancies);
+        if (!oldVacancies.isEmpty()) {
+            List<VacancyContainer> newVacancies = extractNewVacancy(oldVacancies, allVacancies);
+            Log.e("!!!", "new vacancies = " + newVacancies);
+            if (!newVacancies.isEmpty()) {
+                // clearing new and recent vacancies
+                clearVacanciesFromFavNewRecTable(Tables.SearchSites.TYPE_RECENT, request);
+                clearVacanciesFromFavNewRecTable(Tables.SearchSites.TYPE_NEW, request);
+                // write new vacancies with TYPE_NEW and TYPE_RECENT;
+                writeVacanciesToFavNewRecTable(Tables.SearchSites.TYPE_RECENT, newVacancies);
+                writeVacanciesToFavNewRecTable(Tables.SearchSites.TYPE_NEW, newVacancies);
+            }
+        } else {
+            // all vacancies are new
+            Log.e("!!!", "Writing vacancies RECENT and NEW " + allVacancies.size());
+            writeVacanciesToFavNewRecTable(Tables.SearchSites.TYPE_RECENT, allVacancies);
+            writeVacanciesToFavNewRecTable(Tables.SearchSites.TYPE_NEW, allVacancies);
+        }
+
+        // clear previous vacancies
+        clearVacanciesFromAllTable(request);
+        // write all vacancies to corresponding table
+        writeVacanciesToAllTable(allVacancies);
     }
 
-    @Override
-    public void saveRecentVacancies() {
-        writeVacanciesToDb(Tables.SearchSites.RECENT, recentVacancies);
+    private void clearVacanciesFromAllTable(String request) {
+        Timber.d("\nclearing all vacancies with request=%s", request);
+        db.delete(Tables.SearchSites.TABLE_ALL_SITES, Tables.SearchSites.Columns.REQUEST
+                + " = '" + request + "'");
+    }
+
+    private void clearVacanciesFromFavNewRecTable(String type, String request) {
+        Timber.d("\nclearing Recent vacancies with request=%s", request);
+        db.delete(Tables.SearchSites.TABLE_FAV_NEW_REC, Tables.SearchSites.Columns.REQUEST + "= '" + request
+                + "' AND " + Tables.SearchSites.Columns.TYPE + "= '" + type + "'");
     }
 
     @Override
@@ -89,32 +111,44 @@ public class SearchServiceRepository implements ISearchServiceRepository {
         Timber.d("\nUpdating request info. Request=%s, vacancyCount=%d, lastUpdateTime=%d",
                 request, vacancyCount, lastUpdateTime);
 
-        db.update(Tables.SearchRequest.TABLE,
+        db.update(Tables.SearchRequest.TABLE_REQUEST,
                 DbItems.createRequestItem(request, vacancyCount, lastUpdateTime),
                 Tables.SearchRequest.Columns.REQUEST + " ='"
                 + request + "'");
     }
 
-    private void clearOldVacancies(String table, String request) {
-        Timber.d("\nclearing table=%s with request=%s", table, request);
-        db.delete(table, Tables.SearchSites.Columns.REQUEST + "= '" + request + "'");
-    }
-
-    private List<VacancyModel> extractNewVacancy(List<VacancyModel> oldVacancies,
-                                                      List<VacancyModel> newVacancies) {
-        List<VacancyModel> copy = new ArrayList<>(newVacancies);
-        for (VacancyModel oldVacancy : oldVacancies) {
+    private List<VacancyContainer> extractNewVacancy(List<VacancyContainer> oldVacancies,
+                                                      List<VacancyContainer> newVacancies) {
+        List<VacancyContainer> copy = new ArrayList<>(newVacancies);
+        for (VacancyContainer oldVacancy : oldVacancies) {
             copy.remove(oldVacancy);
         }
+
         return copy;
     }
 
-    private void writeVacanciesToDb(String table, List<VacancyModel> list) {
-        Timber.d("\nWriting into table=%s %d vacancies", table, list.size());
+    private void writeVacanciesToAllTable(List<VacancyContainer> list) {
+        Timber.d("\nWriting into All table %d vacancies", list.size());
         BriteDatabase.Transaction transaction = db.newTransaction();
         try {
-            for (VacancyModel vacancy : list) {
-                db.insert(table, DbItems.createVacancyItem(vacancy));
+            for (VacancyContainer vacancyContainer : list) {
+                db.insert(Tables.SearchSites.TABLE_ALL_SITES,
+                        DbItems.createVacancyContainerAllItem(vacancyContainer));
+            }
+            transaction.markSuccessful();
+        } finally {
+            transaction.end();
+        }
+    }
+
+    private void writeVacanciesToFavNewRecTable(String type, List<VacancyContainer> newVacancies) {
+        Timber.d("\nWriting into FavNewRec table= %d vacancies", newVacancies.size());
+        Log.e("111", "writing vacancies to " + type);
+        BriteDatabase.Transaction transaction = db.newTransaction();
+        try {
+            for (VacancyContainer vacancyContainer : newVacancies) {
+                db.insert(Tables.SearchSites.TABLE_FAV_NEW_REC,
+                        DbItems.createVacancyContainerFavNewRecItem(type, vacancyContainer));
             }
             transaction.markSuccessful();
         } finally {

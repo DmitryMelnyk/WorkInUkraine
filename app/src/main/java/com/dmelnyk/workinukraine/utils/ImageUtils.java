@@ -1,4 +1,4 @@
-package com.dmelnyk.workinukraine.helpers;
+package com.dmelnyk.workinukraine.utils;
 
 import com.dmelnyk.workinukraine.R;
 
@@ -16,10 +16,10 @@ public class ImageUtils {
     }
 
     public ImageUtils() {
-        titleImage.put("hh.ua", R.drawable.bg_hhua);
-        titleImage.put("jobs.ua", R.drawable.bg_jobsua);
-        titleImage.put("rabota.ua", R.drawable.bg_rabotaua);
-        titleImage.put("worknew.info", R.drawable.bg_worknewinfo);
-        titleImage.put("work.ua", R.drawable.bg_workua);
+//        titleImage.put("hh.ua", R.drawable.bg_hhua);
+//        titleImage.put("jobs.ua", R.drawable.bg_jobsua);
+//        titleImage.put("rabota.ua", R.drawable.bg_rabotaua);
+//        titleImage.put("worknew.info", R.drawable.bg_worknewinfo);
+//        titleImage.put("work.ua", R.drawable.bg_workua);
     }
 }

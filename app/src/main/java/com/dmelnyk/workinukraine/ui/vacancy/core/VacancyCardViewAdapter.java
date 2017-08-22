@@ -2,11 +2,14 @@ package com.dmelnyk.workinukraine.ui.vacancy.core;
 
 import android.content.Context;
 import android.support.annotation.IntDef;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -28,11 +31,13 @@ import timber.log.Timber;
 
 public class VacancyCardViewAdapter extends RecyclerView.Adapter<VacancyCardViewAdapter.MyViewHolder> {
 
-    public static final int TYPE_TABVIEW = 1;
+    public static final int TYPE_STANDARD = 0;
+    public static final int TYPE_NEW = 1;
     public static final int TYPE_FAVORITE = 2;
-    public static final int MENU_SAVE = 3;
-    public static final int MENU_REMOVE = 4;
-    public static final int MENU_SHARE = 5;
+    public static final int TYPE_RECENT = 3;
+    public static final int MENU_SAVE = 4;
+    public static final int MENU_REMOVE = 5;
+    public static final int MENU_SHARE = 6;
 
     private static String PARENT_CLASS = "";
     private OnAdapterInteractionListener mListener;
@@ -43,7 +48,7 @@ public class VacancyCardViewAdapter extends RecyclerView.Adapter<VacancyCardView
     public @interface VacancyPopupMenuType { }
 
     @Retention(RetentionPolicy.SOURCE)
-    @IntDef(value = { TYPE_FAVORITE, TYPE_TABVIEW })
+    @IntDef(value = { TYPE_FAVORITE, TYPE_NEW, TYPE_RECENT, TYPE_STANDARD })
     public @interface CardViewType {}
 
     private ArrayList<VacancyModel> mDataSet;
@@ -71,6 +76,13 @@ public class VacancyCardViewAdapter extends RecyclerView.Adapter<VacancyCardView
         holder.mTextView.setText(vacancyModel.title());
         holder.mDateTextView.setText(vacancyModel.date());
 
+        int color;
+        if (position % 2 == 1) {
+            color = ContextCompat.getColor(mContext, R.color.white_middle);
+        } else {
+            color = ContextCompat.getColor(mContext, R.color.white);
+        }
+        holder.mCardviewLayout.setBackgroundColor(color);
         // creating PopupMenu:
         final PopupMenu popupMenu = new PopupMenu(mContext, holder.mMenuButton);
 
@@ -84,9 +96,20 @@ public class VacancyCardViewAdapter extends RecyclerView.Adapter<VacancyCardView
             Timber.e(e);
         }
 
+        if (mCardViewType == TYPE_STANDARD) {
+            popupMenu.getMenuInflater().inflate(R.menu.card_menu_tabview, popupMenu.getMenu()); // for Standard, Tabs, New, Recent activities
+        }
         if (mCardViewType == TYPE_FAVORITE) {
+            holder.mIconImageView.setImageDrawable(ContextCompat.getDrawable(
+                    mContext, R.mipmap.ic_tab_favorite_dark));
             popupMenu.getMenuInflater().inflate(R.menu.card_menu_favorite, popupMenu.getMenu()); // for Favorite activity
-        } else {
+        } else if (mCardViewType == TYPE_NEW){
+            holder.mIconImageView.setImageDrawable(ContextCompat.getDrawable(
+                    mContext, R.mipmap.ic_tab_new_dark));
+            popupMenu.getMenuInflater().inflate(R.menu.card_menu_tabview, popupMenu.getMenu()); // for Standard, Tabs, New, Recent activities
+        } else if (mCardViewType == TYPE_RECENT) {
+            holder.mIconImageView.setImageDrawable(ContextCompat.getDrawable(
+                    mContext, R.mipmap.ic_tab_recent_dark));
             popupMenu.getMenuInflater().inflate(R.menu.card_menu_tabview, popupMenu.getMenu()); // for Tabs, New, Recent activities
         }
 
@@ -122,13 +145,15 @@ public class VacancyCardViewAdapter extends RecyclerView.Adapter<VacancyCardView
     public class MyViewHolder extends RecyclerView.ViewHolder {
         TextView mTextView;
         TextView mDateTextView;
+        ImageView mIconImageView;
         ImageButton mMenuButton;
         RelativeLayout mCardviewLayout;
 
         public MyViewHolder(final View itemView) {
             super(itemView);
             mTextView = (TextView) itemView.findViewById(R.id.body_text_view);
-            mDateTextView = (TextView) itemView.findViewById(R.id.card_date);
+            mDateTextView = (TextView) itemView.findViewById(R.id.date_text_view);
+            mIconImageView = (ImageView) itemView.findViewById(R.id.vacancy_icon);
             mMenuButton = (ImageButton) itemView.findViewById(R.id.popup_menu);
             mCardviewLayout = (RelativeLayout) itemView.findViewById(R.id.item_layout);
         }

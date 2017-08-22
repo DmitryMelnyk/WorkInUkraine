@@ -1,4 +1,4 @@
-package com.dmelnyk.workinukraine.helpers;
+package com.dmelnyk.workinukraine.utils;
 
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;

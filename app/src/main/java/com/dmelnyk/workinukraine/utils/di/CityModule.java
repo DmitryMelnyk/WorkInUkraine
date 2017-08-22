@@ -1,4 +1,4 @@
-package com.dmelnyk.workinukraine.di.module;
+package com.dmelnyk.workinukraine.utils.di;
 
 import android.content.Context;
 

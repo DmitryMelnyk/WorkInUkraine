@@ -3,9 +3,6 @@ package com.dmelnyk.workinukraine.application;
 import android.app.Application;
 import android.content.Context;
 
-import com.dmelnyk.workinukraine.di.component.ApplicationComponent;
-import com.dmelnyk.workinukraine.di.component.DaggerApplicationComponent;
-
 import timber.log.Timber;
 
 /**

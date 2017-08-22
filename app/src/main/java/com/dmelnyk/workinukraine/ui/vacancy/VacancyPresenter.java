@@ -6,6 +6,7 @@ import com.dmelnyk.workinukraine.business.vacancy.IVacancyInteractor;
 import com.dmelnyk.workinukraine.data.VacancyModel;
 import com.dmelnyk.workinukraine.ui.vacancy.core.VacancyCardViewAdapter;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +14,7 @@ import java.util.Map;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
+import timber.log.Timber;
 
 /**
  * Created by d264 on 7/28/17.
@@ -28,46 +30,66 @@ public class VacancyPresenter implements Contract.IVacancyPresenter {
     private Disposable disposableFavorites;
 
     private static Map<String, Map<String, List<VacancyModel>>> sDataCache;
-    private String request;
+    private static String sError;
+    private static boolean sIsDisplayed;
+    private static String mRequest;
+    private static List<VacancyModel> sFavoriteVacanciesCache;
 
-    public VacancyPresenter(IVacancyInteractor interactor) {
+    public VacancyPresenter(IVacancyInteractor interactor, String request) {
         this.interactor = interactor;
-        sDataCache = new HashMap<>();
+        this.mRequest = request;
+        // Don't get data from db if we have saved data
+        if (sDataCache == null) {
+            getAllVacancies(request);
+        }
     }
 
     @Override
     public void bindView(Contract.IVacancyView view, String request) {
         this.view = view;
-        this.request =request;
-        if (view == null) return;
 
-        // restoring cached data
-//        if (!sDataCache.isEmpty()) {
-//            restoreData(sDataCache);
-//        }
+        // Don't do anything after orientation changes return
+        Log.e("!!!", "sIsDislpayed=" + sIsDisplayed);
+        if (sIsDisplayed) return;
 
-        getAllVacancies(view, request);
+        // If request to database has been already received get the result in cache
+        if (sDataCache != null) {
+            // successful result
+            Log.e("!!!", "VacancyPresenter. sDataCache=" + sDataCache);
+            view.displayTabFragment(sDataCache);
+        } else if (sError != null) {
+            // error result
+            view.showErrorMessage(sError);
+            sError = null;
+        }
     }
 
-    private void restoreData(Map<String, Map<String, List<VacancyModel>>> mDataCache) {
-        view.displayTabFragment(mDataCache);
-    }
-
-    private void getAllVacancies(Contract.IVacancyView view, String request) {
+    private void getAllVacancies(String request) {
         interactor.getAllVacancies(request)
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(vacanciesMap -> {
                     Log.e("!!! VacancyPr. All = ", vacanciesMap.toString());
-                    sDataCache = vacanciesMap;
-                    view.displayTabFragment(vacanciesMap);
+                    sDataCache = new HashMap<>(vacanciesMap);
+                    if (view != null) {
+                        sIsDisplayed = true;
+                        view.displayTabFragment(vacanciesMap);
+                    }
                 }, throwable -> {
-                    view.showErrorMessage(throwable.getMessage());
+                    Timber.e(throwable.getStackTrace().toString());
+                    if (view != null) {
+                        view.showErrorMessage(throwable.getMessage());
+                    } else {
+                        // if view hasn't been initialized yet save error msg to cache
+                        sError = throwable.getMessage();
+                    }
                 });
     }
 
     @Override
     public void unbindView() {
         view = null;
+        sIsDisplayed = false;
         if (saveOrRemoveDisposable != null) {
             saveOrRemoveDisposable.dispose();
         }
@@ -85,8 +107,8 @@ public class VacancyPresenter implements Contract.IVacancyPresenter {
             saveOrRemoveDisposable = interactor.onPopupMenuClicked(vacancy, type)
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(() -> {
-                        view.showResultingMessage(type);
                         updateFavorite();
+                        view.showResultingMessage(type);
                     }, throwable -> {
                         view.showErrorMessage(throwable.getMessage());
                     });
@@ -94,15 +116,22 @@ public class VacancyPresenter implements Contract.IVacancyPresenter {
     }
 
     private void updateFavorite() {
-        disposableFavorites = interactor.getVacancies(request, IVacancyInteractor.VACANCIES_FAVORITE)
+        disposableFavorites = interactor.getFavoriteVacancies(mRequest, IVacancyInteractor.VACANCIES_FAVORITE)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(vacancies -> view.updateFavoriteTab(vacancies),
-                        throwable -> view.showErrorMessage(throwable.getMessage()));
+                .subscribe(vacancies -> {
+                    view.updateFavoriteTab(vacancies);
+                    // TODO: save type
+//                    view.showResultingMessage(type);
+                    sFavoriteVacanciesCache = new ArrayList<VacancyModel>(vacancies);
+                }, throwable -> view.showErrorMessage(throwable.getMessage()));
     }
 
     @Override
     public void clear() {
         sDataCache = null;
+        sFavoriteVacanciesCache = null;
+        sError = null;
+        sIsDisplayed = false;
     }
 }

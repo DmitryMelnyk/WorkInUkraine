@@ -1,8 +1,7 @@
-package com.dmelnyk.workinukraine.mvp.dialog_request;
+package com.dmelnyk.workinukraine.ui.dialogs.request;
 
 import android.graphics.PorterDuff;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.content.ContextCompat;
@@ -19,10 +18,13 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.dmelnyk.workinukraine.R;
-import com.dmelnyk.workinukraine.helpers.BaseDialog;
+import com.dmelnyk.workinukraine.utils.BaseDialog;
 import com.dmelnyk.workinukraine.utils.MyBounceInterpolator;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -36,32 +38,30 @@ import butterknife.OnClick;
 public class DialogRequest extends BaseDialog implements
         Contract.View
 {
-    private static final String TAG = "GT.DialogDownloading";
     public static String REQUEST;
     private DialogRequestCallbackListener mCallbackInterface;
 
-    @BindView(R.id.closeButton)
-    ImageView closeButton;
-    @BindView(R.id.textInputLayout)
-    TextInputLayout textInputLayout;
-    @BindView(R.id.search_dialog_keywords)
-    AppCompatEditText searchRequest;
-    @BindView(R.id.search_dialog_spinner)
-    Spinner spinner;
-    @BindView(R.id.button_ok)
-    Button button;
+    @BindView(R.id.closeButton) ImageView closeButton;
+    @BindView(R.id.textInputLayout) TextInputLayout textInputLayout;
+    @BindView(R.id.search_dialog_keywords) AppCompatEditText searchRequest;
+    @BindView(R.id.search_dialog_spinner) Spinner spinner;
+    @BindView(R.id.button_ok) Button button;
 
     private View dialogView;
-    private static Handler mainActivityHandler;
     private static DialogRequest dialog;
     private DialogRequestPresenter presenter;
 
-    public static DialogRequest getInstance(Handler handler) {
-        mainActivityHandler = handler;
+    public static DialogRequest getInstance() {
         if (null == dialog) {
             dialog = new DialogRequest();
         }
         return dialog;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setRetainInstance(true);
     }
 
     @Override
@@ -77,7 +77,8 @@ public class DialogRequest extends BaseDialog implements
         ButterKnife.bind(this, dialogView);
 
         initializePresenter();
-        presenter.onTakeView(this);
+        configSpinner();
+        presenter.bindView(this);
 
         return dialogView;
     }
@@ -85,7 +86,7 @@ public class DialogRequest extends BaseDialog implements
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        presenter.onTakeView(null);
+        presenter.bindView(null);
         presenter = null;
     }
 
@@ -96,7 +97,7 @@ public class DialogRequest extends BaseDialog implements
 
     private void initializePresenter() {
         if (presenter == null) {
-            presenter = new DialogRequestPresenter(getActivity(), mainActivityHandler);
+            presenter = new DialogRequestPresenter();
         }
     }
 
@@ -116,7 +117,13 @@ public class DialogRequest extends BaseDialog implements
     }
 
     @Override
-    public void configSpinner(ArrayList<String> items) {
+    public void configSpinner() {
+        String[] cities = (getResources().getStringArray(R.array.cities));
+        Arrays.sort(cities);
+        List<String> items = new ArrayList<>();
+        items.add("Киев");
+        Collections.addAll(items, cities);
+
         spinner.setSelection(0);
         spinner.getBackground().setColorFilter(
                 ContextCompat.getColor(getContext(), R.color.violet_lighter),
@@ -130,7 +137,6 @@ public class DialogRequest extends BaseDialog implements
 
     @Override
     public void dismiss() {
-        mCallbackInterface.onDismissDialogRequest();
         super.dismiss();
     }
 
@@ -159,10 +165,9 @@ public class DialogRequest extends BaseDialog implements
 
     public interface DialogRequestCallbackListener {
         void onTakeRequest(String request);
-        void onDismissDialogRequest();
     }
 
-    public void setCallbackInterface(DialogRequestCallbackListener callbackInterface) {
+    public void setCallback(DialogRequestCallbackListener callbackInterface) {
         mCallbackInterface = callbackInterface;
     }
 }

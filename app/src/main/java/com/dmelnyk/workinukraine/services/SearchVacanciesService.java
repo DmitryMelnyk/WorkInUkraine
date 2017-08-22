@@ -4,11 +4,9 @@ import android.app.IntentService;
 import android.content.Intent;
 import android.support.annotation.IntDef;
 import android.support.v4.content.LocalBroadcastManager;
-import android.util.Log;
 
 import com.dmelnyk.workinukraine.data.RequestModel;
-import com.dmelnyk.workinukraine.data.VacancyModel;
-import com.dmelnyk.workinukraine.db.Tables;
+import com.dmelnyk.workinukraine.data.VacancyContainer;
 import com.dmelnyk.workinukraine.db.di.DaggerDbComponent;
 import com.dmelnyk.workinukraine.db.di.DbModule;
 import com.dmelnyk.workinukraine.model.search_service.ISearchServiceRepository;
@@ -55,7 +53,7 @@ public class SearchVacanciesService extends IntentService {
     public static final String KEY_MODE = "mode";
     public static final String KEY_REQUESTS = "requests";
     public static final String KEY_REQUEST = "downloading request";
-    public static final String KEY_VACANCIES_COUNT = "vacancies count";
+    public static final String KEY_TOTAL_VACANCIES_COUNT = "vacancies count";
 
     private final static int HEADHUNTERSUA = 0;
     private final static int JOBSUA        = 1;
@@ -88,8 +86,6 @@ public class SearchVacanciesService extends IntentService {
         if (mode == MODE_SEARCH) {
         }
 
-        repository.clearNewTable();
-
         ExecutorService pool = Executors.newCachedThreadPool();
         // Creating parallel search tasks for each search request
         List<Future> futures = new ArrayList<>();
@@ -104,7 +100,7 @@ public class SearchVacanciesService extends IntentService {
 
         for (Future future : futures) {
             try {
-                List<VacancyModel> vacancies = (List<VacancyModel>) future.get();
+                List<VacancyContainer> vacancies = (List<VacancyContainer>) future.get();
                 addVacancyInfo(vacancies);
                 Timber.d(" Found vacancies: " + vacancies.size());
             } catch (Exception e) {
@@ -112,10 +108,9 @@ public class SearchVacanciesService extends IntentService {
             }
         }
 
-//        repository.closeDb();
-        sendBroadcastMessage(ACTION_FINISHED, null, -1);
+        sendBroadcastMessage(ACTION_FINISHED, null /* request no need */, totalVacanciesCount);
+        // changes data in db Table that contains request's info
         updateRequestVacancyInfo();
-        repository.saveRecentVacancies();
         long endTime = System.currentTimeMillis();
         Timber.d("\nSearch completed at %d seconds", (endTime - startTime) / 1000);
     }
@@ -127,9 +122,9 @@ public class SearchVacanciesService extends IntentService {
         }
     }
 
-    private void addVacancyInfo(List<VacancyModel> vacancies) {
+    private void addVacancyInfo(List<VacancyContainer> vacancies) {
         if (!vacancies.isEmpty()) {
-            String request = vacancies.get(0).request();
+            String request = vacancies.get(0).getVacancy().request();
             int count = vacancies.size();
             if (vacancyInfos.get(request) != null) {
                 vacancyInfos.put(request, vacancyInfos.get(request) + count);
@@ -146,19 +141,20 @@ public class SearchVacanciesService extends IntentService {
         switch (action) {
             case ACTION_FINISHED:
                 broadcast = new Intent(ACTION_FINISHED);
+                broadcast.putExtra(KEY_TOTAL_VACANCIES_COUNT, vacanciesCount);
                 LocalBroadcastManager.getInstance(this).sendBroadcast(broadcast);
                 break;
 
             case ACTION_DOWNLOADING_IN_PROGRESS:
                 broadcast = new Intent(ACTION_DOWNLOADING_IN_PROGRESS);
                 broadcast.putExtra(KEY_REQUEST, request);
-                broadcast.putExtra(KEY_VACANCIES_COUNT, vacanciesCount);
+                broadcast.putExtra(KEY_TOTAL_VACANCIES_COUNT, vacanciesCount);
                 LocalBroadcastManager.getInstance(this).sendBroadcast(broadcast);
                 break;
         }
     }
 
-    private class CallableSearchTask implements Callable<List<VacancyModel>> {
+    private class CallableSearchTask implements Callable<List<VacancyContainer>> {
         private final int code;
         private final String request;
 
@@ -168,9 +164,9 @@ public class SearchVacanciesService extends IntentService {
         }
 
         @Override
-        public List<VacancyModel> call() throws Exception {
+        public List<VacancyContainer> call() throws Exception {
             Timber.d(" Starting task " + code);
-            List<VacancyModel> list = new ArrayList<>();
+            List<VacancyContainer> list = new ArrayList<>();
 
             switch (code) {
                 case HEADHUNTERSUA:
@@ -190,10 +186,36 @@ public class SearchVacanciesService extends IntentService {
                     break;
             }
 
-            repository.saveVacancies(Tables.SearchSites.SITES[code], list);
+//            repository.saveVacancies(Tables.SearchSites.TYPE_SITES[code], list);
+            saveData(request, list);
             sendBroadcastMessage(ACTION_DOWNLOADING_IN_PROGRESS, request, list.size());
 
             return list;
+        }
+    }
+
+    private volatile int totalVacanciesCount = 0;
+    private volatile Map<String, Integer> count = new HashMap<>();
+    private volatile Map<String, List<VacancyContainer>> data = new HashMap<>();
+
+    private void saveData(String request, List<VacancyContainer> list) {
+        totalVacanciesCount += list.size();
+
+        if (count.containsKey(request)) {
+            count.put(request, count.get(request) + 1);
+        } else {
+            count.put(request, 1);
+        }
+
+        if (!data.containsKey(request)) {
+            List<VacancyContainer> vacancyList = new ArrayList<>();
+            data.put(request, vacancyList);
+        }
+
+        data.get(request).addAll(list);
+
+        if (count.get(request) == 5) {
+            repository.saveVacancies(data.get(request));
         }
     }
 }

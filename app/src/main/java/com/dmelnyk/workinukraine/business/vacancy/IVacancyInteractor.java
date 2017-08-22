@@ -20,8 +20,8 @@ import io.reactivex.Observable;
 public interface IVacancyInteractor {
 
     String VACANCIES_ALL = "all";
-    String VACANCIES_FAVORITE = "FAVORITE";
-    String VACANCIES_RECENT = "RECENT";
+    String VACANCIES_FAVORITE = "TYPE_FAVORITE";
+    String VACANCIES_RECENT = "TYPE_RECENT";
     String VACANCIES_NEW = "FRESH";
     String VACANCIES_SITE_HH = "HEADHUNTERSUA";
     String VACANCIES_SITE_JU = "JOBSUA";
@@ -45,12 +45,12 @@ public interface IVacancyInteractor {
      * @param table Table where to get data
      * @return Observable List of vacancies
      */
-    Observable<List<VacancyModel>> getVacancies(String request, String table);
+    Observable<List<VacancyModel>> getFavoriteVacancies(String request, String table);
 
     /**
      * Removes or saves to favorite vacancy
      * @param vacancy Vacancy that should be treated
-     * @param operation Type of operation that should be done (save/remove to FAVORITE table)
+     * @param operation Type of operation that should be done (save/remove to TYPE_FAVORITE table)
      * @return Completable? the result of operation.
      */
     Completable onPopupMenuClicked(VacancyModel vacancy,

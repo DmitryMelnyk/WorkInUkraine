@@ -3,8 +3,5 @@
     <string name="msg_item_saved_to_favorite">Васансия добавлена в список избранных!</string>
     <string name="msg_item_removed_from_favorite">Вакансия удалена из списка избранных!</string>
 
-    <string name="tabs.tabfragment.tab1">Log</string>
-    <string name="tabs_tabfragment_tab2">General</string>
-    <string name="tabs_tabfragment_tab3">Docs</string>
-    <string name="tabs_tabfragment_tab4">DVIR</string>
+    <string name="text_view_tab_is_empty">Вы пока еще не добавили ни одной вакансии в список избранных!</string>
 </resources>

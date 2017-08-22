@@ -1,4 +1,4 @@
-package com.dmelnyk.workinukraine.mvp.dialog_request;
+package com.dmelnyk.workinukraine.ui.dialogs.request;
 
 import java.util.ArrayList;
 
@@ -11,7 +11,7 @@ public class Contract {
     interface View {
         void showErrorMessage();
 
-        void configSpinner(ArrayList<String> items);
+        void configSpinner();
 
         void dialogDismiss();
     }
@@ -19,7 +19,9 @@ public class Contract {
     interface Presenter {
         void onButtonClicked(String request, String textRequest);
 
-        void onTakeView(DialogRequest dialog);
+        void bindView(DialogRequest dialog);
+
+        void unbindView();
     }
 
     // Model - is one class for all: JobPool

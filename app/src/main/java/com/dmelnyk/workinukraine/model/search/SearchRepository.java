@@ -19,7 +19,7 @@ import timber.log.Timber;
 
 public class SearchRepository implements ISearchRepository {
 
-    private static final String REQUEST_TABLE = Tables.SearchRequest.TABLE;
+    private static final String REQUEST_TABLE = Tables.SearchRequest.TABLE_REQUEST;
     private final BriteDatabase bd;
 
     public SearchRepository(BriteDatabase bd) {
@@ -36,12 +36,8 @@ public class SearchRepository implements ISearchRepository {
     @Override
     public void removeDataFromTables(String request) {
         Timber.d("\nRemoving data with request=%s from all tables", request);
-        for (String table : Tables.SearchSites.SITES) {
-            bd.delete(table, Tables.SearchSites.Columns.REQUEST + " = '" + request +"'");
-        }
-        bd.delete(Tables.SearchSites.NEW, Tables.SearchSites.Columns.REQUEST + " = '" + request +"'");
-        bd.delete(Tables.SearchSites.FAVORITE, Tables.SearchSites.Columns.REQUEST + " = '" + request +"'");
-        bd.delete(Tables.SearchSites.RECENT, Tables.SearchSites.Columns.REQUEST + " = '" + request +"'");
+        bd.delete(Tables.SearchSites.TABLE_ALL_SITES, Tables.SearchSites.Columns.REQUEST + " = '" + request +"'");
+        bd.delete(Tables.SearchSites.TABLE_FAV_NEW_REC, Tables.SearchSites.Columns.REQUEST + " = '" + request +"'");
     }
 
     @Override

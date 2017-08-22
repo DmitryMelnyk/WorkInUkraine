@@ -5,10 +5,12 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.dmelnyk.workinukraine.application.WorkInUaApplication;
+import com.dmelnyk.workinukraine.data.VacancyContainer;
 import com.dmelnyk.workinukraine.data.VacancyModel;
-import com.dmelnyk.workinukraine.di.component.DaggerUtilComponent;
-import com.dmelnyk.workinukraine.helpers.CityUtils;
-import com.dmelnyk.workinukraine.helpers.NetUtils;
+import com.dmelnyk.workinukraine.db.Tables;
+import com.dmelnyk.workinukraine.utils.CityUtils;
+import com.dmelnyk.workinukraine.utils.NetUtils;
+import com.dmelnyk.workinukraine.utils.di.DaggerUtilComponent;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -47,13 +49,13 @@ public class ParserRabotaUa {
      * @return list of VacancyModule's or empty ArrayList
      */
     @NonNull
-    public ArrayList<VacancyModel> getJobs(String request) {
+    public ArrayList<VacancyContainer> getJobs(String request) {
         String jobRequest = request.split(" / ")[0];
         String city = request.split(" / ")[1];
 
         Log.d(TAG, "started getJobs(). City = " + city + " request = " + jobRequest);
 
-        ArrayList<VacancyModel> vacancies = new ArrayList<>();
+        ArrayList<VacancyContainer> vacancies = new ArrayList<>();
 
         String cityId = cities.getCityId(CityUtils.SITE.RABOTAUA, city);
         String correctedRequest = netUtils.replaceSpacesWithPlus(jobRequest);
@@ -83,7 +85,7 @@ public class ParserRabotaUa {
                         .setTitle(title)
                         .setUrl(url)
                         .build();
-                vacancies.add(vacancyModel);
+                vacancies.add(VacancyContainer.create(vacancyModel, Tables.SearchSites.TYPE_SITES[2]));
             }
         }
 

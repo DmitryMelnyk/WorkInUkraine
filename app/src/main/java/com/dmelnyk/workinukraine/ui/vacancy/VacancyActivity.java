@@ -5,10 +5,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,8 +21,12 @@ import com.dmelnyk.workinukraine.ui.vacancy.core.SitesTabFragment;
 import com.dmelnyk.workinukraine.ui.vacancy.core.VacancyCardViewAdapter;
 import com.dmelnyk.workinukraine.ui.vacancy.core.ScreenSlidePagerAdapter;
 import com.dmelnyk.workinukraine.ui.vacancy.di.DaggerVacancyComponent;
+import com.dmelnyk.workinukraine.ui.vacancy.di.VacancyModule;
 import com.dmelnyk.workinukraine.utils.ButtonTabs;
+import com.dmelnyk.workinukraine.utils.CustomViewPager;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -39,16 +43,18 @@ public class VacancyActivity extends AppCompatActivity implements
         SitesTabFragment.OnFragmentInteractionListener,
         Contract.IVacancyView {
 
+    private static final String KEY_CURRENT_POSITION = "current_position";
     @Inject
     Contract.IVacancyPresenter presenter;
 
     @BindView(R.id.title_text_view) TextView mTitleTextView;
     @BindView(R.id.vacancies_count_text_view) TextView mTitleVacanciesCountTextView;
-    @BindView(R.id.pager) ViewPager mViewPager;
+    @BindView(R.id.pager) CustomViewPager mViewPager;
     private ScreenSlidePagerAdapter mSlideAdapter;
     private String mRequest;
     private int[] mTabVacancyCount;
     private String[] mTabTitles;
+    private Map<String, Map<String, List<VacancyModel>>> mAllVacancies;
 
     @OnClick(R.id.back_image_view)
     public void onViewClicked() {
@@ -56,8 +62,10 @@ public class VacancyActivity extends AppCompatActivity implements
         onBackPressed();
     }
 
-    private void initializeDependency() {
-        DaggerVacancyComponent.builder().dbModule(new DbModule(getApplicationContext()))
+    private void initializeDependency(String request) {
+        DaggerVacancyComponent.builder()
+                .dbModule(new DbModule(getApplicationContext()))
+                .vacancyModule(new VacancyModule(request))
                 .build().inject(this);
     }
 
@@ -67,11 +75,9 @@ public class VacancyActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_scrolling);
         ButterKnife.bind(this);
 
-        initializeDependency();
-
-        initializeViews();
-
         mRequest = getIntent().getAction();
+        initializeDependency(mRequest);
+        initializeViews();
         Log.e("!!!", "request = " + mRequest);
     }
 
@@ -84,33 +90,10 @@ public class VacancyActivity extends AppCompatActivity implements
     private void initializeViews() {
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
 
-        int[][] resource = new int[4][2];
-        resource[0][0] = R.mipmap.ic_tab_vacancy_light;
-        resource[1][0] = R.mipmap.ic_tab_new_light;
-        resource[2][0] = R.mipmap.ic_tab_recent_light;
-        resource[3][0] = R.mipmap.ic_tab_favorite_light;
-
-        resource[0][1] = R.mipmap.ic_tab_vacancy_dark;
-        resource[1][1] = R.mipmap.ic_tab_new_dark;
-        resource[2][1] = R.mipmap.ic_tab_recent_dark;
-        resource[3][1] = R.mipmap.ic_tab_favorite_dark;
-
-        ButtonTabs tabs = (ButtonTabs) findViewById(R.id.button_tubs);
-        tabs.setData(resource);
-        tabs.setOnTabClickListener(tabClicked -> {
-            mViewPager.setCurrentItem(tabClicked);
-            updateTitleView(tabClicked);
-        });
-
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(view ->
                 Snackbar.make(fab.getRootView(), "Replace with your own action", Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show());
-
-        // Disabling swiping
-        mViewPager.setOnTouchListener((view, event) -> true);
-
-
     }
 
     private void updateTitleView(int tabPosition) {
@@ -143,6 +126,22 @@ public class VacancyActivity extends AppCompatActivity implements
     }
 
     @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(KEY_CURRENT_POSITION, mViewPager.getCurrentItem());
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        // restoring ButtonTab position
+        if (savedInstanceState != null && mTabTitles != null) {
+            int currentPosition = savedInstanceState.getInt(KEY_CURRENT_POSITION);
+            updateTitleView(currentPosition);
+        }
+    }
+
+    @Override
     public void onFragmentInteractionItemClicked(VacancyModel vacancy) {
         Toast.makeText(this, "Vacancy that should be opened = " + vacancy, Toast.LENGTH_SHORT).show();
     }
@@ -150,8 +149,8 @@ public class VacancyActivity extends AppCompatActivity implements
     @Override
     public void onFragmentInteractionPopupMenuClicked(VacancyModel vacancy,
                                                       @VacancyCardViewAdapter.VacancyPopupMenuType int type) {
-        Toast.makeText(this, "PopupMenu clicked = " + vacancy + ", " + type, Toast.LENGTH_SHORT).show();
         presenter.onItemPopupMenuClicked(vacancy, type);
+        Timber.d("TAG", "popup menu clicked");
     }
 
     @Override
@@ -185,6 +184,7 @@ public class VacancyActivity extends AppCompatActivity implements
     public void showErrorMessage(String message) {
         Timber.e("error msg = %s", message);
         Log.e("!!!", message);
+        message = getString(R.string.errors_db_favorite_vacancy_already_exists);
         Toast.makeText(this, message, Toast.LENGTH_LONG).show();
     }
 
@@ -201,34 +201,87 @@ public class VacancyActivity extends AppCompatActivity implements
     @Override
     public void displayTabFragment(
             Map<String, Map<String, List<VacancyModel>>> vacanciesMap) {
+        mAllVacancies = new HashMap<>(vacanciesMap);
+        mTabVacancyCount = new int[3];
 
-        mTabTitles = getResources().getStringArray(R.array.tab_titles);
-        mTabVacancyCount = new int[4];
         int siteTabsCount = 0;
+        // Counts all vacancies
         for (Map.Entry<String, List<VacancyModel>> vacancyList :
-                vacanciesMap.get(IVacancyInteractor.DATA_TAB_SITES).entrySet()) {
+                mAllVacancies.get(IVacancyInteractor.DATA_TAB_SITES).entrySet()) {
             siteTabsCount += vacancyList.getValue().size();
         }
+
         mTabVacancyCount[0] = siteTabsCount;
 
-        mTabVacancyCount[1] = vacanciesMap.get(IVacancyInteractor.DATA_OTHER_TABS)
-                .get(IVacancyInteractor.VACANCIES_NEW).size();
+        List<VacancyModel> newVacanciesList = mAllVacancies.get(IVacancyInteractor.DATA_OTHER_TABS)
+                .get(IVacancyInteractor.VACANCIES_NEW);
 
-        mTabVacancyCount[2] = vacanciesMap.get(IVacancyInteractor.DATA_OTHER_TABS)
-                .get(IVacancyInteractor.VACANCIES_RECENT).size();
+        // Display NEW or RECENT tab
+        if (newVacanciesList != null && newVacanciesList.size() != 0) {
+            mTabTitles = getResources().getStringArray(R.array.tab_titles_with_new);
+            mTabVacancyCount[1] = newVacanciesList.size();
+            initializeButtonTans(true);
+        } else {
+            mTabTitles = getResources().getStringArray(R.array.tab_titles_with_recent);
+            mTabVacancyCount[1] = mAllVacancies.get(IVacancyInteractor.DATA_OTHER_TABS)
+                    .get(IVacancyInteractor.VACANCIES_RECENT).size();
+            initializeButtonTans(false);
+        }
 
-        mTabVacancyCount[3] = vacanciesMap.get(IVacancyInteractor.DATA_OTHER_TABS)
+        mTabVacancyCount[2] = mAllVacancies.get(IVacancyInteractor.DATA_OTHER_TABS)
                 .get(IVacancyInteractor.VACANCIES_FAVORITE).size();
 
-
-        mSlideAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager(),
-                mTabTitles, vacanciesMap);
+        mSlideAdapter = new ScreenSlidePagerAdapter(
+                getSupportFragmentManager(), mTabTitles, mAllVacancies);
         mViewPager.setAdapter(mSlideAdapter);
-        updateTitleView(0);
+
+        // show NEW tab if there are new vacancies
+        if (newVacanciesList.size() != 0) {
+            updateTitleView(1);
+            mViewPager.setCurrentItem(1);
+        } else {
+            updateTitleView(0);
+        }
+    }
+
+    public void initializeButtonTans(boolean withNewVacanciesTab) {
+        int[][] resource = new int[3][2];
+        resource[0][0] = R.mipmap.ic_tab_vacancy_light;
+        resource[0][1] = R.mipmap.ic_tab_vacancy_dark;
+
+        if (withNewVacanciesTab) {
+            resource[1][0] = R.mipmap.ic_tab_new_light;
+            resource[1][1] = R.mipmap.ic_tab_new_dark;
+        } else {
+            resource[1][0] = R.mipmap.ic_tab_recent_light;
+            resource[1][1] = R.mipmap.ic_tab_recent_dark;
+        }
+
+        resource[2][0] = R.mipmap.ic_tab_favorite_light;
+        resource[2][1] = R.mipmap.ic_tab_favorite_dark;
+
+        ButtonTabs buttonTabs = (ButtonTabs) findViewById(R.id.button_tubs);
+        buttonTabs.setData(resource);
+        buttonTabs.setVisibility(View.VISIBLE);
+        buttonTabs.setOnTabClickListener(tabClicked -> {
+            mViewPager.setCurrentItem(tabClicked);
+            updateTitleView(tabClicked);
+        });
+
+        if (withNewVacanciesTab) {
+            // selecting NEW tab position
+            buttonTabs.selectTab(1);
+        }
     }
 
     @Override
     public void updateFavoriteTab(List<VacancyModel> vacancies) {
-        mSlideAdapter.updateFavoriteTab(vacancies);
+        // updating data in adapters
+        mSlideAdapter.updateFavoriteData(vacancies);
+        // updating title manually if current tab is FAVORITE;
+        mTabVacancyCount[2] = vacancies.size();
+        if (mViewPager.getCurrentItem() == 2) {
+            updateTitleView(2);
+        }
     }
 }

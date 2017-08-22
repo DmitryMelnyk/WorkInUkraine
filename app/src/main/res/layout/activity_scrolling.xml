@@ -11,15 +11,13 @@
         android:id="@+id/app_bar"
         android:layout_width="match_parent"
         android:layout_height="160dp"
-        android:elevation="4dp"
-        android:translationZ="6dp"
         >
 
         <android.support.design.widget.CollapsingToolbarLayout
             android:id="@+id/toolbar_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/kiev_bg2"
+            android:background="@drawable/kiev_bg3"
             app:titleEnabled="true"
             app:contentScrim="?attr/colorPrimary"
             app:layout_scrollFlags="scroll|exitUntilCollapsed"
@@ -93,58 +91,60 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:src="@mipmap/search_fragment_back_arrow" />
-
-                    <!--<TextView-->
-                        <!--android:id="@+id/text_view_balance"-->
-                        <!--android:layout_width="wrap_content"-->
-                        <!--android:layout_height="wrap_content"-->
-                        <!--android:layout_centerHorizontal="true"-->
-                        <!--android:layout_centerVertical="true"-->
-                        <!--android:layout_marginRight="3dp"-->
-                        <!--android:text="Искать вакансии"-->
-                        <!--android:textSize="20sp"-->
-                        <!--android:textColor="@android:color/white"-->
-                        <!--/>-->
-
-                    <!--<ImageView-->
-                        <!--android:id="@+id/addImageView"-->
-                        <!--android:layout_alignParentRight="true"-->
-                        <!--android:layout_width="wrap_content"-->
-                        <!--android:layout_height="wrap_content"-->
-                        <!--android:src="@mipmap/search_fragment_add" />-->
                 </RelativeLayout>
             </android.support.v7.widget.Toolbar>
 
         </android.support.design.widget.CollapsingToolbarLayout>
     </android.support.design.widget.AppBarLayout>
 
-    <android.support.v4.view.ViewPager
+    <com.dmelnyk.workinukraine.utils.CustomViewPager
         android:id="@+id/pager"
-        android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="20dp"
+        android:layout_width="match_parent"
+        android:layout_marginTop="10dp"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
-        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+    <!--<LinearLayout-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:paddingBottom="45dp"-->
+        <!--app:layout_anchor="@id/app_bar"-->
+        <!--app:layout_anchorGravity="end|bottom"-->
+        <!--&gt;-->
+        <!--<android.support.design.widget.FloatingActionButton-->
+            <!--android:id="@+id/fab"-->
+            <!--android:layout_width="45dp"-->
+            <!--android:layout_height="45dp"-->
+            <!--android:layout_marginBottom="45dp"-->
+            <!--android:layout_marginRight="20dp"-->
+            <!--app:fabSize="normal"-->
+
+            <!--app:srcCompat="@drawable/search_item_last_update" />-->
+    <!--</LinearLayout>-->
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
         android:layout_width="45dp"
         android:layout_height="45dp"
-        android:layout_margin="@dimen/fab_margin"
+        android:layout_marginBottom="45dp"
+        android:layout_marginRight="20dp"
         app:fabSize="normal"
         app:layout_anchor="@id/app_bar"
-        app:layout_anchorGravity="bottom|end"
-        app:srcCompat="@android:drawable/ic_search_category_default" />
+        app:layout_anchorGravity="bottom|right|end"
+        app:srcCompat="@drawable/search_item_last_update" />
 
     <com.dmelnyk.workinukraine.utils.ButtonTabs
         android:id="@+id/button_tubs"
-        android:layout_width="wrap_content"
+        android:layout_width="135dp"
         android:layout_height="45dp"
         android:elevation="10dp"
-        android:layout_margin="20dp"
-        app:backgroundColor="@color/violet_light"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="25dp"
+        android:padding="5dp"
+        android:visibility="gone"
         app:animation="true"
+        app:backgroundColor="@color/violet_light"
         app:layout_anchor="@id/app_bar"
-        app:layout_anchorGravity="bottom|start"
-        />
+        app:layout_anchorGravity="start|left|bottom"/>
+
 </android.support.design.widget.CoordinatorLayout>

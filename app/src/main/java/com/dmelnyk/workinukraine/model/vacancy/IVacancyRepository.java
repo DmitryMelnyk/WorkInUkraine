@@ -15,10 +15,10 @@ import io.reactivex.Observable;
 public interface IVacancyRepository {
 
 
-    Observable<List<VacancyModel>> getVacancies(String request, String type);
+    Observable<List<VacancyModel>> getFavoriteVacancies(String request, String type);
 
     /**
-     * Removes vacancy from FAVORITE table
+     * Removes vacancy from TYPE_FAVORITE table
      * @param vacancy The item that should be removed
      * @return
      */

@@ -12,7 +12,7 @@ public class DbOpenHelper extends SQLiteOpenHelper {
     private static final int VERSION = 1;
 
     private static final String CREATE_SEARCH_REQUEST = ""
-            + "CREATE TABLE " + Tables.SearchRequest.TABLE + "("
+            + "CREATE TABLE " + Tables.SearchRequest.TABLE_REQUEST + "("
             + Tables.SearchRequest.Columns.REQUEST + " TEXT NOT NULL PRIMARY KEY, "
             + Tables.SearchRequest.Columns.VACANCIES + " INTEGER NOT NULL, "
             + Tables.SearchRequest.Columns.UPDATED + " INTEGER NOT NULL)";
@@ -23,22 +23,21 @@ public class DbOpenHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
+        // creates table that contains request
         db.execSQL(CREATE_SEARCH_REQUEST);
 
-        for (String table : Tables.SearchSites.SITES) {
-            db.execSQL(createTableSql(table));
-        }
+        // creates table that contains all vacancies
+        db.execSQL(createTableSql(Tables.SearchSites.TABLE_ALL_SITES));
 
-        db.execSQL(createTableSql(Tables.SearchSites.FAVORITE));
-        db.execSQL(createTableSql(Tables.SearchSites.NEW));
-        db.execSQL(createTableSql(Tables.SearchSites.RECENT));
+        // creates table that contains TYPE_NEW, TYPE_RECENT, TYPE_FAVORITE vacancies
+        db.execSQL(createTableSql(Tables.SearchSites.TABLE_FAV_NEW_REC));
     }
 
     private String createTableSql(String table) {
-        return ""
-                + "CREATE TABLE " + table + "("
+        return "CREATE TABLE " + table + "("
                 + "_id INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + Tables.SearchSites.Columns.REQUEST + " TEXT NOT NULL, "
+                + Tables.SearchSites.Columns.TYPE + " TEXT NOT NULL, "
                 + Tables.SearchSites.Columns.TITLE + " TEXT NOT NULL, "
                 + Tables.SearchSites.Columns.DATE + " TEXT, "
                 + Tables.SearchSites.Columns.URL + " TEXT NOT NULL);";

@@ -1,27 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
     >
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:alpha="0.3"
-        android:background="@color/violet_hard"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        />
 
     <RelativeLayout
         android:id="@+id/item_layout"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="5dp"
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools">
+        >
 
         <ImageView
             android:id="@+id/vacancy_icon"
@@ -56,7 +47,7 @@
             tools:ignore="MissingPrefix"/>
 
         <TextView
-            android:id="@+id/card_date"
+            android:id="@+id/date_text_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginRight="10dp"

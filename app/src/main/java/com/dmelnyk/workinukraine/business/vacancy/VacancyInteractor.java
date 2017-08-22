@@ -29,11 +29,9 @@ public class VacancyInteractor implements IVacancyInteractor {
     }
 
     @Override
-    public Observable<List<VacancyModel>> getVacancies(String request, @VacancyResource String table) {
-        return repository.getVacancies(request, table);
+    public Observable<List<VacancyModel>> getFavoriteVacancies(String request, @VacancyResource String table) {
+        return repository.getFavoriteVacancies(request, table);
     }
-
-    // TODO getAllVacancies
 
     @Override
     public Completable onPopupMenuClicked(VacancyModel vacancy,

@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -21,7 +22,7 @@ import android.widget.Toast;
 import com.dmelnyk.workinukraine.R;
 import com.dmelnyk.workinukraine.data.RequestModel;
 import com.dmelnyk.workinukraine.db.di.DbModule;
-import com.dmelnyk.workinukraine.mvp.dialog_request.DialogRequest;
+import com.dmelnyk.workinukraine.ui.dialogs.request.DialogRequest;
 import com.dmelnyk.workinukraine.services.SearchVacanciesService;
 import com.dmelnyk.workinukraine.ui.dialogs.delete.DialogDelete;
 import com.dmelnyk.workinukraine.ui.dialogs.downloading.DialogDownloading;
@@ -54,27 +55,32 @@ public class SearchFragment extends Fragment implements
         DialogDelete.DialogDeleteCallbackListener,
         DialogDownloading.DialogDownloadCallbackListener {
 
-    private static final String TAG_DIALOG_DOWNLOADING = "downloading dialog";
-    private static final String TAG_DIALOG_REQUEST = "request dialog";
+    private static final String TAG_DIALOG_DOWNLOADING = "downloading_dialog";
+    private static final String TAG_DIALOG_REQUEST = "request_dialog";
+    private static final String TAG_DIALOG_DELETE = "delete_dialog";
 
     @BindView(R.id.backImageView) ImageView mBackImageView;
     @BindView(R.id.addImageView) ImageView mAddImageView;
     @BindView((R.id.recyclerView)) RecyclerView mRecyclerView;
     @BindView(R.id.buttonAdd) ImageView mButtonAdd;
     @BindView(R.id.buttonSearch) ImageView mButtonSearch;
+    @BindView(R.id.vacancies_count_text_view) TextView mVacanciesCountTextView;
     Unbinder unbinder;
 
     @Inject
     ISearchPresenter presenter;
-    @BindView(R.id.vacancies_count_text_view)
-    TextView mVacanciesCountTextView;
 
     private OnFragmentInteractionListener mListener;
     private static String sItemClickedRequest = "";
 
+    private DialogDelete mDialogDelete;
     private DialogDownloading mDialogDownloading;
+    private DialogRequest mDialogRequest;
     private ArrayList<RequestModel> mRequestsList;
     private SearchAdapter mAdapter;
+
+    private static int sTotalVacanciesCount = 0;
+    private static boolean sDownloadingIsFinished;
 
     private final BroadcastReceiver mDownloadingBroadcastReceiver = new BroadcastReceiver() {
         @Override
@@ -84,16 +90,17 @@ public class SearchFragment extends Fragment implements
             String request = intent.getStringExtra(SearchVacanciesService.KEY_REQUEST);
             switch (intent.getAction()) {
                 case SearchVacanciesService.ACTION_FINISHED:
-                    mDialogDownloading.downloadingFinished();
+                    sTotalVacanciesCount = intent.getIntExtra(SearchVacanciesService.KEY_TOTAL_VACANCIES_COUNT, -1);
+                    sDownloadingIsFinished = true;
+                    mDialogDownloading.downloadingFinished(sTotalVacanciesCount);
                     Toast.makeText(context, "Download finished!", Toast.LENGTH_SHORT).show();
                     presenter.bindView(SearchFragment.this);
                     break;
 
                 case SearchVacanciesService.ACTION_DOWNLOADING_IN_PROGRESS:
-                    int vacanciesCount = intent.getIntExtra(
-                            SearchVacanciesService.KEY_VACANCIES_COUNT, -1);
-
-//                    Toast.makeText(context, request + vacanciesCount, Toast.LENGTH_SHORT).show();
+//                    sTotalVacanciesCount += intent.getIntExtra(
+//                            SearchVacanciesService.KEY_TOTAL_VACANCIES_COUNT, -1);
+//                    Toast.makeText(context, request + sTotalVacanciesCount, Toast.LENGTH_SHORT).show();
             }
         }
     };
@@ -154,24 +161,33 @@ public class SearchFragment extends Fragment implements
     }
 
     private void restoreDialogs() {
-        mDialogDownloading = (DialogDownloading) getFragmentManager()
-                .findFragmentByTag(TAG_DIALOG_DOWNLOADING);
-        // initialize callbackListener
-        if (mDialogDownloading != null) {
-            mDialogDownloading.setDialogDownloadingCallbackListener(this);
-            mButtonAdd.postDelayed(() -> {
-                mDialogDownloading.downloadingFinished();
-            }, 1000);
+        // restoring DeleteDialog if needed
+        mDialogDelete = (DialogDelete) getFragmentManager()
+                .findFragmentByTag(TAG_DIALOG_DELETE);
+        if (mDialogDelete != null) {
+            mDialogDelete.setCallback(this);
         }
 
+        // restoring DownloadingDialog if needed
         mDialogDownloading = (DialogDownloading) getFragmentManager()
                 .findFragmentByTag(TAG_DIALOG_DOWNLOADING);
-        // initialize callbackListener
         if (mDialogDownloading != null) {
-            mDialogDownloading.setDialogDownloadingCallbackListener(this);
-            mButtonAdd.postDelayed(() -> {
-                mDialogDownloading.downloadingFinished();
-            }, 1000);
+            if (sDownloadingIsFinished) {
+                // removing previous dialog
+                FragmentTransaction ft = getFragmentManager().beginTransaction();
+                ft.remove(mDialogDownloading);
+                mDialogDownloading = DialogDownloading.newInstance(false, sTotalVacanciesCount);
+                mDialogDownloading.show(ft, TAG_DIALOG_DOWNLOADING);
+                // create new dialog
+            }
+            mDialogDownloading.setCallback(this);
+        }
+
+        // restoring RequestDialog if needed
+        mDialogRequest = (DialogRequest) getFragmentManager()
+                .findFragmentByTag(TAG_DIALOG_REQUEST);
+        if (mDialogRequest != null) {
+            mDialogRequest.setCallback(this);
         }
     }
 
@@ -220,15 +236,14 @@ public class SearchFragment extends Fragment implements
     }
 
     private void showDialogRequest() {
-        DialogRequest dialog =
-                DialogRequest.getInstance(new Handler());
-        dialog.setCallbackInterface(this);
-        dialog.show(getFragmentManager(), TAG_DIALOG_REQUEST);
+        mDialogRequest = DialogRequest.getInstance();
+        mDialogRequest.setCallback(this);
+        mDialogRequest.show(getFragmentManager(), TAG_DIALOG_REQUEST);
     }
 
     private void showDialogDownloading() {
-        mDialogDownloading = DialogDownloading.newInstance();
-        mDialogDownloading.setDialogDownloadingCallbackListener(this);
+        mDialogDownloading = DialogDownloading.newInstance(true, 0);
+        mDialogDownloading.setCallback(this);
         mDialogDownloading.show(getFragmentManager(), TAG_DIALOG_DOWNLOADING);
     }
 
@@ -269,9 +284,9 @@ public class SearchFragment extends Fragment implements
     public void onButtonRemoveClicked(String item) {
         Timber.d("onButtonRemoveClicked on item " + item);
         sItemClickedRequest = item;
-        DialogDelete dialogDelete = DialogDelete.getInstance(getString(R.string.delete_request));
-        dialogDelete.setCallback(this);
-        dialogDelete.show(getFragmentManager(), null);
+        mDialogDelete = DialogDelete.getInstance(getString(R.string.delete_request));
+        mDialogDelete.setCallback(this);
+        mDialogDelete.show(getFragmentManager(), TAG_DIALOG_DELETE);
     }
 
     // SearchAdapter.AdapterCallback for open Item Fragment
@@ -290,12 +305,6 @@ public class SearchFragment extends Fragment implements
         presenter.addNewRequest(request);
     }
 
-    @Override
-    public void onDismissDialogRequest() {
-        // TODO remove this method
-//        sIsDialogRequestOpen = false;
-    }
-
     // DialogRequestCallbackListener remove item
     @Override
     public void onRemoveRequest() {
@@ -308,7 +317,7 @@ public class SearchFragment extends Fragment implements
     public void onDismissDialogDownloading() {
         // TODO: remove this method
 //        sIsDialogDownloadingOpen = false;
-
+        sTotalVacanciesCount = 0;
     }
 
     public interface OnFragmentInteractionListener {

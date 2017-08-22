@@ -7,7 +7,7 @@ package com.dmelnyk.workinukraine.db;
 public class Tables {
 
     public static final class SearchRequest {
-        public static final String TABLE = "search_requests";
+        public static final String TABLE_REQUEST = "search_requests";
 
         public static final class Columns {
             public static final String REQUEST = "request";
@@ -17,22 +17,27 @@ public class Tables {
     }
 
     public static final class SearchSites {
-        public static final String[] SITES = {
+        // Two tables
+        public static final String TABLE_ALL_SITES = "all_sites";
+        public static final String TABLE_FAV_NEW_REC = "favorite_new_recent";
+
+        // Values of TYPE column: TYPE_SITES AND TYPE_FAVORITE, TYPE_NEW, TYPE_RECENT
+        public static final String[] TYPE_SITES = {
                 "HEADHUNTERSUA",
                 "JOBSUA",
                 "RABOTAUA",
                 "WORKNEWINFO",
                 "WORKUA" };
-
-        public static final String FAVORITE = "FAVORITE";
-        public static final String RECENT = "RECENT";
-        public static final String NEW = "FRESH";
+        public static final String TYPE_FAVORITE = "TYPE_FAVORITE";
+        public static final String TYPE_RECENT = "TYPE_RECENT";
+        public static final String TYPE_NEW = "FRESH";
 
         public static final class Columns {
             public static final String REQUEST = "request";
             public static final String TITLE = "title";
             public static final String DATE = "date";
             public static final String URL = "urlCode";
+            public static final String TYPE = "type";
         }
     }
 }

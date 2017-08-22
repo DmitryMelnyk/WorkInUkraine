@@ -3,6 +3,7 @@ package com.dmelnyk.workinukraine.ui.vacancy;
 import com.dmelnyk.workinukraine.data.VacancyModel;
 import com.dmelnyk.workinukraine.ui.vacancy.core.VacancyCardViewAdapter;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 

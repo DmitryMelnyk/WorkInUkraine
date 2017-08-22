@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.dmelnyk.workinukraine.R;
-import com.dmelnyk.workinukraine.helpers.BaseDialog;
+import com.dmelnyk.workinukraine.utils.BaseDialog;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

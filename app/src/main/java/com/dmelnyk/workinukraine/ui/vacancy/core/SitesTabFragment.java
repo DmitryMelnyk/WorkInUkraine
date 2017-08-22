@@ -2,6 +2,7 @@ package com.dmelnyk.workinukraine.ui.vacancy.core;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -16,9 +17,10 @@ import com.dmelnyk.workinukraine.R;
 import com.dmelnyk.workinukraine.data.VacancyModel;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+
+import timber.log.Timber;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -28,19 +30,13 @@ import java.util.Map;
  */
 public class SitesTabFragment extends Fragment {
 
-    public static final String ARG_HEADHUNTERSUA = "HEADHUNTERSUA";
-    public static final String ARG_JOBSUA = "JOBSUA";
-    public static final String ARG_RABOTAUA = "RABOTAUA";
-    public static final String ARG_WORKNEWINFO = "WORKNEWINFO";
-    public static final String ARG_WORKUA = "WORKUA";
-
     private static Map<String, List<VacancyModel>> sVacancies;
     private static OnFragmentInteractionListener mListener;
     private static List<String> sSitesTitle;
     private ViewPager mViewPager;
-    private static int mCurrentItem = 0;
 
     public static SitesTabFragment getNewInstance(Map<String, List<VacancyModel>> vacanciesMap) {
+
         sVacancies = vacanciesMap;
         sSitesTitle = new ArrayList<>();
         for(String title : vacanciesMap.keySet()) {
@@ -56,14 +52,12 @@ public class SitesTabFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.vacancy_fragment_tab, container, false);
         // Sites titles
-        Log.e("!!!", "siteTitles length=" + sSitesTitle.size());
-
+//        ((TabLayout)(view.findViewById(R.id.tab_layout))).
         mViewPager = (ViewPager) view.findViewById(R.id.pager);
-        TabsPagerAdapter adapter = new TabsPagerAdapter(getContext(), sSitesTitle, sVacancies);
+        TabsPagerAdapter adapter = new TabsPagerAdapter(sSitesTitle, sVacancies);
         mViewPager.setAdapter(adapter);
         mViewPager.setPageTransformer(true, new ZoomOutPageTransformer());
 
-        Log.e("!!!", "SitesTabFragment created!");
         return view;
     }
 
@@ -75,12 +69,12 @@ public class SitesTabFragment extends Fragment {
         private List<String> mTitles;
         private final Map<String, List<VacancyModel>> mData;
 
-        public TabsPagerAdapter(Context mContext, List<String> titles,
+        public TabsPagerAdapter(List<String> titles,
                                 Map<String, List<VacancyModel>> data) {
             mTitles = titles;
             mData = data;
 
-            Log.e("!!!", "Adapter created. Data="+data);
+            Log.e("!!!", "SitesTabFragment Adapter created.");
         }
 
         /*
@@ -103,7 +97,7 @@ public class SitesTabFragment extends Fragment {
 
             VacancyCardViewAdapter adapter = new VacancyCardViewAdapter(
                     (ArrayList<VacancyModel>)  mData.get(mTitles.get(position)),
-                    VacancyCardViewAdapter.TYPE_TABVIEW);
+                    VacancyCardViewAdapter.TYPE_STANDARD);
             adapter.setOnAdapterInteractionListener(this);
 
             RecyclerView recyclerView = new RecyclerView(container.getContext());
@@ -145,6 +139,12 @@ public class SitesTabFragment extends Fragment {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.e("222", "onResume SitesTabFragment");
     }
 
     @Override

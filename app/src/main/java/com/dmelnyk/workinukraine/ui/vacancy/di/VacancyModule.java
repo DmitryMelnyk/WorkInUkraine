@@ -2,6 +2,7 @@ package com.dmelnyk.workinukraine.ui.vacancy.di;
 
 import com.dmelnyk.workinukraine.business.vacancy.IVacancyInteractor;
 import com.dmelnyk.workinukraine.business.vacancy.VacancyInteractor;
+import com.dmelnyk.workinukraine.data.VacancyModel;
 import com.dmelnyk.workinukraine.model.vacancy.IVacancyRepository;
 import com.dmelnyk.workinukraine.model.vacancy.VacancyRepository;
 import com.dmelnyk.workinukraine.ui.vacancy.Contract;
@@ -18,6 +19,12 @@ import dagger.Provides;
 @Module
 public class VacancyModule {
 
+    private final String request;
+
+    public VacancyModule(String request) {
+        this.request = request;
+    }
+
     @Provides
     @VacancyScope
     IVacancyRepository provideIVacancyRepository(BriteDatabase db) {
@@ -33,6 +40,6 @@ public class VacancyModule {
     @Provides
     @VacancyScope
     Contract.IVacancyPresenter providePresenter(IVacancyInteractor interactor) {
-        return new VacancyPresenter(interactor);
+        return new VacancyPresenter(interactor, request);
     }
 }

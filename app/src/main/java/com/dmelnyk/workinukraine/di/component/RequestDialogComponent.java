@@ -1,9 +1,9 @@
 package com.dmelnyk.workinukraine.di.component;
 
+import com.dmelnyk.workinukraine.application.ApplicationComponent;
 import com.dmelnyk.workinukraine.application.ApplicationScope;
-import com.dmelnyk.workinukraine.di.module.CityModule;
-import com.dmelnyk.workinukraine.di.module.DbModule;
-import com.dmelnyk.workinukraine.mvp.dialog_request.DialogRequestPresenter;
+import com.dmelnyk.workinukraine.utils.di.CityModule;
+import com.dmelnyk.workinukraine.ui.dialogs.request.DialogRequestPresenter;
 
 import dagger.Component;
 
@@ -13,7 +13,7 @@ import dagger.Component;
 
 @ApplicationScope
 @Component(dependencies = ApplicationComponent.class,
-        modules = {DbModule.class, CityModule.class}
+        modules = {CityModule.class}
 )
 public interface RequestDialogComponent {
 

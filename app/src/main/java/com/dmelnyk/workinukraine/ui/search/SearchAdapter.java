@@ -1,18 +1,18 @@
 package com.dmelnyk.workinukraine.ui.search;
 
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.dmelnyk.workinukraine.R;
 import com.dmelnyk.workinukraine.data.RequestModel;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -24,6 +24,7 @@ import butterknife.OnClick;
 
 class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.MyViewHolder> {
 
+    public static final String SPLITTER = " / ";
     private ArrayList<RequestModel> mRequestModels;
     private AdapterCallback mCallback;
 
@@ -55,19 +56,42 @@ class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.MyViewHolder> {
     public void onBindViewHolder(MyViewHolder holder, final int position) {
         RequestModel requestModel = mRequestModels.get(position);
         // TODO
+        String request = requestModel.request().split(SPLITTER)[0];
+        String city = requestModel.request().split(" / ")[1];
+        int newVacanciesCount = requestModel.newVacanciesCount();
 
-        if (requestModel.updated() == -1l) {
-            holder.mTextViewUpdated.setText("-");
+        Log.e("444", "newVacancies=" + newVacanciesCount);
+
+        holder.mCityTextView.setText(city);
+        holder.mLetterTextView.setText(String.valueOf(request.charAt(0)).toUpperCase());
+        holder.mRequestTextView.setText(request);
+        holder.mNewVacanciesCountTextView.setText(String.valueOf(newVacanciesCount));
+
+        if (newVacanciesCount > 0) {
+            holder.mNewVacanciesCountTextView.setVisibility(View.VISIBLE);
+            holder.mNewVacanciesCountTextView.setText(String.valueOf(newVacanciesCount));
+            holder.mCityTextView.setTextColor(
+                    ContextCompat.getColor(holder.itemView.getContext(), R.color.white_soft));
+            holder.mRequestTextView.setTextColor(
+                    ContextCompat.getColor(holder.itemView.getContext(), R.color.white_soft));
+            holder.mLetterTextView.setTextColor(
+                    ContextCompat.getColor(holder.itemView.getContext(), R.color.white_soft));
+            holder.mItemLayout.setBackgroundColor(
+                    ContextCompat.getColor(holder.itemView.getContext(), R.color.green));
         } else {
-            SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
-            String updated = timeFormat.format(new Date(requestModel.updated()));
-            holder.mTextViewUpdated.setText(updated);
+            holder.mNewVacanciesCountTextView.setVisibility(View.GONE);
+            holder.mCityTextView.setTextColor(
+                    ContextCompat.getColor(holder.itemView.getContext(), R.color.green));
+            holder.mRequestTextView.setTextColor(
+                    ContextCompat.getColor(holder.itemView.getContext(), R.color.green));
+            holder.mLetterTextView.setTextColor(
+                    ContextCompat.getColor(holder.itemView.getContext(), R.color.green));
+            holder.mItemLayout.setBackgroundColor(
+                    ContextCompat.getColor(holder.itemView.getContext(), R.color.white_soft));
         }
 
-        holder.mTextViewTitle.setText(requestModel.request());
-        holder.mTextViewCount.setText("" + requestModel.vacanciesCount());
-
-
+//        SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
+//        String updated = timeFormat.format(new Date(requestModel.updated()));
     }
 
     @Override
@@ -77,26 +101,27 @@ class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.MyViewHolder> {
 
 
     class MyViewHolder extends RecyclerView.ViewHolder {
-        @BindView(R.id.text_view_title)
-        TextView mTextViewTitle;
-        @BindView(R.id.text_view_count)
-        TextView mTextViewCount;
-        @BindView(R.id.text_view_updated)
-        TextView mTextViewUpdated;
+        @BindView(R.id.item_layout) RelativeLayout mItemLayout;
+        @BindView(R.id.new_vacancies_text_view) TextView mNewVacanciesCountTextView;
+        @BindView(R.id.letter_text_view) TextView mLetterTextView;
+        @BindView(R.id.request_text_view) TextView mRequestTextView;
+        @BindView(R.id.request_city_text_view) TextView mCityTextView;
 
         public MyViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
         }
 
-        @OnClick({R.id.button_remove, R.id.item_layout})
+        @OnClick({R.id.item_layout})
         public void onViewClicked(View view) {
             switch (view.getId()) {
-                case R.id.button_remove:
-                    mCallback.onButtonRemoveClicked(mTextViewTitle.getText().toString());
-                    break;
+//                case R.id.button_remove:
+//                    mCallback.onButtonRemoveClicked(mRequestTextView.getText().toString());
+//                    break;
                 case R.id.item_layout:
-                    mCallback.onItemClicked(mTextViewTitle.getText().toString());
+                    String fullRequest = mRequestTextView.getText().toString()
+                            + SPLITTER + mCityTextView.getText().toString();
+                    mCallback.onItemClicked(fullRequest);
                     break;
             }
         }

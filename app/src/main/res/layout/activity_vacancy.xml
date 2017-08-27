@@ -17,7 +17,7 @@
             android:id="@+id/toolbar_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/kiev_bg3"
+            android:background="@drawable/kiev_bg"
             app:titleEnabled="true"
             app:contentScrim="?attr/colorPrimary"
             app:layout_scrollFlags="scroll|exitUntilCollapsed"
@@ -70,11 +70,11 @@
                     />
             </LinearLayout>
 
-
+            <!-- Toolbar -->
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
+                android:layout_height="@dimen/fragment_toolbar_height"
                 app:layout_collapseMode="pin"
                 app:title=""
                 app:popupTheme="@style/AppTheme.PopupOverlay"
@@ -83,7 +83,7 @@
                 <RelativeLayout
                     android:layout_alignParentTop="true"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/fragment_toolbar_height"
+                    android:layout_height="match_parent"
                     >
 
                     <ImageView
@@ -131,10 +131,10 @@
         app:fabSize="normal"
         app:layout_anchor="@id/app_bar"
         app:layout_anchorGravity="bottom|right|end"
-        app:srcCompat="@drawable/search_item_last_update" />
+        app:srcCompat="@drawable/ic_settings" />
 
     <com.dmelnyk.workinukraine.utils.ButtonTabs
-        android:id="@+id/button_tubs"
+        android:id="@+id/button_tabs"
         android:layout_width="135dp"
         android:layout_height="45dp"
         android:elevation="10dp"

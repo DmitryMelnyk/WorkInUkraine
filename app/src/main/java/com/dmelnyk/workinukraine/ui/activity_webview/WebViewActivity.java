@@ -6,18 +6,18 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.dmelnyk.workinukraine.R;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 /**
  * Created by dmitry on 22.01.17.
@@ -25,48 +25,60 @@ import butterknife.ButterKnife;
 
 public class WebViewActivity extends AppCompatActivity implements Contract.View{
 
-    public static final String ARGS = "WebViewActivity.Args";
+    private static final String EXTRA_TITLE = "extra_title";
+    private static final String EXTRA_URL = "extra_url";
 
     @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.fragment_vacancy_progress_bar) ProgressBar bar;
     @BindView(R.id.web_view) WebView mWebView;
 
-    private String url;
-    private String title;
+    private String mUrl;
+    private String mTitle;
     private WebActivityPresenter presenter;
     private int menuView = -1; // for changing menu
 
 
-    public static Intent newInstance(Context context/*, Job job*/) {
+    public static Intent newInstance(Context context, String title, String url) {
         Intent intent = new Intent(context, WebViewActivity.class);
-//        intent.putExtra(ARGS, job);
+        intent.putExtra(EXTRA_TITLE, title);
+        intent.putExtra(EXTRA_URL, url);
         return intent;
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.webview_fragment);
+        setContentView(R.layout.activity_webview);
         ButterKnife.bind(this);
 //
-//        job = getIntent().getParcelableExtra(ARGS);
-//        url = job.getUrlCode();
-//        title = job.getTitle();
+        mUrl = getIntent().getStringExtra(EXTRA_URL);
+        mTitle = getIntent().getStringExtra(EXTRA_TITLE);
 
-        initializePresenter();
-        presenter.onTakeView(this);
+//        initializePresenter();
+//        presenter.onTakeView(this);
 
-        configToolbar();
+//        configToolbar();
         configProgressBar();
+        TextView titleTextView = (TextView) findViewById(R.id.title_text_view);
+        titleTextView.setText(mTitle);
+
+        findViewById(R.id.back_image_view).setOnClickListener(view -> onBackPressed());
+
         if (savedInstanceState == null) {
             configWebView();
         }
     }
 
     @Override
+    protected void attachBaseContext(Context newBase) {
+        // For fonts
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
+    }
+
+    @Override
     protected void onDestroy() {
-        presenter.onTakeView(null);
-        presenter = null;
+//        presenter.onTakeView(null);
+//        presenter = null;
         super.onDestroy();
     }
 
@@ -88,35 +100,35 @@ public class WebViewActivity extends AppCompatActivity implements Contract.View{
         }
     }
 
-    private void configToolbar() {
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle(title);
-        toolbar.setNavigationOnClickListener(
-                view -> finish());
-    }
+//    private void configToolbar() {
+//        setSupportActionBar(toolbar);
+//        getSupportActionBar().setDisplayShowHomeEnabled(true);
+//        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+//        getSupportActionBar().setTitle(mTitle);
+//        toolbar.setNavigationOnClickListener(
+//                view -> finish());
+//    }
 
     public void onChangeMenu(int id) {
         menuView = id;
         invalidateOptionsMenu();
     }
 
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(menuView, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.webview_menu_favorite:
-                presenter.onMenuItemSelected();
-                break;
-        }
-        return true;
-    }
+//    @Override
+//    public boolean onPrepareOptionsMenu(Menu menu) {
+//        getMenuInflater().inflate(menuView, menu);
+//        return true;
+//    }
+//
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//        switch (item.getItemId()) {
+//            case R.id.webview_menu_favorite:
+//                presenter.onMenuItemSelected();
+//                break;
+//        }
+//        return true;
+//    }
 
     private void configProgressBar() {
         bar.setMax(100);
@@ -144,7 +156,7 @@ public class WebViewActivity extends AppCompatActivity implements Contract.View{
                 }
             }
         });
-        mWebView.loadUrl(url);
+        mWebView.loadUrl(mUrl);
     }
 
     @Override
@@ -154,7 +166,7 @@ public class WebViewActivity extends AppCompatActivity implements Contract.View{
             mWebView.goBack();
         }
         else {
-            super.onBackPressed();
+            finish(); //supportFinishAfterTransition();
         }
     }
 

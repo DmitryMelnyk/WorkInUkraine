@@ -12,15 +12,17 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Toast;
 
 import com.dmelnyk.workinukraine.R;
 
@@ -54,7 +56,7 @@ public class ButtonTabs extends View {
 
     private float mAnimatedRadius = 0f;
     private float mRadius;
-    private List<Boolean> mButtonsState;
+    private boolean[] mButtonsStates;
     private Paint mCircleLightPaint;
     private Paint mCircleAnimationPaint;
 
@@ -95,7 +97,6 @@ public class ButtonTabs extends View {
         mCircleAnimationPaint.setAlpha(100);
 
         mDetector = new GestureDetector(ButtonTabs.this.getContext(), new TapListener());
-        mButtonsState = new ArrayList<>();
     }
 
     public void setBackgroundColor(int color) {
@@ -108,9 +109,12 @@ public class ButtonTabs extends View {
         this.resource = resource;
 
         // initialize buttons state
-        mButtonsState.add(true);
-        for (int i = 1; i < resource.length; i++) {
-            mButtonsState.add(false);
+        if (mButtonsStates == null) {
+            mButtonsStates = new boolean[resource.length];
+            mButtonsStates[0] = true;
+            for (int i = 1; i < resource.length; i++) {
+                mButtonsStates[i] = false;
+            }
         }
     }
 
@@ -211,7 +215,7 @@ public class ButtonTabs extends View {
             for (int i = 0; i < itemCount; i++) {
                 Bitmap image;
                 float shift = i * 2 * mRadius;
-                boolean isSelected = mButtonsState.get(i);
+                boolean isSelected = mButtonsStates[i];
                 // activated state
                 if (isSelected) {
                     image = icons[i][0];
@@ -233,8 +237,7 @@ public class ButtonTabs extends View {
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
-
-        Timber.d("onSizeChanged()");
+        Log.e("333", "onSizeChanged()");
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             setOutlineProvider(new ButtonTabOutline(w, h));
@@ -303,12 +306,12 @@ public class ButtonTabs extends View {
     }
 
     private void setButtonSelected(int buttonPosition) {
-        for (int i = 0; i < mButtonsState.size(); i++) {
+        for (int i = 0; i < mButtonsStates.length; i++) {
             if (i == buttonPosition) {
-                mButtonsState.set(i, true);
+                mButtonsStates[i] = true;
                 mCallback.tabSelected(i);
             } else {
-                mButtonsState.set(i, false);
+                mButtonsStates[i] = false;
             }
         }
     }
@@ -339,7 +342,13 @@ public class ButtonTabs extends View {
     }
 
     public void selectTab(int selectedTab) {
-        setButtonSelected(selectedTab);
+        for (int i = 0; i < mButtonsStates.length; i++) {
+            if (i == selectedTab) {
+                mButtonsStates[i] = true;
+            } else {
+                mButtonsStates[i] = false;
+            }
+        }
     }
     /**
      * Class that uses ButtonTabs must implement this callback interface
@@ -356,5 +365,50 @@ public class ButtonTabs extends View {
         mCallback = callback;
     }
 
+    @Override
+    protected Parcelable onSaveInstanceState() {
+        Parcelable superState = super.onSaveInstanceState();
+        SavedState savedState = new SavedState(superState);
+        savedState.saveButtonsState(mButtonsStates);
+        return savedState;
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Parcelable state) {
+        SavedState savedState = (SavedState) state;
+        super.onRestoreInstanceState(savedState.getSuperState());
+        initializeButtonsState(savedState.getButtonState());
+    }
+
+    private void initializeButtonsState(boolean[] buttonsStates) {
+        mButtonsStates = buttonsStates;
+    }
+
+    static class SavedState extends BaseSavedState {
+        private boolean[] buttonsStates;
+
+        public SavedState(Parcelable superState) {
+            super(superState);
+        }
+
+        public SavedState(Parcel in) {
+            super(in);
+            in.readBooleanArray(buttonsStates);
+        }
+
+        public void saveButtonsState(boolean[] buttonsStates) {
+            this.buttonsStates = buttonsStates;
+        }
+
+        public boolean[] getButtonState() {
+            return buttonsStates;
+        }
+
+        @Override
+        public void writeToParcel(Parcel out, int flags) {
+            super.writeToParcel(out, flags);
+            out.writeBooleanArray(buttonsStates);
+        }
+    }
 
 }

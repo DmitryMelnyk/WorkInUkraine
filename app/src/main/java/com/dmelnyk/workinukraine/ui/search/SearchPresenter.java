@@ -9,6 +9,7 @@ import java.util.List;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by d264 on 6/25/17.
@@ -33,9 +34,17 @@ public class SearchPresenter implements Contract.ISearchPresenter {
                     .subscribe(requestsList -> {
                         view.updateData((ArrayList<RequestModel>) requestsList);
                         view.updateVacanciesCount(countAllVacancies(requestsList));
-                    }
-                            );
+                        view.updateNewVacanciesCount(countAllNewVacancies(requestsList));
+                    });
         }
+    }
+
+    private int countAllNewVacancies(List<RequestModel> requestsList) {
+        int allNewVacancies = 0;
+        for (RequestModel requestModel : requestsList) {
+            allNewVacancies += requestModel.newVacanciesCount();
+        }
+        return allNewVacancies;
     }
 
     private int countAllVacancies(List<RequestModel> requestsList) {
@@ -56,7 +65,16 @@ public class SearchPresenter implements Contract.ISearchPresenter {
     public void addNewRequest(String request) {
         interactor.saveRequest(request).observeOn(AndroidSchedulers.mainThread())
                 .subscribe(() -> { },
-                        throwable -> view.showErrorMessage());
+                        throwable -> view.showErrorMessage(throwable.getMessage()));
+    }
+
+    @Override
+    public void clearAllRequest() {
+        interactor.clearAllRequests()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(() -> {},
+                        throwable -> view.showErrorMessage(throwable.getMessage()));
     }
 
     @Override

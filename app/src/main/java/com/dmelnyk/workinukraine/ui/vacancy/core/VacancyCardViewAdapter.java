@@ -1,6 +1,7 @@
 package com.dmelnyk.workinukraine.ui.vacancy.core;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.IntDef;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
@@ -9,7 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -73,19 +73,21 @@ public class VacancyCardViewAdapter extends RecyclerView.Adapter<VacancyCardView
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
         final VacancyModel vacancyModel = mDataSet.get(position);
-        holder.mTextView.setText(vacancyModel.title());
+        holder.mBodyTextView.setText(vacancyModel.title());
         holder.mDateTextView.setText(vacancyModel.date());
 
-        int color;
+        Drawable ripple_bg;
         if (position % 2 == 1) {
-            color = ContextCompat.getColor(mContext, R.color.white_middle);
+            ripple_bg = ContextCompat.getDrawable(mContext, R.drawable.ripple_bg_even);
+//            color = ContextCompat.getColor(mContext, R.color.white_middle);
         } else {
-            color = ContextCompat.getColor(mContext, R.color.white);
+            ripple_bg = ContextCompat.getDrawable(mContext, R.drawable.ripple_bg_odd);
+//            color = ContextCompat.getColor(mContext, R.color.white);
         }
-        holder.mCardviewLayout.setBackgroundColor(color);
-        // creating PopupMenu:
+//        holder.mCardviewLayout.setBackgroundColor(color);
+        holder.mCardviewLayout.setBackground(ripple_bg);
+        // creating PopupMenu using reflection:
         final PopupMenu popupMenu = new PopupMenu(mContext, holder.mMenuButton);
-
         try {
             Field field = popupMenu.getClass().getDeclaredField("mPopup");
             field.setAccessible(true);
@@ -98,8 +100,7 @@ public class VacancyCardViewAdapter extends RecyclerView.Adapter<VacancyCardView
 
         if (mCardViewType == TYPE_STANDARD) {
             popupMenu.getMenuInflater().inflate(R.menu.card_menu_tabview, popupMenu.getMenu()); // for Standard, Tabs, New, Recent activities
-        }
-        if (mCardViewType == TYPE_FAVORITE) {
+        } else if (mCardViewType == TYPE_FAVORITE) {
             holder.mIconImageView.setImageDrawable(ContextCompat.getDrawable(
                     mContext, R.mipmap.ic_tab_favorite_dark));
             popupMenu.getMenuInflater().inflate(R.menu.card_menu_favorite, popupMenu.getMenu()); // for Favorite activity
@@ -132,7 +133,7 @@ public class VacancyCardViewAdapter extends RecyclerView.Adapter<VacancyCardView
 
         holder.mCardviewLayout.setOnClickListener( view -> {
             if (view.getId() != R.id.popup_menu) {
-                itemClicked(position);
+                itemClicked(position, holder.mBodyTextView);
             }
         });
     }
@@ -143,7 +144,7 @@ public class VacancyCardViewAdapter extends RecyclerView.Adapter<VacancyCardView
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
-        TextView mTextView;
+        TextView mBodyTextView;
         TextView mDateTextView;
         ImageView mIconImageView;
         ImageButton mMenuButton;
@@ -151,7 +152,7 @@ public class VacancyCardViewAdapter extends RecyclerView.Adapter<VacancyCardView
 
         public MyViewHolder(final View itemView) {
             super(itemView);
-            mTextView = (TextView) itemView.findViewById(R.id.body_text_view);
+            mBodyTextView = (TextView) itemView.findViewById(R.id.body_text_view);
             mDateTextView = (TextView) itemView.findViewById(R.id.date_text_view);
             mIconImageView = (ImageView) itemView.findViewById(R.id.vacancy_icon);
             mMenuButton = (ImageButton) itemView.findViewById(R.id.popup_menu);
@@ -160,7 +161,7 @@ public class VacancyCardViewAdapter extends RecyclerView.Adapter<VacancyCardView
     }
 
     public interface OnAdapterInteractionListener {
-        void onAdapterInteractionItemClicked(VacancyModel vacancyClicked);
+        void onAdapterInteractionItemClicked(VacancyModel vacancyClicked, View textView);
         void onAdapterInteractionPopupMenuClicked(VacancyModel vacancyClicked, @VacancyPopupMenuType int type);
     }
 
@@ -175,11 +176,11 @@ public class VacancyCardViewAdapter extends RecyclerView.Adapter<VacancyCardView
         } else mListener.onAdapterInteractionPopupMenuClicked(mDataSet.get(position), action);
     }
 
-    private void itemClicked(int position) {
+    private void itemClicked(int position, View body) {
         if (mListener == null) {
             throw new ClassCastException(PARENT_CLASS
                     + " must implement " + OnAdapterInteractionListener.class);
-        } else mListener.onAdapterInteractionItemClicked(mDataSet.get(position));
+        } else mListener.onAdapterInteractionItemClicked(mDataSet.get(position), body);
     }
 
 }

@@ -19,14 +19,6 @@ public interface ISearchServiceRepository {
     void closeDb();
 
     /**
-     * Updates REQUEST table
-     * @param request
-     * @param integer
-     * @param updateTime
-     */
-    void updateRequestTable(String request, Integer integer, long updateTime);
-
-    /**
      * Saves vacancies from all websites
      * @param stringListMap
      */

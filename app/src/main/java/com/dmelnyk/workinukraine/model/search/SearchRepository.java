@@ -27,6 +27,19 @@ public class SearchRepository implements ISearchRepository {
     }
 
     @Override
+    public Completable clearAllRequests() {
+        try {
+        bd.delete(Tables.SearchRequest.TABLE_REQUEST, "");
+        bd.delete(Tables.SearchSites.TABLE_ALL_SITES, "");
+        bd.delete(Tables.SearchSites.TABLE_FAV_NEW_REC, "");
+        } catch (Exception e) {
+            return Completable.error(e);
+        }
+
+        return Completable.complete();
+    }
+
+    @Override
     public Observable<List<RequestModel>> loadRequestList() {
         Timber.d("\nloadRequestList()");
         return bd.createQuery(REQUEST_TABLE, "SELECT * FROM " + REQUEST_TABLE)
@@ -50,7 +63,7 @@ public class SearchRepository implements ISearchRepository {
     public Completable saveRequest(String request) {
         Timber.d("\nsaveRequest: " + request);
         return Completable.fromCallable(() ->
-            bd.insert(REQUEST_TABLE, DbItems.createRequestItem(request, 0, -1l)));
+            bd.insert(REQUEST_TABLE, DbItems.createRequestItem(request, 0, 0, -1l)));
     }
 
     @Override

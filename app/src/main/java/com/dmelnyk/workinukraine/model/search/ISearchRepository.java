@@ -47,4 +47,6 @@ public interface ISearchRepository {
      * @param request
      */
     void removeDataFromTables(String request);
+
+    Completable clearAllRequests();
 }

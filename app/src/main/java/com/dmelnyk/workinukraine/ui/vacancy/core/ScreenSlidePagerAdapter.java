@@ -24,11 +24,9 @@ public class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {
     private static final String TAB_NEW = IVacancyInteractor.VACANCIES_NEW;
     private static final String TAB_RECENT = IVacancyInteractor.VACANCIES_RECENT;
 
-//    private final SitesTabFragment mFragment0;
-//    private final BaseTabFragment mFragment1;
-//    private FavoriteTabFragment mFragment2;
-
-    private BaseTabFragment mFragment2;
+    private final SitesTabFragment mFragment0;
+    private final BaseTabFragment mFragment1;
+    private FavoriteTabFragment mFragment2;
 
     private String[] mTitles;
     private final Map<String, List<VacancyModel>> mBaseFragmentData;
@@ -45,26 +43,22 @@ public class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {
         this.mSitesData = mAllVacancies.get(IVacancyInteractor.DATA_TAB_SITES);
         this.mBaseFragmentData = mAllVacancies.get(IVacancyInteractor.DATA_OTHER_TABS);
 
-//        mFragment0 = SitesTabFragment.getNewInstance(mSitesData);
-//
-//        List<VacancyModel> newVacancies = mBaseFragmentData.get(TAB_NEW);
-//        List<VacancyModel> recentVacancies = mBaseFragmentData.get(TAB_RECENT);
-//        if (newVacancies != null && !newVacancies.isEmpty()) {
-//            mFragment1 = BaseTabFragment.getNewInstance(
-//                    (ArrayList<VacancyModel>) newVacancies,
-//                    BaseTabFragment.FRAGMENT_NEW);
-//        } else {
-//            mFragment1 = BaseTabFragment.getNewInstance(
-//                    (ArrayList<VacancyModel>) recentVacancies,
-//                    BaseTabFragment.FRAGMENT_RECENT);
-//        }
+        mFragment0 = SitesTabFragment.getNewInstance(mSitesData);
 
-//        mFragment2 = new FavoriteTabFragment();
-//        mFragment2.updateData(mBaseFragmentData.get(TAB_FAVORITE));
+        List<VacancyModel> newVacancies = mBaseFragmentData.get(TAB_NEW);
+        List<VacancyModel> recentVacancies = mBaseFragmentData.get(TAB_RECENT);
+        if (newVacancies != null && !newVacancies.isEmpty()) {
+            mFragment1 = BaseTabFragment.getNewInstance(
+                    (ArrayList<VacancyModel>) newVacancies,
+                    BaseTabFragment.FRAGMENT_NEW);
+        } else {
+            mFragment1 = BaseTabFragment.getNewInstance(
+                    (ArrayList<VacancyModel>) recentVacancies,
+                    BaseTabFragment.FRAGMENT_RECENT);
+        }
 
-//        mFragment2 = BaseTabFragment.getNewInstance(
-//                (ArrayList<VacancyModel>) mBaseFragmentData.get(TAB_FAVORITE),
-//                BaseTabFragment.FRAGMENT_FAVORITE);
+        mFragment2 = new FavoriteTabFragment();
+        mFragment2.updateData(mBaseFragmentData.get(TAB_FAVORITE));
     }
 
     @Override
@@ -84,36 +78,13 @@ public class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {
     public Fragment getItem(int position) {
         Log.e("222", "getItem =" + position);
 
-//        switch (position) {
-//            case 0:
-//                return mFragment0;
-//            case 1:
-//                return mFragment1;
-//            case 2:
-//                return mFragment2;
-//        }
-
         switch (position) {
             case 0:
-                return SitesTabFragment.getNewInstance(mSitesData);
+                return mFragment0;
             case 1:
-                List<VacancyModel> newVacancies = mBaseFragmentData.get(TAB_NEW);
-                List<VacancyModel> recentVacancies = mBaseFragmentData.get(TAB_RECENT);
-                Fragment mFragment1;
-                if (newVacancies != null && !newVacancies.isEmpty()) {
-                    mFragment1 = BaseTabFragment.getNewInstance(
-                            (ArrayList<VacancyModel>) newVacancies,
-                            BaseTabFragment.FRAGMENT_NEW);
-                } else {
-                    mFragment1 = BaseTabFragment.getNewInstance(
-                            (ArrayList<VacancyModel>) recentVacancies,
-                            BaseTabFragment.FRAGMENT_RECENT);
-                }
                 return mFragment1;
             case 2:
-                return BaseTabFragment.getNewInstance(
-                        (ArrayList<VacancyModel>) mBaseFragmentData.get(TAB_FAVORITE),
-                        BaseTabFragment.FRAGMENT_FAVORITE);
+                return mFragment2;
         }
 
         return null;
@@ -132,10 +103,7 @@ public class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {
 
     public void updateFavoriteData(List<VacancyModel> vacancies) {
         Log.e("222", "SSPAdapter. updateFavoriteData =" + vacancies.size());
-//        mBaseFragmentData.put(TAB_FAVORITE, vacancies);
-//        mFragment2.updateData(vacancies);
-        BaseTabFragment fragment = (BaseTabFragment) instantiateItem(null, 2);
-        fragment.updateData((ArrayList<VacancyModel>) vacancies);
-
+        mBaseFragmentData.put(TAB_FAVORITE, vacancies);
+        mFragment2.updateData(vacancies);
     }
 }

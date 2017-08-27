@@ -18,18 +18,21 @@ import io.reactivex.functions.Function;
 public abstract class RequestModel implements Parcelable {
     public abstract String request();
     public abstract int vacanciesCount();
+    public abstract int newVacanciesCount();
     public abstract long updated();
 
-    public static RequestModel create(String request, int vacanciesCount, long updated) {
-        return new AutoValue_RequestModel(request, vacanciesCount, updated);
+    public static RequestModel create(
+            String request, int vacanciesCount, int newVacanciesCount, long updated) {
+        return new AutoValue_RequestModel(request, vacanciesCount, newVacanciesCount, updated);
     }
 
     public static Function<Cursor, RequestModel> MAPPER = new Function<Cursor, RequestModel>() {
         @Override public RequestModel apply(@NonNull Cursor cursor) throws Exception {
             String request = Db.getString(cursor, Tables.SearchRequest.Columns.REQUEST);
             int vacanciesCount = Db.getInt(cursor, Tables.SearchRequest.Columns.VACANCIES);
+            int newVacanciesCount = Db.getInt(cursor, Tables.SearchRequest.Columns.NEW_VACANCIES);
             long updated = Db.getLong(cursor, Tables.SearchRequest.Columns.UPDATED);
-            return create(request, vacanciesCount, updated);
+            return create(request, vacanciesCount, newVacanciesCount, updated);
         }
     };
 }

@@ -62,10 +62,12 @@ public class DbItems {
         return values;
     }
 
-    public static ContentValues createRequestItem(String request, int vacanciesCount, long updated) {
+    public static ContentValues createRequestItem(
+            String request, int vacanciesCount, int newVacanciesCount, long updated) {
         final ContentValues values = new ContentValues();
         values.put(Tables.SearchRequest.Columns.REQUEST, request);
         values.put(Tables.SearchRequest.Columns.VACANCIES, vacanciesCount);
+        values.put(Tables.SearchRequest.Columns.NEW_VACANCIES, newVacanciesCount);
         values.put(Tables.SearchRequest.Columns.UPDATED, updated);
 
         return values;

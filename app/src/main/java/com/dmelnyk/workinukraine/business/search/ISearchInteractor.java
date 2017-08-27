@@ -33,4 +33,6 @@ public interface ISearchInteractor {
      * @param request Te search request in "request / city" format
      */
     void removeRequest(String request);
+
+    Completable clearAllRequests();
 }

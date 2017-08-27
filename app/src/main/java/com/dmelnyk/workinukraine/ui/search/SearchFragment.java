@@ -5,32 +5,34 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
-import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.dmelnyk.workinukraine.R;
 import com.dmelnyk.workinukraine.data.RequestModel;
 import com.dmelnyk.workinukraine.db.di.DbModule;
-import com.dmelnyk.workinukraine.ui.dialogs.request.DialogRequest;
 import com.dmelnyk.workinukraine.services.SearchVacanciesService;
 import com.dmelnyk.workinukraine.ui.dialogs.delete.DialogDelete;
 import com.dmelnyk.workinukraine.ui.dialogs.downloading.DialogDownloading;
+import com.dmelnyk.workinukraine.ui.dialogs.request.DialogRequest;
 import com.dmelnyk.workinukraine.ui.search.Contract.ISearchPresenter;
 import com.dmelnyk.workinukraine.ui.search.di.DaggerSearchComponent;
 import com.dmelnyk.workinukraine.ui.search.di.SearchModule;
 import com.dmelnyk.workinukraine.ui.vacancy.VacancyActivity;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 
 import javax.inject.Inject;
@@ -59,16 +61,29 @@ public class SearchFragment extends Fragment implements
     private static final String TAG_DIALOG_REQUEST = "request_dialog";
     private static final String TAG_DIALOG_DELETE = "delete_dialog";
 
-    @BindView(R.id.backImageView) ImageView mBackImageView;
-    @BindView(R.id.addImageView) ImageView mAddImageView;
-    @BindView((R.id.recyclerView)) RecyclerView mRecyclerView;
-    @BindView(R.id.buttonAdd) ImageView mButtonAdd;
-    @BindView(R.id.buttonSearch) ImageView mButtonSearch;
-    @BindView(R.id.vacancies_count_text_view) TextView mVacanciesCountTextView;
+    @BindView(R.id.backImageView)
+    ImageView mBackImageView;
+    @BindView(R.id.settings_image_view)
+    ImageView mSettingsImageView;
+    @BindView((R.id.recyclerView))
+    RecyclerView mRecyclerView;
+    @BindView(R.id.buttonAdd)
+    ImageView mButtonAdd;
+    @BindView(R.id.buttonSearch)
+    ImageView mButtonSearch;
+    @BindView(R.id.vacancies_count_text_view)
+    TextView mVacanciesCountTextView;
+    @BindView(R.id.new_vacancies_text_view)
+    TextView mNewVacanciesTextView;
+    @BindView(R.id.refreshed_text_view)
+    TextView mLastUpdateTimeTextView;
+    @BindView(R.id.new_text_view) TextView mNewTextView;
     Unbinder unbinder;
 
     @Inject
     ISearchPresenter presenter;
+
+
 
     private OnFragmentInteractionListener mListener;
     private static String sItemClickedRequest = "";
@@ -127,13 +142,40 @@ public class SearchFragment extends Fragment implements
 
         mAdapter = new SearchAdapter(mRequestsList);
         mAdapter.setAdapterListener(this);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        mRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
         mRecyclerView.setAdapter(mAdapter);
 
         presenter.bindView(this);
 
-        // TODO: show updating dialog
+        createMenu();
         return view;
+    }
+
+    private void createMenu() {
+        final PopupMenu popupMenu = new PopupMenu(getContext(), mSettingsImageView);
+        try {
+            Field field = popupMenu.getClass().getDeclaredField("mPopup");
+            field.setAccessible(true);
+            Object menuPopupHelper = field.get(popupMenu);
+            Method setForceIcons = menuPopupHelper.getClass().getDeclaredMethod("setForceShowIcon", Boolean.TYPE);
+            setForceIcons.invoke(menuPopupHelper, true);
+        } catch (Exception e) {
+            Timber.e(e);
+        }
+
+        popupMenu.getMenuInflater().inflate(R.menu.menu_main, popupMenu.getMenu());
+        mSettingsImageView.setOnClickListener(view -> popupMenu.show());
+
+        popupMenu.setOnMenuItemClickListener(view -> {
+            switch (view.getItemId()) {
+                case R.id.menu_clear_requests:
+                    // TODO : realize clearing requests
+                    Toast.makeText(getContext(), "Todo: Clearing all requests!", Toast.LENGTH_SHORT).show();
+                    presenter.clearAllRequest();
+                    break;
+            }
+            return true;
+        });
     }
 
     @Override
@@ -215,15 +257,12 @@ public class SearchFragment extends Fragment implements
         unbinder.unbind();
     }
 
-    @OnClick({R.id.backImageView, R.id.addImageView, R.id.buttonAdd, R.id.buttonSearch})
+    @OnClick({R.id.backImageView, R.id.buttonAdd, R.id.buttonSearch})
     public void onViewClicked(View view) {
         // TODO update dialog
         switch (view.getId()) {
             case R.id.backImageView:
                 mListener.onFragmentInteraction();
-                break;
-            case R.id.addImageView:
-                showDialogRequest();
                 break;
             case R.id.buttonAdd:
                 showDialogRequest();
@@ -247,7 +286,6 @@ public class SearchFragment extends Fragment implements
         mDialogDownloading.show(getFragmentManager(), TAG_DIALOG_DOWNLOADING);
     }
 
-
     private void startSearchVacanciesService() {
         Intent searchService = new Intent(
                 getContext().getApplicationContext(), SearchVacanciesService.class);
@@ -265,18 +303,23 @@ public class SearchFragment extends Fragment implements
     }
 
     @Override
+    public void updateNewVacanciesCount(int newVacanciesCount) {
+        mNewVacanciesTextView.setVisibility(
+                newVacanciesCount == 0 ? View.GONE : View.VISIBLE);
+        mNewTextView.setVisibility(
+                newVacanciesCount == 0 ? View.GONE : View.VISIBLE);
+        mNewVacanciesTextView.setText("" + newVacanciesCount);
+    }
+
+    @Override
     public void updateVacanciesCount(int allVacanciesCount) {
         mVacanciesCountTextView.setText("" + allVacanciesCount);
     }
 
     @Override
-    public void showErrorMessage() {
-        Toast.makeText(getContext(), getString(R.string.errors_db_request_already_exists), Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void restoreSavedState(String time) {
-        // Todo: remove
+    public void showErrorMessage(String message) {
+        Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
+//        Toast.makeText(getContext(), getString(R.string.errors_db_request_already_exists), Toast.LENGTH_SHORT).show();
     }
 
     // SearchAdapter.AdapterCallback for open DialogDelete

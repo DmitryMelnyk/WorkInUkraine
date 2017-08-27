@@ -109,17 +109,8 @@ public class SearchVacanciesService extends IntentService {
         }
 
         sendBroadcastMessage(ACTION_FINISHED, null /* request no need */, totalVacanciesCount);
-        // changes data in db Table that contains request's info
-        updateRequestVacancyInfo();
         long endTime = System.currentTimeMillis();
         Timber.d("\nSearch completed at %d seconds", (endTime - startTime) / 1000);
-    }
-
-    private void updateRequestVacancyInfo() {
-        for (String request : vacancyInfos.keySet()) {
-            repository.updateRequestTable(request, vacancyInfos.get(request),
-                    System.currentTimeMillis());
-        }
     }
 
     private void addVacancyInfo(List<VacancyContainer> vacancies) {

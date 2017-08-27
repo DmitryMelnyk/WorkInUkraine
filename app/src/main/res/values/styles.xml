@@ -238,4 +238,14 @@
         <item name="android:layout_height">wrap_content</item>
     </style>
 
+    <style name="SearchTextViewBold">
+        <item name="android:textColor">@color/white_soft</item>
+        <item name="android:gravity">center</item>
+        <item name="fontPath">fonts/FranckerCYR-ExtraBold.otf</item>
+    </style>
+
+    <style name="SearchTextView">
+        <item name="android:textColor">@color/white_soft</item>
+        <item name="android:gravity">center</item>
+    </style>
 </resources>

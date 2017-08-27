@@ -21,7 +21,6 @@
         <!-- Popup menu -->
         <item name="android:itemBackground">@color/colorBackground</item>
         <item name="android:popupMenuStyle">@style/PopupMenu</item>
-
     </style>
 
     <style name="ThemeLight" parent="Theme.AppCompat.Light"/>

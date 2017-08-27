@@ -106,7 +106,6 @@ public class BaseTabFragment extends Fragment implements
     @Override
     public void onResume() {
         super.onResume();
-        mRecyclerView.setAdapter(mAdapter);
         Log.e("222", "onResume " + (mCardAdapterType == 3 ? "Recent" : "Favorite"));
     }
 
@@ -130,8 +129,8 @@ public class BaseTabFragment extends Fragment implements
     }
 
     @Override
-    public void onAdapterInteractionItemClicked(VacancyModel vacancyClicked) {
-        mListener.onFragmentInteractionItemClicked(vacancyClicked);
+    public void onAdapterInteractionItemClicked(VacancyModel vacancyClicked, View bodyTextView) {
+        mListener.onFragmentInteractionItemClicked(vacancyClicked, bodyTextView);
     }
 
     @Override
@@ -149,7 +148,7 @@ public class BaseTabFragment extends Fragment implements
      * activity.
      */
     public interface OnFragmentInteractionListener {
-        void onFragmentInteractionItemClicked(VacancyModel vacancyModel);
+        void onFragmentInteractionItemClicked(VacancyModel vacancyModel, View bodyTextView);
 
         void onFragmentInteractionPopupMenuClicked(VacancyModel vacancy,
                                                    @VacancyCardViewAdapter.VacancyPopupMenuType int type);

@@ -1,114 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    app:cardCornerRadius="5dp"
-    android:layout_margin="5dp"
     app:cardElevation="10dp"
     >
-    <LinearLayout
+
+    <RelativeLayout
         android:id="@+id/item_layout"
+        android:gravity="center"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="10dp"
-        >
+        android:layout_height="200dp">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <!-- TODO: remove android:text="android developer / Каменец-Подольский"-->
-            <TextView
-                android:id="@+id/text_view_title"
-                android:layout_width="0dp"
-                android:layout_weight="90"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="5dp"
-                android:text="android developer / Каменец-Подольский"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                />
-            <ImageView
-                android:id="@+id/button_remove"
-                android:layout_width="0dp"
-                android:layout_weight="10"
-                android:layout_height="wrap_content"
-                android:src="@mipmap/search_request_close_button"
-                />
-        </LinearLayout>
-
-        <RelativeLayout
-            android:padding="10dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <ImageView
-                android:id="@+id/vacancy"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_alignParentLeft="true"
-                android:src="@drawable/ic_nav_vacancy"/>
-
-            <TextView
-                android:id="@+id/text_view_count"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_toRightOf="@id/vacancy"
-                android:layout_marginLeft="5dp"
-                android:text="-"
-                android:textSize="30sp"
-                android:textStyle="bold"
-                />
-
-            <TextView
-                android:layout_below="@id/vacancy"
-                android:text="Найдено вакансий"
-                style="@style/ItemRequestText"
-                />
-
-            <ImageView
-                android:id="@+id/go"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_alignParentRight="true"
-                android:src="@mipmap/ic_arrow_right"/>
-
-            <ImageView
-                android:id="@+id/updated"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_toLeftOf="@id/go"
-                android:layout_marginRight="15dp"
-                android:src="@drawable/search_item_last_update"
-                />
-
-            <TextView
-                android:layout_below="@id/updated"
-                android:layout_toLeftOf="@id/go"
-                android:layout_marginRight="20dp"
-                android:text="Обновлено"
-                style="@style/ItemRequestText"
-                />
-
-            <TextView
-                android:id="@+id/text_view_updated"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_toLeftOf="@id/updated"
-                android:layout_marginRight="5dp"
-                android:text="-"
-                android:textSize="30sp"
-                />
-        </RelativeLayout>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="10dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:background="@drawable/request_item_bg"
+        <TextView
+            android:id="@+id/letter_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:textSize="64dp"
+            android:text="A"
+            android:textColor="@color/green"
+            fontPath="fonts/FranckerCYR-ExtraBold.otf"
+            tools:ignore="MissingPrefix"
             />
-    </LinearLayout>
 
+        <TextView
+            android:id="@+id/request_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@id/letter_text_view"
+            android:gravity="center"
+            android:text="android developer"
+            android:textSize="18sp"
+            android:textColor="@color/green"
+            fontPath="fonts/FranckerCYR-ExtraBold.otf"
+            tools:ignore="MissingPrefix"
+            />
+
+        <TextView
+            android:id="@+id/request_city_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@id/request_text_view"
+            android:gravity="center"
+            android:text="Каменец-Подольский"
+            android:textSize="18sp"
+            android:textColor="@color/green"
+            />
+
+        <TextView
+            android:id="@+id/new_vacancies_text_view"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:background="@drawable/new_vacancies_bg"
+            android:layout_marginTop="12dp"
+            android:text="3"
+            android:textSize="8sp"
+            style="@style/SearchTextViewBold"
+            android:layout_toRightOf="@+id/letter_text_view"
+            android:layout_toEndOf="@+id/letter_text_view" />
+
+
+    </RelativeLayout>
 </android.support.v7.widget.CardView>

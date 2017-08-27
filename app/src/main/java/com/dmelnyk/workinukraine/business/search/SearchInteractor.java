@@ -20,6 +20,11 @@ public class SearchInteractor implements ISearchInteractor {
     }
 
     @Override
+    public Completable clearAllRequests() {
+        return repository.clearAllRequests();
+    }
+
+    @Override
     public Observable<List<RequestModel>> getRequests() {
         return repository.loadRequestList();
     }

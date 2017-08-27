@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="new_vacancies">НОВЫХ</string>
+    <string name="refreshed">Обновлено</string>
+    <string name="menu_clear">Очистись запросы</string>
+    <string name="title">Искать</string>
+</resources>

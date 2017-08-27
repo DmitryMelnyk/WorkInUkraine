@@ -15,6 +15,7 @@ public class DbOpenHelper extends SQLiteOpenHelper {
             + "CREATE TABLE " + Tables.SearchRequest.TABLE_REQUEST + "("
             + Tables.SearchRequest.Columns.REQUEST + " TEXT NOT NULL PRIMARY KEY, "
             + Tables.SearchRequest.Columns.VACANCIES + " INTEGER NOT NULL, "
+            + Tables.SearchRequest.Columns.NEW_VACANCIES + " INTEGER NOT NULL, "
             + Tables.SearchRequest.Columns.UPDATED + " INTEGER NOT NULL)";
 
     public DbOpenHelper(Context context) {

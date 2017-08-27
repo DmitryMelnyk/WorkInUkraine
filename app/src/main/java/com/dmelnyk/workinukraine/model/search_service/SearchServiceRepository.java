@@ -69,9 +69,13 @@ public class SearchServiceRepository implements ISearchServiceRepository {
 
         cursor.close();
 
+        int newVacanciesCount = 0;
+
         Log.e("!!!", "old vacancies = " + oldVacancies);
         if (!oldVacancies.isEmpty()) {
             List<VacancyContainer> newVacancies = extractNewVacancy(oldVacancies, allVacancies);
+            newVacanciesCount = newVacancies.size();
+
             Log.e("!!!", "new vacancies = " + newVacancies);
             if (!newVacancies.isEmpty()) {
                 // clearing new and recent vacancies
@@ -86,12 +90,16 @@ public class SearchServiceRepository implements ISearchServiceRepository {
             Log.e("!!!", "Writing vacancies RECENT and NEW " + allVacancies.size());
             writeVacanciesToFavNewRecTable(Tables.SearchSites.TYPE_RECENT, allVacancies);
             writeVacanciesToFavNewRecTable(Tables.SearchSites.TYPE_NEW, allVacancies);
+            newVacanciesCount = allVacancies.size();
         }
 
         // clear previous vacancies
         clearVacanciesFromAllTable(request);
         // write all vacancies to corresponding table
         writeVacanciesToAllTable(allVacancies);
+        // updating Requests table
+        updateRequestTable(
+                request, allVacancies.size(), newVacanciesCount, System.currentTimeMillis());
     }
 
     private void clearVacanciesFromAllTable(String request) {
@@ -106,13 +114,14 @@ public class SearchServiceRepository implements ISearchServiceRepository {
                 + "' AND " + Tables.SearchSites.Columns.TYPE + "= '" + type + "'");
     }
 
-    @Override
-    public void updateRequestTable(String request, Integer vacancyCount, long lastUpdateTime) {
-        Timber.d("\nUpdating request info. Request=%s, vacancyCount=%d, lastUpdateTime=%d",
-                request, vacancyCount, lastUpdateTime);
+    public void updateRequestTable(
+            String request, int vacancyCount, int newVacanciesCount, long lastUpdateTime) {
+        Log.e("444", "new vacancies=" + newVacanciesCount);
+        Timber.d("\nUpdating request info. Request=%s, vacancyCount=%d, newVacanciesCount=%d, lastUpdateTime=%d",
+                request, vacancyCount, newVacanciesCount, lastUpdateTime);
 
         db.update(Tables.SearchRequest.TABLE_REQUEST,
-                DbItems.createRequestItem(request, vacancyCount, lastUpdateTime),
+                DbItems.createRequestItem(request, vacancyCount, newVacanciesCount, lastUpdateTime),
                 Tables.SearchRequest.Columns.REQUEST + " ='"
                 + request + "'");
     }

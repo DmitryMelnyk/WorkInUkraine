@@ -24,7 +24,7 @@ public class DialogDelete extends BaseDialog {
     private static final String ARG_TITLE = "title";
     DialogDeleteCallbackListener mCallback;
     Unbinder unbinder;
-    @BindView(R.id.text_view_title) TextView mTextViewTitle;
+    @BindView(R.id.request_text_view) TextView mTextViewTitle;
 
     public static DialogDelete getInstance(String title) {
         DialogDelete dialog = new DialogDelete();

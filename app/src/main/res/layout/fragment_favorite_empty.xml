@@ -8,7 +8,7 @@
     android:padding="16dp"
     android:gravity="center_horizontal"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:showIn="@layout/activity_scrolling"
+    tools:showIn="@layout/activity_vacancy"
     >
 
     <ImageView
@@ -26,7 +26,7 @@
         android:textSize="20sp"
 
         fontPath="fonts/FranckerCYR-ExtraBold.otf"
-        tools:showIn="@layout/activity_scrolling"
+        tools:showIn="@layout/activity_vacancy"
         tools:ignore="MissingPrefix"
         >
     </TextView>

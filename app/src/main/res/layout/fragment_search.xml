@@ -1,4 +1,5 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
@@ -11,14 +12,13 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-
+        android:background="@color/blue_dark"
         >
+
         <!-- Toolbar -->
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="@dimen/fragment_toolbar_height"
-            android:paddingLeft="@dimen/activity_horizontal_margin"
-            android:paddingRight="@dimen/activity_horizontal_margin"
             >
 
             <ImageView
@@ -34,60 +34,128 @@
                 android:layout_centerHorizontal="true"
                 android:layout_centerVertical="true"
                 android:layout_marginRight="3dp"
-                android:text="Искать вакансии"
+                android:text="@string/title"
                 android:textSize="20sp"
-                android:textColor="@android:color/white"
+                style="@style/SearchTextViewBold"
                 />
 
             <ImageView
-                android:id="@+id/addImageView"
+                android:id="@+id/settings_image_view"
                 android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@mipmap/search_fragment_add" />
+                android:src="@mipmap/ic_settings_white" />
 
         </RelativeLayout>
 
-        <LinearLayout
-            android:layout_width="wrap_content"
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
             >
 
-            <ImageView
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:src="@mipmap/ic_vacancy"
-                />
             <TextView
                 android:id="@+id/vacancies_count_text_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
                 android:text="20"
-                android:textSize="50sp"
-                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:layout_marginLeft="16dp"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:layout_marginTop="19dp"
+                style="@style/SearchTextViewBold"
                 />
-        </LinearLayout>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:text="Найдено вакансий"
-            android:textColor="@android:color/white"
-            android:textSize="12sp"
-            android:textStyle="bold"
-            />
+            <TextView
+                android:id="@+id/vacancies_found_text_view"
+                style="@style/SearchTextViewBold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="19dp"
+                android:text="@string/vacancies_found"
+                android:textSize="20sp"
+                app:layout_constraintLeft_toRightOf="@+id/vacancies_count_text_view"
+                app:layout_constraintTop_toTopOf="parent" />
 
-        <!--TODO: padding-->
+            <ImageView
+                android:id="@+id/vacancy_image_view"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@mipmap/ic_vacancy"
+                android:layout_marginRight="35dp"
+                android:layout_marginTop="-16dp"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/refreshed_text_view"
+                app:layout_constraintBottom_toBottomOf="@+id/refreshed_text_view"
+                android:layout_marginBottom="0dp" />
+
+            <TextView
+                android:id="@+id/new_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginTop="22dp"
+                android:text="@string/new_vacancies"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                style="@style/SearchTextView"
+                />
+
+            <TextView
+                android:id="@+id/new_vacancies_text_view"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:background="@drawable/new_vacancies_bg"
+                android:layout_marginTop="0dp"
+                android:layout_marginBottom="8dp"
+                android:layout_marginRight="3dp"
+                android:text="3"
+                android:textSize="8sp"
+                style="@style/SearchTextViewBold"
+                app:layout_constraintTop_toTopOf="@+id/new_text_view"
+                app:layout_constraintRight_toLeftOf="@+id/new_text_view"
+                app:layout_constraintBottom_toBottomOf="@+id/new_text_view"
+                app:layout_constraintVertical_bias="0.0" />
+
+            <TextView
+                android:id="@+id/refreshed_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="19dp"
+                android:text="@string/refreshed"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/vacancies_count_text_view"
+                app:layout_constraintBottom_toBottomOf="parent"
+                style="@style/SearchTextView"
+                />
+
+        </android.support.constraint.ConstraintLayout>
+
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recyclerView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            />
+            android:background="@color/white_soft" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            >
+
+
+
+        </LinearLayout>
+
     </LinearLayout>
 
+    <!-- "Add" and "Search" buttons bottom the screen -->
     <LinearLayout
         android:background="@android:color/white"
         android:layout_width="match_parent"

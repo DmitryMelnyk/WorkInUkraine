@@ -13,8 +13,6 @@ import java.util.Map;
 
 public class Contract {
     public interface IVacancyView {
-        void openVacancyInWeb(String url);
-
         void createShareIntent(VacancyModel vacancy);
 
         void showResultingMessage(@VacancyCardViewAdapter.VacancyPopupMenuType int type);

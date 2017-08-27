@@ -13,13 +13,13 @@ import java.util.List;
 public class Contract {
 
     public interface ISearchView {
-        void restoreSavedState(String time);
-
         void updateData(ArrayList<RequestModel> data);
+
+        void updateNewVacanciesCount(int newVacanciesCount);
 
         void updateVacanciesCount(int allVacanciesCount);
 
-        void showErrorMessage();
+        void showErrorMessage(String message);
     }
 
     public interface ISearchPresenter {
@@ -29,5 +29,7 @@ public class Contract {
         void addNewRequest(String request);
 
         void removeRequest(String mItemClicked);
+
+        void clearAllRequest();
     }
 }

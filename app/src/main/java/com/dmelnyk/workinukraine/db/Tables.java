@@ -13,6 +13,7 @@ public class Tables {
             public static final String REQUEST = "request";
             public static final String VACANCIES = "vacancies";
             public static final String UPDATED = "updated";
+            public static final String NEW_VACANCIES = "new_vacancies";
         }
     }
 

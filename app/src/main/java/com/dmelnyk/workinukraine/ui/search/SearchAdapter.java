@@ -50,8 +50,6 @@ class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.MyViewHolder> {
         return new MyViewHolder(view);
     }
 
-
-
     @Override
     public void onBindViewHolder(MyViewHolder holder, final int position) {
         RequestModel requestModel = mRequestModels.get(position);
@@ -59,8 +57,6 @@ class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.MyViewHolder> {
         String request = requestModel.request().split(SPLITTER)[0];
         String city = requestModel.request().split(" / ")[1];
         int newVacanciesCount = requestModel.newVacanciesCount();
-
-        Log.e("444", "newVacancies=" + newVacanciesCount);
 
         holder.mCityTextView.setText(city);
         holder.mLetterTextView.setText(String.valueOf(request.charAt(0)).toUpperCase());

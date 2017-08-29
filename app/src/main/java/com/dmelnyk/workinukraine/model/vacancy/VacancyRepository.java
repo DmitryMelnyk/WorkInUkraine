@@ -1,8 +1,10 @@
 package com.dmelnyk.workinukraine.model.vacancy;
 
+import android.content.Context;
 import android.database.Cursor;
 import android.util.Log;
 
+import com.dmelnyk.workinukraine.R;
 import com.dmelnyk.workinukraine.business.vacancy.IVacancyInteractor;
 import com.dmelnyk.workinukraine.data.VacancyContainer;
 import com.dmelnyk.workinukraine.data.VacancyModel;
@@ -18,7 +20,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Callable;
 
 import io.reactivex.Completable;
 import io.reactivex.Observable;
@@ -31,9 +32,11 @@ import timber.log.Timber;
 public class VacancyRepository implements IVacancyRepository {
 
     private final BriteDatabase db;
+    private final Context context;
 
-    public VacancyRepository(BriteDatabase db) {
+    public VacancyRepository(BriteDatabase db, Context context) {
         this.db = db;
+        this.context = context;
     }
 
     @Override
@@ -42,7 +45,6 @@ public class VacancyRepository implements IVacancyRepository {
 
         // Get new vacancies and then clear them after displaying first time
         List<VacancyModel> newVacancies = getNewVacancies(request);
-        if (!newVacancies.isEmpty()) clearNewVacancies(request);
 
         // Vacancies from TABLE_ALL_SITES
         Observable<List<VacancyContainer>> sitesObservable =
@@ -58,6 +60,7 @@ public class VacancyRepository implements IVacancyRepository {
                         Tables.SearchSites.Columns.REQUEST + " ='" + request + "'")
                         .mapToList(VacancyContainer.MAPPER);
 
+        if (!newVacancies.isEmpty()) convertNewToRecentVacancies(request);
         db.close();
         return Observable.zip(favoriteNewRecentObservable, sitesObservable, (favorite, sites) -> {
             Map<String, Map<String, List<VacancyModel>>> result =
@@ -74,10 +77,9 @@ public class VacancyRepository implements IVacancyRepository {
 
         Cursor cursor = db.query("SELECT * FROM "
                 + Tables.SearchSites.TABLE_FAV_NEW_REC
-                + " WHERE " + Tables.SearchSites.Columns.TYPE
-                + " = '" + Tables.SearchSites.TYPE_NEW
-                + "' AND " + Tables.SearchSites.Columns.REQUEST
-                + " = '" + request + "'");
+                + " WHERE " + Tables.SearchSites.Columns.REQUEST
+                + " = '" + request + "' AND " + Tables.SearchSites.Columns.TYPE
+                + " = '" + Tables.SearchSites.TYPE_NEW + "'");
 
         if (cursor.moveToFirst()) {
             do {
@@ -100,10 +102,22 @@ public class VacancyRepository implements IVacancyRepository {
         return vacancies;
     }
 
-    private void clearNewVacancies(String request) {
+    private void convertNewToRecentVacancies(String request) {
         Timber.d("\nclearing New vacancies with request=%s", request);
-        db.delete(Tables.SearchSites.TABLE_FAV_NEW_REC, Tables.SearchSites.Columns.REQUEST + "= '" + request
-                + "' AND " + Tables.SearchSites.Columns.TYPE + "= '" + Tables.SearchSites.TYPE_NEW + "'");
+
+        db.execute("UPDATE " + Tables.SearchSites.TABLE_FAV_NEW_REC
+                + " SET " + Tables.SearchSites.Columns.TYPE + "='"
+                + Tables.SearchSites.TYPE_RECENT + "' WHERE "
+                + Tables.SearchSites.Columns.REQUEST + " ='" + request
+                + "' AND " + Tables.SearchSites.Columns.TYPE + "='"
+                + Tables.SearchSites.TYPE_NEW + "'"
+        );
+
+        // updating Request's table
+        db.execute("UPDATE " + Tables.SearchRequest.TABLE_REQUEST
+                + " SET " + Tables.SearchRequest.Columns.NEW_VACANCIES
+                + "='0' WHERE " + Tables.SearchRequest.Columns.REQUEST
+                + "='" + request + "'");
     }
 
     private Map<String, List<VacancyModel>> convertToFNRMap(
@@ -232,5 +246,15 @@ public class VacancyRepository implements IVacancyRepository {
             cursor.close();
             return Completable.error(new Exception("Vacancy already exist in list!"));
         }
+    }
+
+    @Override
+    public String[] getNewTitles() {
+        return context.getResources().getStringArray(R.array.tab_titles_with_new);
+    }
+
+    @Override
+    public String[] getRecentTitles() {
+        return context.getResources().getStringArray(R.array.tab_titles_with_recent);
     }
 }

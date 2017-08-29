@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 
 import com.dmelnyk.workinukraine.R;
 import com.dmelnyk.workinukraine.data.VacancyModel;
+import com.h6ah4i.android.tablayouthelper.TabLayoutHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,11 +53,14 @@ public class SitesTabFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.vacancy_fragment_tab, container, false);
         // Sites titles
-//        ((TabLayout)(view.findViewById(R.id.tab_layout))).
         mViewPager = (ViewPager) view.findViewById(R.id.pager);
         TabsPagerAdapter adapter = new TabsPagerAdapter(sSitesTitle, sVacancies);
         mViewPager.setAdapter(adapter);
         mViewPager.setPageTransformer(true, new ZoomOutPageTransformer());
+
+        TabLayout tabLayout = (TabLayout)(view.findViewById(R.id.tab_layout));
+        TabLayoutHelper tabLayoutHelper = new TabLayoutHelper(tabLayout, mViewPager);
+        tabLayoutHelper.setAutoAdjustTabModeEnabled(true);
 
         return view;
     }

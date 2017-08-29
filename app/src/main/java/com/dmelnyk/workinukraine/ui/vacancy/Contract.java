@@ -19,13 +19,15 @@ public class Contract {
 
         void showErrorMessage(String message);
 
-        void displayLoadingProcess();
-
-        void hideLoadingProcess();
-
-        void displayTabFragment(Map<String, Map<String, List<VacancyModel>>> vacanciesMap);
-
         void updateFavoriteTab(List<VacancyModel> vacancies);
+
+        void displayTabFragment(
+                String[] tabTitles,
+                int[] tabVacancyCount,
+                boolean isButtonTubWithNewIcon,
+                Map<String, Map<String, List<VacancyModel>>> allVacancies);
+
+        void exitActivity();
     }
 
     public interface IVacancyPresenter {

@@ -11,6 +11,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,6 +44,9 @@ import butterknife.OnClick;
 import butterknife.Unbinder;
 import timber.log.Timber;
 
+import static android.app.Activity.RESULT_CANCELED;
+import static android.app.Activity.RESULT_OK;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -60,6 +64,7 @@ public class SearchFragment extends Fragment implements
     private static final String TAG_DIALOG_DOWNLOADING = "downloading_dialog";
     private static final String TAG_DIALOG_REQUEST = "request_dialog";
     private static final String TAG_DIALOG_DELETE = "delete_dialog";
+    private static final int REQUEST_CODE_VACANCY_ACTIVITY = 1001;
 
     @BindView(R.id.backImageView)
     ImageView mBackImageView;
@@ -82,8 +87,6 @@ public class SearchFragment extends Fragment implements
 
     @Inject
     ISearchPresenter presenter;
-
-
 
     private OnFragmentInteractionListener mListener;
     private static String sItemClickedRequest = "";
@@ -108,7 +111,6 @@ public class SearchFragment extends Fragment implements
                     sTotalVacanciesCount = intent.getIntExtra(SearchVacanciesService.KEY_TOTAL_VACANCIES_COUNT, -1);
                     sDownloadingIsFinished = true;
                     mDialogDownloading.downloadingFinished(sTotalVacanciesCount);
-                    Toast.makeText(context, "Download finished!", Toast.LENGTH_SHORT).show();
                     presenter.bindView(SearchFragment.this);
                     break;
 
@@ -337,9 +339,25 @@ public class SearchFragment extends Fragment implements
     public void onItemClicked(String itemRequestTitle) {
         Timber.d("SearchAdapter.AdapterCallback.onItemClicked. Item = " + itemRequestTitle);
         sItemClickedRequest = itemRequestTitle;
-        Intent i = new Intent(getContext(), VacancyActivity.class);
-        i.setAction(itemRequestTitle);
-        startActivity(i);
+        Intent vacancyActivityIntent = new Intent(getContext(), VacancyActivity.class);
+        vacancyActivityIntent.setAction(itemRequestTitle);
+        startActivityForResult(vacancyActivityIntent, REQUEST_CODE_VACANCY_ACTIVITY);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_CODE_VACANCY_ACTIVITY) {
+            switch (resultCode) {
+                case RESULT_OK:
+                    // update request table
+                    presenter.getFreshRequests();
+                    break;
+                case RESULT_CANCELED:
+                    Toast.makeText(getContext(), R.string.no_vacancies_found, Toast.LENGTH_LONG)
+                            .show();
+                    break;
+            }
+        }
     }
 
     // DialogRequestCallbackListener add item

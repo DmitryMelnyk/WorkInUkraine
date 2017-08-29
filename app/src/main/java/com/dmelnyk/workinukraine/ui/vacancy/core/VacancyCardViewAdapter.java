@@ -79,13 +79,11 @@ public class VacancyCardViewAdapter extends RecyclerView.Adapter<VacancyCardView
         Drawable ripple_bg;
         if (position % 2 == 1) {
             ripple_bg = ContextCompat.getDrawable(mContext, R.drawable.ripple_bg_even);
-//            color = ContextCompat.getColor(mContext, R.color.white_middle);
         } else {
             ripple_bg = ContextCompat.getDrawable(mContext, R.drawable.ripple_bg_odd);
-//            color = ContextCompat.getColor(mContext, R.color.white);
         }
-//        holder.mCardviewLayout.setBackgroundColor(color);
         holder.mCardviewLayout.setBackground(ripple_bg);
+
         // creating PopupMenu using reflection:
         final PopupMenu popupMenu = new PopupMenu(mContext, holder.mMenuButton);
         try {

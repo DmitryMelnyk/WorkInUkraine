@@ -22,25 +22,6 @@ public abstract class VacancyContainer  {
         return new AutoValue_VacancyContainer(vacancyModel, type);
     }
 
-//    public static Function<Cursor, VacancyContainer> MAPPER_ALL_SITES = new Function<Cursor, VacancyContainer>() {
-//        @Override public VacancyContainer apply(@NonNull Cursor cursor) throws Exception {
-//            String request = Db.getString(cursor, Tables.SearchSites.Columns.REQUEST);
-//            String type = Db.getString(cursor, Tables.SearchSites.Columns.SITE);
-//            String title = Db.getString(cursor, Tables.SearchSites.Columns.TITLE);
-//            String date = Db.getString(cursor, Tables.SearchSites.Columns.DATE);
-//            String url = Db.getString(cursor, Tables.SearchSites.Columns.URL);
-//
-//            VacancyModel vacancy = VacancyModel.builder()
-//                    .setRequest(request)
-//                    .setTitle(title)
-//                    .setDate(date)
-//                    .setUrl(url)
-//                    .build();
-//
-//            return create(vacancy, type);
-//        }
-//    };
-
     public static Function<Cursor, VacancyContainer> MAPPER = new Function<Cursor, VacancyContainer>() {
         @Override public VacancyContainer apply(@NonNull Cursor cursor) throws Exception {
             String request = Db.getString(cursor, Tables.SearchSites.Columns.REQUEST);
@@ -59,4 +40,10 @@ public abstract class VacancyContainer  {
             return create(vacancy, type);
         }
     };
+
+    @Override
+    public boolean equals(Object obj) {
+        VacancyContainer v = (VacancyContainer) obj;
+        return this.getVacancy().url().equals(v.getVacancy().url());
+    }
 }

@@ -34,6 +34,16 @@ public class VacancyInteractor implements IVacancyInteractor {
     }
 
     @Override
+    public String[] getTitles(String type) {
+        if (type.equals(TITLE_NEW)) {
+            return repository.getNewTitles();
+        } else {
+            return repository.getRecentTitles();
+        }
+
+    }
+
+    @Override
     public Completable onPopupMenuClicked(VacancyModel vacancy,
                                           @VacancyCardViewAdapter.VacancyPopupMenuType int operation) {
         switch (operation) {

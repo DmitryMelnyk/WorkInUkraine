@@ -56,7 +56,7 @@ public class VacancyPresenter implements Contract.IVacancyPresenter {
         if (sDataCache != null) {
             // successful result
             Log.e("!!!", "VacancyPresenter. sDataCache=" + sDataCache);
-            view.displayTabFragment(sDataCache);
+            displayData(sDataCache);
         } else if (sError != null) {
             // error result
             view.showErrorMessage(sError);
@@ -64,16 +64,57 @@ public class VacancyPresenter implements Contract.IVacancyPresenter {
         }
     }
 
+    private void displayData(Map<String, Map<String, List<VacancyModel>>> vacanciesMap) {
+        int[] tabVacancyCount = new int[3];
+        String[] tabTitles;
+        boolean buttonTubWithNewIcon;
+
+        // Counting vacancies count in all tab sites
+        int siteTabsCount = 0;
+        // Counts all vacancies
+        for (Map.Entry<String, List<VacancyModel>> vacancyList :
+                vacanciesMap.get(IVacancyInteractor.DATA_TAB_SITES).entrySet()) {
+            siteTabsCount += vacancyList.getValue().size();
+        }
+
+        tabVacancyCount[0] = siteTabsCount;
+        if (siteTabsCount == 0) {
+            view.exitActivity();
+            clear();
+            return;
+        }
+
+        // Counts vacancies
+        int newVacanciesCount = vacanciesMap.get(IVacancyInteractor.DATA_OTHER_TABS)
+                .get(IVacancyInteractor.VACANCIES_NEW).size();
+        int recentVacanciesCount = vacanciesMap.get(IVacancyInteractor.DATA_OTHER_TABS)
+                .get(IVacancyInteractor.VACANCIES_RECENT).size();
+        int favoriteVacanciesCount = vacanciesMap.get(IVacancyInteractor.DATA_OTHER_TABS)
+                .get(IVacancyInteractor.VACANCIES_FAVORITE).size();
+
+        if (newVacanciesCount != 0) {
+            tabTitles = interactor.getTitles(IVacancyInteractor.TITLE_NEW);
+            tabVacancyCount[1] = newVacanciesCount;
+            buttonTubWithNewIcon = true;
+        } else {
+            tabTitles = interactor.getTitles(IVacancyInteractor.TITLE_RECENT);
+            tabVacancyCount[1] = recentVacanciesCount;
+            buttonTubWithNewIcon = false;
+        }
+
+        tabVacancyCount[2] = favoriteVacanciesCount;
+        view.displayTabFragment(tabTitles, tabVacancyCount, buttonTubWithNewIcon, vacanciesMap);
+    }
+
     private void getAllVacancies(String request) {
         interactor.getAllVacancies(request)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(vacanciesMap -> {
-                    Log.e("!!! VacancyPr. All = ", vacanciesMap.toString());
                     sDataCache = new HashMap<>(vacanciesMap);
                     if (view != null) {
                         sIsDisplayed = true;
-                        view.displayTabFragment(vacanciesMap);
+                        displayData(sDataCache);
                     }
                 }, throwable -> {
                     Timber.e(throwable.getStackTrace().toString());

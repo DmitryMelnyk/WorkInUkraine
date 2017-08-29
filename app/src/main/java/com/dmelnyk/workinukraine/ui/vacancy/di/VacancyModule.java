@@ -1,5 +1,7 @@
 package com.dmelnyk.workinukraine.ui.vacancy.di;
 
+import android.content.Context;
+
 import com.dmelnyk.workinukraine.business.vacancy.IVacancyInteractor;
 import com.dmelnyk.workinukraine.business.vacancy.VacancyInteractor;
 import com.dmelnyk.workinukraine.data.VacancyModel;
@@ -20,15 +22,17 @@ import dagger.Provides;
 public class VacancyModule {
 
     private final String request;
+    private final Context context;
 
-    public VacancyModule(String request) {
+    public VacancyModule(String request, Context context) {
         this.request = request;
+        this.context = context.getApplicationContext();
     }
 
     @Provides
     @VacancyScope
     IVacancyRepository provideIVacancyRepository(BriteDatabase db) {
-        return new VacancyRepository(db);
+        return new VacancyRepository(db, context);
     }
 
     @Provides

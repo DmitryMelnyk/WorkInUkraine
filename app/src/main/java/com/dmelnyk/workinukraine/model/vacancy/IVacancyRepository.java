@@ -27,4 +27,14 @@ public interface IVacancyRepository {
     Completable saveToFavorite(VacancyModel vacancy);
 
     Observable<Map<String, Map<String, List<VacancyModel>>>> getAllVacancies(String request);
+
+    /**
+     * @return The array of Strings titles from resources with New tab
+     */
+    String[] getNewTitles();
+
+    /**
+     * @return The array of Strings titles from resources with Recent tab
+     */
+    String[] getRecentTitles();
 }

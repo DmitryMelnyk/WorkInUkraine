@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -48,19 +49,18 @@ public class VacancyActivity extends AppCompatActivity implements
     private static final String KEY_TAB_TITLES = "tab_titles";
     private static final String KEY_TAB_VACANCY_COUNT = "tab_vacancy_count";
     private static final String KEY_ORIENTATION_CHANGED = "orientation_changed";
-    @Inject
-    Contract.IVacancyPresenter presenter;
+
+    @Inject Contract.IVacancyPresenter presenter;
 
     @BindView(R.id.title_text_view) TextView mTitleTextView;
     @BindView(R.id.vacancies_count_text_view) TextView mTitleVacanciesCountTextView;
-    @BindView(R.id.pager) CustomViewPager mViewPager;
+    @BindView(R.id.pager) ViewPager mViewPager;
     @BindView(R.id.button_tabs) ButtonTabs mButtonTabs;
     private ScreenSlidePagerAdapter mSlideAdapter;
     private String mRequest;
 
     private int[] mTabVacancyCount;
     private String[] mTabTitles;
-    private Map<String, Map<String, List<VacancyModel>>> mAllVacancies;
     private boolean orientationHasChanged;
 
     @OnClick(R.id.back_image_view)
@@ -71,7 +71,7 @@ public class VacancyActivity extends AppCompatActivity implements
     private void initializeDependency(String request) {
         DaggerVacancyComponent.builder()
                 .dbModule(new DbModule(getApplicationContext()))
-                .vacancyModule(new VacancyModule(request))
+                .vacancyModule(new VacancyModule(request, getApplicationContext()))
                 .build().inject(this);
     }
 
@@ -122,15 +122,9 @@ public class VacancyActivity extends AppCompatActivity implements
 
     @Override
     public void onBackPressed() {
-        onStop();
         presenter.clear();
+        setResult(RESULT_OK);
         finish();
-    }
-
-    @Override
-    protected void onDestroy() {
-        Log.e("444", "onDestroy");
-        super.onDestroy();
     }
 
     @Override
@@ -204,56 +198,30 @@ public class VacancyActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void displayLoadingProcess() {
-        Toast.makeText(this, "Loading starts", Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void hideLoadingProcess() {
-        Toast.makeText(this, "Loading finished", Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
     public void displayTabFragment(
-            Map<String, Map<String, List<VacancyModel>>> vacanciesMap) {
+            String[] tabTitles,
+            int[] tabVacancyCount,
+            boolean isButtonTubWithNewIcon,
+            Map<String, Map<String, List<VacancyModel>>> allVacancies) {
 
-        mAllVacancies = new HashMap<>(vacanciesMap);
-        mTabVacancyCount = new int[3];
-
-        int siteTabsCount = 0;
-        // Counts all vacancies
-        for (Map.Entry<String, List<VacancyModel>> vacancyList :
-                mAllVacancies.get(IVacancyInteractor.DATA_TAB_SITES).entrySet()) {
-            siteTabsCount += vacancyList.getValue().size();
-        }
-
-        mTabVacancyCount[0] = siteTabsCount;
-
-        List<VacancyModel> newVacanciesList = mAllVacancies.get(IVacancyInteractor.DATA_OTHER_TABS)
-                .get(IVacancyInteractor.VACANCIES_NEW);
-
-        // Display NEW or RECENT tab
-        if (newVacanciesList != null && newVacanciesList.size() != 0) {
-            mTabTitles = getResources().getStringArray(R.array.tab_titles_with_new);
-            mTabVacancyCount[1] = newVacanciesList.size();
-            initializeButtonTabs(true);
-        } else {
-            mTabTitles = getResources().getStringArray(R.array.tab_titles_with_recent);
-            mTabVacancyCount[1] = mAllVacancies.get(IVacancyInteractor.DATA_OTHER_TABS)
-                    .get(IVacancyInteractor.VACANCIES_RECENT).size();
-            initializeButtonTabs(false);
-        }
-
-        mTabVacancyCount[2] = mAllVacancies.get(IVacancyInteractor.DATA_OTHER_TABS)
-                .get(IVacancyInteractor.VACANCIES_FAVORITE).size();
-
+        // initialize ButtonTubs
+        initializeButtonTabs(isButtonTubWithNewIcon);
+        // Initialize tab titles
+        mTabTitles = tabTitles;
+        mTabVacancyCount = tabVacancyCount;
         mSlideAdapter = new ScreenSlidePagerAdapter(
-                getSupportFragmentManager(), mTabTitles, mAllVacancies);
+                getSupportFragmentManager(), mTabTitles, allVacancies);
         mViewPager.setAdapter(mSlideAdapter);
 
         if (!orientationHasChanged) {
             updateTitleView(0);
         }
+    }
+
+    @Override
+    public void exitActivity() {
+        setResult(RESULT_CANCELED);
+        finish();
     }
 
     public void initializeButtonTabs(boolean withNewVacanciesTab) {

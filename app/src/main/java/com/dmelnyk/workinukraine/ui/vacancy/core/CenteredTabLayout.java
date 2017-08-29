@@ -3,9 +3,12 @@ package com.dmelnyk.workinukraine.ui.vacancy.core;
 import android.content.Context;
 import android.support.design.widget.TabLayout;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.ViewGroup;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 /**
  * Created by d264 on 8/20/17.
@@ -27,24 +30,28 @@ public class CenteredTabLayout extends TabLayout {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+
         ViewGroup tabLayout = (ViewGroup)getChildAt(0);
+        int screenWidth = getResources().getDisplayMetrics().widthPixels;
 
-        int childCount = tabLayout.getChildCount();
+        int childCount = getTabCount();
+        if (childCount == 0) return;
 
-        int widths[] = new int[childCount];
-        int globalChildWidth = 0;
+        int childrenWidth = 0;
         for(int i = 0; i < childCount; i++){
-            globalChildWidth += widths[i] = tabLayout.getChildAt(i).getMeasuredWidth();
+            childrenWidth += tabLayout.getChildAt(i).getMeasuredWidth();
+            Log.d("CenteredTabLayout", "childWidth=" + tabLayout.getChildAt(i).getMeasuredWidth());
         }
 
-        int measuredWidth = getMeasuredWidth();
-        int freeSpace = measuredWidth - globalChildWidth;
-        if (freeSpace < 0) return;
-
-        int additionWidth = freeSpace / childCount;
-        for(int i = 0; i < childCount; i++){
-            tabLayout.getChildAt(i).setMinimumWidth(widths[i] + additionWidth);
+        if (childrenWidth == screenWidth) return;
+        if (childrenWidth < screenWidth) {
+            setTabMode(MODE_FIXED);
+            setTabGravity(GRAVITY_FILL);
+        } else {
+            setTabMode(MODE_SCROLLABLE);
         }
 
+        Log.d("CenteredTabLayout", "mode=" + (getTabMode() == 0 ? "MODE_SCROLLABLE" : "MODE_FIXED"));
+        Log.d("CenteredTabLayout", "gravity=" + (getTabGravity() == 0 ? "GRAVITY_FILL" : "GRAVITY_CENTER"));
     }
 }

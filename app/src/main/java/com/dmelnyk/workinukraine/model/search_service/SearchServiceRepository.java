@@ -80,19 +80,17 @@ public class SearchServiceRepository implements ISearchServiceRepository {
             if (!newVacancies.isEmpty()) {
                 // clearing new and recent vacancies
                 clearVacanciesFromFavNewRecTable(Tables.SearchSites.TYPE_RECENT, request);
-                clearVacanciesFromFavNewRecTable(Tables.SearchSites.TYPE_NEW, request);
-                // write new vacancies with TYPE_NEW and TYPE_RECENT;
-                writeVacanciesToFavNewRecTable(Tables.SearchSites.TYPE_RECENT, newVacancies);
+                // write new vacancies with TYPE_NEW;
                 writeVacanciesToFavNewRecTable(Tables.SearchSites.TYPE_NEW, newVacancies);
             }
         } else {
             // all vacancies are new
-            Log.e("!!!", "Writing vacancies RECENT and NEW " + allVacancies.size());
-            writeVacanciesToFavNewRecTable(Tables.SearchSites.TYPE_RECENT, allVacancies);
+            Log.e("!!!", "Writing vacancies NEW " + allVacancies.size());
             writeVacanciesToFavNewRecTable(Tables.SearchSites.TYPE_NEW, allVacancies);
             newVacanciesCount = allVacancies.size();
         }
 
+        if (newVacanciesCount == 0) return;
         // clear previous vacancies
         clearVacanciesFromAllTable(request);
         // write all vacancies to corresponding table

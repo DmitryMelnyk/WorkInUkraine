@@ -1,5 +1,7 @@
 package com.dmelnyk.workinukraine.ui.search;
 
+import android.util.Log;
+
 import com.dmelnyk.workinukraine.business.search.ISearchInteractor;
 import com.dmelnyk.workinukraine.data.RequestModel;
 import com.dmelnyk.workinukraine.ui.search.Contract.ISearchView;
@@ -29,14 +31,23 @@ public class SearchPresenter implements Contract.ISearchPresenter {
     public void bindView(ISearchView view) {
         this.view = view;
         if (view != null) {
-            disposableRequests = interactor.getRequests()
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(requestsList -> {
-                        view.updateData((ArrayList<RequestModel>) requestsList);
-                        view.updateVacanciesCount(countAllVacancies(requestsList));
-                        view.updateNewVacanciesCount(countAllNewVacancies(requestsList));
-                    });
+            getRequests(view);
         }
+    }
+
+    private void getRequests(ISearchView view) {
+        disposableRequests = interactor.getRequests()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(requestsList -> {
+                    view.updateData((ArrayList<RequestModel>) requestsList);
+                    view.updateVacanciesCount(countAllVacancies(requestsList));
+                    view.updateNewVacanciesCount(countAllNewVacancies(requestsList));
+                });
+    }
+
+    @Override
+    public void getFreshRequests() {
+        getRequests(view);
     }
 
     private int countAllNewVacancies(List<RequestModel> requestsList) {
@@ -63,7 +74,8 @@ public class SearchPresenter implements Contract.ISearchPresenter {
 
     @Override
     public void addNewRequest(String request) {
-        interactor.saveRequest(request).observeOn(AndroidSchedulers.mainThread())
+        interactor.saveRequest(request)
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(() -> { },
                         throwable -> view.showErrorMessage(throwable.getMessage()));
     }

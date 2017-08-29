@@ -31,6 +31,12 @@ public interface IVacancyInteractor {
     String DATA_OTHER_TABS = "data for favorite, new and recent tabs";
     String DATA_TAB_SITES = "data to tab sites";
 
+    String TITLE_NEW = "new_tytles";
+    String TITLE_RECENT = "recent_tytles";
+    @StringDef({ TITLE_NEW, TITLE_RECENT })
+    @Retention(RetentionPolicy.CLASS)
+    public @interface TitleResource {}
+
     @StringDef({ VACANCIES_ALL, VACANCIES_FAVORITE, VACANCIES_NEW, VACANCIES_RECENT,
             VACANCIES_SITE_HH, VACANCIES_SITE_JU, VACANCIES_SITE_RU,
             VACANCIES_SITE_WN, VACANCIES_SITE_WU})
@@ -38,7 +44,6 @@ public interface IVacancyInteractor {
     public @interface VacancyResource {}
 
     Observable<Map<String, Map<String, List<VacancyModel>>>> getAllVacancies(String request);
-
     /**
      * Returns a list of vacancies
      * @param request Vacancy request in format "request / city"
@@ -47,6 +52,11 @@ public interface IVacancyInteractor {
      */
     Observable<List<VacancyModel>> getFavoriteVacancies(String request, String table);
 
+    /**
+     * @param type The type of vacancies: new or recent
+     * @return Array of String values
+     */
+    String[] getTitles(@TitleResource String type);
     /**
      * Removes or saves to favorite vacancy
      * @param vacancy Vacancy that should be treated

@@ -31,5 +31,7 @@ public class Contract {
         void removeRequest(String mItemClicked);
 
         void clearAllRequest();
+
+        void getFreshRequests();
     }
 }

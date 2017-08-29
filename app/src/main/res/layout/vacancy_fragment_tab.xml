@@ -9,14 +9,15 @@
 
     <com.dmelnyk.workinukraine.ui.vacancy.core.CenteredTabLayout
         android:id="@+id/tab_layout"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:elevation="6dp"
-        android:overScrollMode="never"
         android:paddingBottom="4dp"
         app:tabTextAppearance="@style/TextAppearance.Design.Tab"
         app:tabSelectedTextColor="@color/colorPrimary"
+        app:tabIndicatorColor="@color/green"
         app:tabMode="scrollable"
+        app:tabMinWidth="0dp"
         />
 
 </android.support.v4.view.ViewPager>

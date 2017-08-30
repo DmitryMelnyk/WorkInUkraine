@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -15,10 +14,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.dmelnyk.workinukraine.R;
-import com.dmelnyk.workinukraine.business.vacancy.IVacancyInteractor;
 import com.dmelnyk.workinukraine.data.VacancyModel;
 import com.dmelnyk.workinukraine.db.di.DbModule;
-import com.dmelnyk.workinukraine.ui.activity_webview.WebViewActivity;
+import com.dmelnyk.workinukraine.ui.vacancy_webview.WebViewActivity;
 import com.dmelnyk.workinukraine.ui.vacancy.core.BaseTabFragment;
 import com.dmelnyk.workinukraine.ui.vacancy.core.SitesTabFragment;
 import com.dmelnyk.workinukraine.ui.vacancy.core.VacancyCardViewAdapter;
@@ -26,9 +24,7 @@ import com.dmelnyk.workinukraine.ui.vacancy.core.ScreenSlidePagerAdapter;
 import com.dmelnyk.workinukraine.ui.vacancy.di.DaggerVacancyComponent;
 import com.dmelnyk.workinukraine.ui.vacancy.di.VacancyModule;
 import com.dmelnyk.workinukraine.utils.ButtonTabs;
-import com.dmelnyk.workinukraine.utils.CustomViewPager;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -84,7 +80,7 @@ public class VacancyActivity extends AppCompatActivity implements
         mRequest = getIntent().getAction();
         initializeDependency(mRequest);
         initializeViews();
-        Log.e("!!!", "request = " + mRequest);
+        presenter.bindView(this, mRequest);
     }
 
     @Override
@@ -111,7 +107,7 @@ public class VacancyActivity extends AppCompatActivity implements
     @Override
     protected void onResume() {
         super.onResume();
-        presenter.bindView(this, mRequest);
+        presenter.bindJustView(this);
     }
 
     @Override
@@ -151,13 +147,8 @@ public class VacancyActivity extends AppCompatActivity implements
 
     @Override
     public void onFragmentInteractionItemClicked(VacancyModel vacancy, View bodyTextView) {
-        Toast.makeText(this, "Vacancy that should be opened = " + vacancy, Toast.LENGTH_SHORT).show();
         Intent webview = WebViewActivity.newInstance(this, vacancy.title(), vacancy.url());
-        // run transaction activity
-//        ActivityOptionsCompat option = ActivityOptionsCompat.makeSceneTransitionAnimation(this,
-//                bodyTextView, getString(R.string.transition_webview_title));
-
-        startActivity(webview/*, option.toBundle()*/);
+        startActivity(webview);
     }
 
     @Override

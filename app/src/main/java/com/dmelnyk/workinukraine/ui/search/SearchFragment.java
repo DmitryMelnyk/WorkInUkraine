@@ -66,22 +66,14 @@ public class SearchFragment extends Fragment implements
     private static final String TAG_DIALOG_DELETE = "delete_dialog";
     private static final int REQUEST_CODE_VACANCY_ACTIVITY = 1001;
 
-    @BindView(R.id.backImageView)
-    ImageView mBackImageView;
-    @BindView(R.id.settings_image_view)
-    ImageView mSettingsImageView;
-    @BindView((R.id.recyclerView))
-    RecyclerView mRecyclerView;
-    @BindView(R.id.buttonAdd)
-    ImageView mButtonAdd;
-    @BindView(R.id.buttonSearch)
-    ImageView mButtonSearch;
-    @BindView(R.id.vacancies_count_text_view)
-    TextView mVacanciesCountTextView;
-    @BindView(R.id.new_vacancies_text_view)
-    TextView mNewVacanciesTextView;
-    @BindView(R.id.refreshed_text_view)
-    TextView mLastUpdateTimeTextView;
+    @BindView(R.id.backImageView) ImageView mBackImageView;
+    @BindView(R.id.settings_image_view) ImageView mSettingsImageView;
+    @BindView((R.id.recyclerView)) RecyclerView mRecyclerView;
+    @BindView(R.id.buttonAdd) ImageView mButtonAdd;
+    @BindView(R.id.buttonSearch) ImageView mButtonSearch;
+    @BindView(R.id.vacancies_count_text_view) TextView mVacanciesCountTextView;
+    @BindView(R.id.new_vacancies_text_view) TextView mNewVacanciesTextView;
+    @BindView(R.id.refreshed_text_view) TextView mLastUpdateTimeTextView;
     @BindView(R.id.new_text_view) TextView mNewTextView;
     Unbinder unbinder;
 
@@ -171,7 +163,6 @@ public class SearchFragment extends Fragment implements
         popupMenu.setOnMenuItemClickListener(view -> {
             switch (view.getItemId()) {
                 case R.id.menu_clear_requests:
-                    // TODO : realize clearing requests
                     Toast.makeText(getContext(), "Todo: Clearing all requests!", Toast.LENGTH_SHORT).show();
                     presenter.clearAllRequest();
                     break;
@@ -261,7 +252,6 @@ public class SearchFragment extends Fragment implements
 
     @OnClick({R.id.backImageView, R.id.buttonAdd, R.id.buttonSearch})
     public void onViewClicked(View view) {
-        // TODO update dialog
         switch (view.getId()) {
             case R.id.backImageView:
                 mListener.onFragmentInteraction();
@@ -316,6 +306,11 @@ public class SearchFragment extends Fragment implements
     @Override
     public void updateVacanciesCount(int allVacanciesCount) {
         mVacanciesCountTextView.setText("" + allVacanciesCount);
+    }
+
+    @Override
+    public void updateLastSearchTime(String updated) {
+        mLastUpdateTimeTextView.setText(getString(R.string.refreshed) + ": " + updated);
     }
 
     @Override

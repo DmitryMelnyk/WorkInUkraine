@@ -3,10 +3,7 @@
     <declare-styleable name="ButtonTabs">
         <attr name="animation" format="boolean" />
         <attr name="backgroundColor" format="color" />
+        <attr name="foregroundColor" format="color" />
         <attr name="cornersRadius" format="dimension" />
-        <!--<attr name="labelPosition" format="enum">-->
-            <!--<enum name="left" value="0"/>-->
-            <!--<enum name="right" value="1"/>-->
-        <!--</attr>-->
     </declare-styleable>
 </resources>

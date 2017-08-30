@@ -6,8 +6,11 @@ import com.dmelnyk.workinukraine.business.search.ISearchInteractor;
 import com.dmelnyk.workinukraine.data.RequestModel;
 import com.dmelnyk.workinukraine.ui.search.Contract.ISearchView;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
@@ -42,7 +45,19 @@ public class SearchPresenter implements Contract.ISearchPresenter {
                     view.updateData((ArrayList<RequestModel>) requestsList);
                     view.updateVacanciesCount(countAllVacancies(requestsList));
                     view.updateNewVacanciesCount(countAllNewVacancies(requestsList));
+                    updateLastUpdateTime(requestsList);
                 });
+    }
+
+    private void updateLastUpdateTime(List<RequestModel> requestsList) {
+        if (requestsList.isEmpty()) {
+
+        } else {
+            long time = requestsList.get(0).updated();
+            SimpleDateFormat timeFormat = new SimpleDateFormat("EE, HH:mm", Locale.getDefault());
+            String updated = timeFormat.format(new Date(time));
+            view.updateLastSearchTime(updated);
+        }
     }
 
     @Override

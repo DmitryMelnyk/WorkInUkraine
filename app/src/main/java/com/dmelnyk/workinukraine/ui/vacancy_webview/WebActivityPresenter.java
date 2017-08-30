@@ -1,11 +1,8 @@
-package com.dmelnyk.workinukraine.ui.activity_webview;
+package com.dmelnyk.workinukraine.ui.vacancy_webview;
 
 import android.content.Context;
 
 import com.dmelnyk.workinukraine.R;
-import com.dmelnyk.workinukraine.application.WorkInUaApplication;
-
-import javax.inject.Inject;
 
 /**
  * Created by dmitry on 14.04.17.

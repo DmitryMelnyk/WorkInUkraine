@@ -72,15 +72,11 @@ public class NavigationActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_navigation);
 
-//        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-//        setSupportActionBar(toolbar);
-
         // initialize dagger2
         WorkInUaApplication.get(this).getAppComponent()
                 .add(new NavigationModule()).inject(this);
 
         navigator = new SlidingRootNavBuilder(this)
-//                .withToolbarMenuToggle(toolbar)
                 .withMenuOpened(true)
                 .withSavedState(savedInstanceState)
                 .withMenuLayout(R.layout.menu_drawer)
@@ -101,7 +97,6 @@ public class NavigationActivity extends AppCompatActivity implements
                 createItemFor(NAV_EXIT_POSITION)));
 
         adapter.setListener(this);
-
         RecyclerView list = (RecyclerView) findViewById(R.id.list);
         list.setNestedScrollingEnabled(false);
         list.setLayoutManager(new LinearLayoutManager(this));
@@ -148,10 +143,10 @@ public class NavigationActivity extends AppCompatActivity implements
 
     private DrawerItem createItemFor(int position) {
         return new SimpleItem(screenIcons[position], screenTitles[position])
-                .withIconTint(color(R.color.textColorSecondary))
-                .withTextTint(color(R.color.textColorPrimary))
-                .withSelectedIconTint(color(R.color.violet))
-                .withSelectedTextTint(color(R.color.violet));
+                .withIconTint(color(R.color.colorPrimary))
+                .withTextTint(color(R.color.colorPrimary))
+                .withSelectedIconTint(color(R.color.colorAccent))
+                .withSelectedTextTint(color(R.color.colorAccent));
     }
 
     @ColorInt

@@ -64,6 +64,11 @@ public class VacancyPresenter implements Contract.IVacancyPresenter {
         }
     }
 
+    @Override
+    public void bindJustView(Contract.IVacancyView view) {
+        this.view = view;
+    }
+
     private void displayData(Map<String, Map<String, List<VacancyModel>>> vacanciesMap) {
         int[] tabVacancyCount = new int[3];
         String[] tabTitles;

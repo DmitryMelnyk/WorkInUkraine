@@ -1,4 +1,4 @@
-package com.dmelnyk.workinukraine.ui.activity_webview;
+package com.dmelnyk.workinukraine.ui.vacancy_webview;
 
 /**
  * Created by dmitry on 14.04.17.

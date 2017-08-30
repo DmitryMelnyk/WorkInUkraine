@@ -18,7 +18,8 @@
         android:paddingStart="24dp"
         android:text="@string/nav_founded_vacancies"
         android:textColor="@color/textColor"
-        android:textSize="12sp" />
+        android:textSize="12sp"
+        />
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -38,13 +39,13 @@
             android:id="@+id/menu_nearest_alarm"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            fontPath="fonts/digital.ttf"
             android:paddingLeft="24dp"
             android:paddingRight="24dp"
             android:layout_marginTop="6dp"
             android:textSize="36sp"
             android:text="84"
             android:textColor="@color/textColor"
+            fontPath="fonts/FranckerCYR-ExtraBold.otf"
             tools:ignore="MissingPrefix" />
 
     </LinearLayout>

@@ -13,7 +13,10 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/fragment_toolbar_height"
         android:background="@color/colorPrimary"
-        app:title=""
+        android:contentInsetLeft="0dp"
+        android:contentInsetStart="0dp"
+        app:contentInsetLeft="0dp"
+        app:contentInsetStart="0dp"
         app:popupTheme="@style/AppTheme.PopupOverlay"
         >
 
@@ -60,9 +63,9 @@
     </android.support.v7.widget.Toolbar>
 
     <ProgressBar
-        android:id="@+id/fragment_vacancy_progress_bar"
+        android:id="@+id/progress_bar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="1dp"
         android:layout_alignParentTop="true"
         android:visibility="visible"
         android:background="?attr/colorPrimary"

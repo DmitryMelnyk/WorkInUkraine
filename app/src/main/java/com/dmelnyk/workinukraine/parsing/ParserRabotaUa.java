@@ -19,8 +19,12 @@ import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.List;
 
 import javax.inject.Inject;
+
+import timber.log.Timber;
 
 /**
  * Created by dmitry on 07.03.17.
@@ -89,6 +93,19 @@ public class ParserRabotaUa {
             }
         }
 
+        // check if any vacancy contain needed request
+        if (vacancies.size() == 20) {
+            boolean isAnyVacancyContainsRequest = false;
+            for (VacancyContainer vacancy : vacancies) {
+                if (vacancy.getVacancy().title().toLowerCase()
+                        .contains(request.split(" / ")[0].toLowerCase())) {
+                    isAnyVacancyContainsRequest = true;
+                    break;
+                }
+            }
+
+            if (!isAnyVacancyContainsRequest) return new ArrayList<>();
+        }
         Log.d(TAG, "found " + vacancies.size() + " vacancies");
         return vacancies;
     }

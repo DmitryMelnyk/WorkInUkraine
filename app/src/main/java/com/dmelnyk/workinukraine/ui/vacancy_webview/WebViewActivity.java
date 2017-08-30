@@ -1,4 +1,4 @@
-package com.dmelnyk.workinukraine.ui.activity_webview;
+package com.dmelnyk.workinukraine.ui.vacancy_webview;
 
 import android.content.Context;
 import android.content.Intent;
@@ -29,7 +29,7 @@ public class WebViewActivity extends AppCompatActivity implements Contract.View{
     private static final String EXTRA_URL = "extra_url";
 
     @BindView(R.id.toolbar) Toolbar toolbar;
-    @BindView(R.id.fragment_vacancy_progress_bar) ProgressBar bar;
+    @BindView(R.id.progress_bar) ProgressBar bar;
     @BindView(R.id.web_view) WebView mWebView;
 
     private String mUrl;

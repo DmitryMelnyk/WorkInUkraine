@@ -26,9 +26,6 @@ import android.view.View;
 
 import com.dmelnyk.workinukraine.R;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import timber.log.Timber;
 
 /**
@@ -52,7 +49,7 @@ public class ButtonTabs extends View {
     // Attributes
     private boolean mAnimationEnabled;
     private int mBackgroundColor = Color.parseColor("#675df7");;
-    private final int mLightTabColor;
+    private final int mForegroundTabColor;
 
     private float mAnimatedRadius = 0f;
     private float mRadius;
@@ -76,8 +73,9 @@ public class ButtonTabs extends View {
         try {
             mAnimationEnabled = a.getBoolean(R.styleable.ButtonTabs_animation, true);
             mBackgroundColor = a.getColor(R.styleable.ButtonTabs_backgroundColor,
+                    ContextCompat.getColor(context, android.R.color.darker_gray));
+            mForegroundTabColor = a.getColor(R.styleable.ButtonTabs_foregroundColor,
                     ContextCompat.getColor(context, android.R.color.white));
-            mLightTabColor = ContextCompat.getColor(getContext(), android.R.color.white);
 
         } finally { a.recycle(); }
 
@@ -88,12 +86,12 @@ public class ButtonTabs extends View {
         mBackgroundDrawable = new BackgroundDrawable(mBackgroundColor);
 
         mCircleLightPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        mCircleLightPaint.setColor(mLightTabColor);
+        mCircleLightPaint.setColor(mForegroundTabColor);
         mCircleLightPaint.setAntiAlias(true);
         mCircleLightPaint.setAlpha(mGlobalAlpha);
 
         mCircleAnimationPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        mCircleAnimationPaint.setColor(mLightTabColor);
+        mCircleAnimationPaint.setColor(mForegroundTabColor);
         mCircleAnimationPaint.setAlpha(100);
 
         mDetector = new GestureDetector(ButtonTabs.this.getContext(), new TapListener());

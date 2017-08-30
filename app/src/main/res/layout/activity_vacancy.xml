@@ -17,9 +17,10 @@
             android:id="@+id/toolbar_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/kiev_bg"
+            android:background="@color/colorPrimary"
             app:titleEnabled="true"
-            app:contentScrim="?attr/colorPrimary"
+            app:title="Title"
+            app:contentScrim="@color/blue_dark"
             app:layout_scrollFlags="scroll|exitUntilCollapsed"
             >
 
@@ -113,7 +114,7 @@
         app:fabSize="normal"
         app:layout_anchor="@id/app_bar"
         app:layout_anchorGravity="bottom|right|end"
-        app:srcCompat="@drawable/ic_settings" />
+        app:srcCompat="@mipmap/ic_settings_white" />
 
     <com.dmelnyk.workinukraine.utils.ButtonTabs
         android:id="@+id/button_tabs"
@@ -125,7 +126,8 @@
         android:padding="5dp"
         android:visibility="gone"
         app:animation="true"
-        app:backgroundColor="@color/violet_light"
+        app:backgroundColor="@color/colorAccent"
+        app:foregroundColor="@color/white_soft"
         app:layout_anchor="@id/app_bar"
         app:layout_anchorGravity="start|left|bottom"/>
 

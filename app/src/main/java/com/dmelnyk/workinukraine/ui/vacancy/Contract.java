@@ -33,6 +33,8 @@ public class Contract {
     public interface IVacancyPresenter {
         void bindView(IVacancyView view, String request);
 
+        void bindJustView(IVacancyView view);
+
         void unbindView();
 
         void onItemPopupMenuClicked(

@@ -20,6 +20,8 @@ public class Contract {
         void updateVacanciesCount(int allVacanciesCount);
 
         void showErrorMessage(String message);
+
+        void updateLastSearchTime(String updated);
     }
 
     public interface ISearchPresenter {

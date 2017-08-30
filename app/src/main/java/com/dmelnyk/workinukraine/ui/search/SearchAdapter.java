@@ -2,7 +2,6 @@ package com.dmelnyk.workinukraine.ui.search;
 
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -74,6 +73,7 @@ class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.MyViewHolder> {
                     ContextCompat.getColor(holder.itemView.getContext(), R.color.white_soft));
             holder.mItemLayout.setBackgroundColor(
                     ContextCompat.getColor(holder.itemView.getContext(), R.color.green));
+            holder.mLetterTextView.setShadowLayer(3, 2, 2, R.color.text_shadow_white);
         } else {
             holder.mNewVacanciesCountTextView.setVisibility(View.GONE);
             holder.mCityTextView.setTextColor(
@@ -84,10 +84,8 @@ class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.MyViewHolder> {
                     ContextCompat.getColor(holder.itemView.getContext(), R.color.green));
             holder.mItemLayout.setBackgroundColor(
                     ContextCompat.getColor(holder.itemView.getContext(), R.color.white_soft));
+            holder.mLetterTextView.setShadowLayer(3, -2, -2, R.color.blue_dark);
         }
-
-//        SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
-//        String updated = timeFormat.format(new Date(requestModel.updated()));
     }
 
     @Override

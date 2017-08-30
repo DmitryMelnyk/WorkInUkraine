@@ -56,9 +56,6 @@ dependencies {
     compile 'com.android.support:design:25.2.0'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
 
-    // ScalebleLayout
-    compile 'com.ssomai:android.scalablelayout:2.1.0'
-
     // ButterKnife
     compile 'com.jakewharton:butterknife:8.5.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
@@ -69,19 +66,12 @@ dependencies {
     // Preference Settings library
     compile 'com.takisoft.fix:preference-v7:25.3.1.0'
 
-    // SmartTabLayout library https://github.com/ogaclejapan/SmartTabLayout
-    compile 'com.ogaclejapan.smarttablayout:library:1.6.1@aar'
-    compile 'com.ogaclejapan.smarttablayout:utils-v4:1.6.1@aar'
-
     // Library for parsing web
     compile 'com.squareup.moshi:moshi:1.4.0'
     compile 'org.jsoup:jsoup:1.10.2'
 
     // Http request library
     compile 'com.squareup.okhttp3:okhttp:3.6.0'
-
-    // Loading spinner library https://github.com/81813780/AVLoadingIndicatorView
-    compile 'com.wang.avi:library:2.1.3'
 
     compile 'it.sephiroth.android.library.bottomnavigation:bottom-navigation:2.0.1-rc1'
 

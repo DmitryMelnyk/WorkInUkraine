@@ -4,7 +4,6 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/kiev_bg"
     tools:context="com.dmelnyk.workinukraine.ui.search.SearchFragment">
 
     <android.support.design.widget.AppBarLayout
@@ -207,7 +206,7 @@
     <LinearLayout
         android:background="@android:color/white"
         android:layout_width="match_parent"
-        android:layout_height="30dp">
+        android:layout_height="40dp">
 
         <ImageView
             android:id="@+id/buttonAdd"

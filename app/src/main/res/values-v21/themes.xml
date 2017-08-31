@@ -10,7 +10,9 @@
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowActionBar">true</item>
         <item name="android:windowActionBarOverlay">true</item>
-        <item name="android:colorControlHighlight">@color/violet_lighter</item>
+
+        <!-- Ripple color -->
+        <item name="android:colorControlHighlight">@color/grey</item>
 
         <!-- Color of the drawer arrow -->
         <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
@@ -34,5 +36,13 @@
         @transition/change_title_transform</item>
         <!--<item name="android:windowSharedElementExitTransition">-->
         <!--@transition/body_transform</item>-->
+    </style>
+
+    <style name="VacancyTheme" parent="AppTheme">
+        <!-- For transparent status bar -->
+        <!--<item name="android:windowTranslucentStatus">true</item>-->
+        <!--<item name="android:windowTranslucentNavigation">true</item>-->
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
     </style>
 </resources>

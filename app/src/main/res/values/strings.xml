@@ -104,8 +104,10 @@
     <string name="settings_cheched_of">Выключено</string>
     <string name="time_picker_from">С</string>
     <string name="time_picker_to">До</string>
+
+    <!---->
     <string name="delete_request">Удалить запрос?</string>
-    <string name="title_activity_scrolling">ScrollingActivity</string>
+    <string name="title_activity_vacancy">Поиск вакансий</string>
     <string name="transition.webview_title">tr_webview_title</string>
 
 

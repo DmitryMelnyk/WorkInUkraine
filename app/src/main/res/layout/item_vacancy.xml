@@ -23,7 +23,8 @@
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
-            android:src="@mipmap/ic_tab_vacancy_dark"/>
+            android:layout_margin="5dp"
+            android:src="@drawable/vacancy_standart_blue"/>
 
         <ImageButton
             android:id="@+id/popup_menu"
@@ -37,7 +38,6 @@
 
         <TextView
             android:id="@+id/body_text_view"
-            android:transitionName="@string/transition.webview_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="14sp"

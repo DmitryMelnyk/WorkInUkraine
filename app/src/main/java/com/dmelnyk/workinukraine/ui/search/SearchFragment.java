@@ -11,7 +11,6 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -157,7 +156,7 @@ public class SearchFragment extends Fragment implements
             Timber.e(e);
         }
 
-        popupMenu.getMenuInflater().inflate(R.menu.menu_main, popupMenu.getMenu());
+        popupMenu.getMenuInflater().inflate(R.menu.search_toolbar, popupMenu.getMenu());
         mSettingsImageView.setOnClickListener(view -> popupMenu.show());
 
         popupMenu.setOnMenuItemClickListener(view -> {

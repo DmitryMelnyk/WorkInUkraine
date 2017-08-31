@@ -23,6 +23,8 @@
         <item name="android:popupMenuStyle">@style/PopupMenu</item>
     </style>
 
+    <style name="VacancyTheme" parent="AppTheme" />
+
     <style name="ThemeLight" parent="Theme.AppCompat.Light"/>
 
     <style name="myTheme" parent="AppTheme">

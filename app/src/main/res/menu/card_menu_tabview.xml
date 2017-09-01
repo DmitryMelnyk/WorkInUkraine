@@ -3,11 +3,11 @@
 
     <item android:id="@+id/popup_add_item"
           android:title="@string/card_view_popup_add_to_favorite"
-          android:icon="@drawable/ic_grade_black_24dp"
+          android:icon="@drawable/vacancy_favorite_blue"
            />
     <item android:id="@+id/popup_share_item"
           android:title="@string/card_view_popup_share"
-          android:icon="@drawable/ic_share_black_24dp"
+          android:icon="@drawable/ic_share_blue"
            />
 
 </menu>

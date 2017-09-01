@@ -11,7 +11,7 @@ public class Contract {
     interface View {
         void showErrorMessage();
 
-        void configSpinner();
+        void configSpinner(String mCity);
 
         void dialogDismiss();
     }

@@ -2,9 +2,12 @@ package com.dmelnyk.workinukraine.ui.vacancy.core;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.support.annotation.IntDef;
+import android.support.annotation.RequiresApi;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -65,7 +68,7 @@ public class VacancyCardViewAdapter extends RecyclerView.Adapter<VacancyCardView
         mContext = parent.getContext();
         PARENT_CLASS = parent.getClass().getSimpleName();
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.vacancy_item, parent, false);
+                .inflate(R.layout.item_vacancy, parent, false);
 
         return new MyViewHolder(view);
     }
@@ -85,7 +88,12 @@ public class VacancyCardViewAdapter extends RecyclerView.Adapter<VacancyCardView
         holder.mCardviewLayout.setBackground(ripple_bg);
 
         // creating PopupMenu using reflection:
-        final PopupMenu popupMenu = new PopupMenu(mContext, holder.mMenuButton);
+        PopupMenu popupMenu;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            popupMenu = new PopupMenu(mContext, holder.mMenuButton, Gravity.RIGHT);
+        } else {
+            popupMenu = new PopupMenu(mContext, holder.mMenuButton);
+        }
         try {
             Field field = popupMenu.getClass().getDeclaredField("mPopup");
             field.setAccessible(true);
@@ -96,21 +104,30 @@ public class VacancyCardViewAdapter extends RecyclerView.Adapter<VacancyCardView
             Timber.e(e);
         }
 
-        if (mCardViewType == TYPE_STANDARD) {
-            popupMenu.getMenuInflater().inflate(R.menu.card_menu_tabview, popupMenu.getMenu()); // for Standard, Tabs, New, Recent activities
-        } else if (mCardViewType == TYPE_FAVORITE) {
-            holder.mIconImageView.setImageDrawable(ContextCompat.getDrawable(
-                    mContext, R.mipmap.ic_tab_favorite_dark));
-            popupMenu.getMenuInflater().inflate(R.menu.card_menu_favorite, popupMenu.getMenu()); // for Favorite activity
-        } else if (mCardViewType == TYPE_NEW){
-            holder.mIconImageView.setImageDrawable(ContextCompat.getDrawable(
-                    mContext, R.mipmap.ic_tab_new_dark));
-            popupMenu.getMenuInflater().inflate(R.menu.card_menu_tabview, popupMenu.getMenu()); // for Standard, Tabs, New, Recent activities
-        } else if (mCardViewType == TYPE_RECENT) {
-            holder.mIconImageView.setImageDrawable(ContextCompat.getDrawable(
-                    mContext, R.mipmap.ic_tab_recent_dark));
-            popupMenu.getMenuInflater().inflate(R.menu.card_menu_tabview, popupMenu.getMenu()); // for Tabs, New, Recent activities
+        int icon = 0;
+        int menu = 0;
+        switch (mCardViewType) {
+            case TYPE_STANDARD:
+                icon = R.drawable.vacancy_standart_blue;
+                menu = R.menu.card_menu_tabview;
+                break;
+            case TYPE_FAVORITE:
+                icon = R.drawable.vacancy_favorite_blue;
+                menu = R.menu.card_menu_favorite;
+                break;
+            case TYPE_RECENT:
+                icon = R.drawable.vacancy_recent_blue;
+                menu = R.menu.card_menu_tabview;
+                break;
+            case TYPE_NEW:
+                icon = R.drawable.vacancy_new_blue;
+                menu = R.menu.card_menu_tabview;
+                break;
         }
+
+        holder.mIconImageView.setImageDrawable(ContextCompat.getDrawable(
+                mContext, icon));
+        popupMenu.getMenuInflater().inflate(menu, popupMenu.getMenu());
 
         popupMenu.setOnMenuItemClickListener(view -> {
             switch (view.getItemId()) {

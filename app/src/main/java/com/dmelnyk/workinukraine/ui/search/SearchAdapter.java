@@ -71,9 +71,9 @@ class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.MyViewHolder> {
                     ContextCompat.getColor(holder.itemView.getContext(), R.color.white_soft));
             holder.mLetterTextView.setTextColor(
                     ContextCompat.getColor(holder.itemView.getContext(), R.color.white_soft));
-            holder.mItemLayout.setBackgroundColor(
-                    ContextCompat.getColor(holder.itemView.getContext(), R.color.green));
             holder.mLetterTextView.setShadowLayer(3, 2, 2, R.color.text_shadow_white);
+            holder.mItemLayout.setBackground(ContextCompat.getDrawable(holder.itemView.getContext(),
+                    R.drawable.request_bg_dark));
         } else {
             holder.mNewVacanciesCountTextView.setVisibility(View.GONE);
             holder.mCityTextView.setTextColor(
@@ -82,9 +82,9 @@ class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.MyViewHolder> {
                     ContextCompat.getColor(holder.itemView.getContext(), R.color.green));
             holder.mLetterTextView.setTextColor(
                     ContextCompat.getColor(holder.itemView.getContext(), R.color.green));
-            holder.mItemLayout.setBackgroundColor(
-                    ContextCompat.getColor(holder.itemView.getContext(), R.color.white_soft));
             holder.mLetterTextView.setShadowLayer(3, -2, -2, R.color.blue_dark);
+            holder.mItemLayout.setBackground(ContextCompat.getDrawable(holder.itemView.getContext(),
+                    R.drawable.request_bg_light));
         }
     }
 

@@ -5,9 +5,13 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     app:cardElevation="10dp"
+
     >
 
     <RelativeLayout
+        android:background="?attr/selectableItemBackground"
+        android:focusable="true"
+        android:clickable="true"
         android:id="@+id/item_layout"
         android:gravity="center"
         android:layout_width="match_parent"

@@ -38,8 +38,10 @@ import butterknife.OnClick;
 public class DialogRequest extends BaseDialog implements
         Contract.View
 {
+    private static final java.lang.String KEY_REQUEST = "key_request";
+    private static final java.lang.String KEY_CITY = "key_city";
     public static String REQUEST;
-    private DialogRequestCallbackListener mCallbackInterface;
+    private DialogRequestCallbackListener mCallback;
 
     @BindView(R.id.closeButton) ImageView closeButton;
     @BindView(R.id.textInputLayout) TextInputLayout textInputLayout;
@@ -48,20 +50,23 @@ public class DialogRequest extends BaseDialog implements
     @BindView(R.id.button_ok) Button button;
 
     private View dialogView;
-    private static DialogRequest dialog;
+    private DialogRequest dialog;
     private DialogRequestPresenter presenter;
 
     public static DialogRequest getInstance() {
-        if (null == dialog) {
-            dialog = new DialogRequest();
-        }
+        DialogRequest dialog = new DialogRequest();
+
         return dialog;
     }
+
+    String mRequest;
+    String mCity;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setRetainInstance(true);
+
+
     }
 
     @Override
@@ -76,12 +81,29 @@ public class DialogRequest extends BaseDialog implements
         dialogView = inflater.inflate(R.layout.dialog_request2, container, false);
         ButterKnife.bind(this, dialogView);
 
+        // Restores saved request
+        if (savedInstanceState != null) {
+            mRequest = savedInstanceState.getString(KEY_REQUEST);
+            mCity = savedInstanceState.getString(KEY_CITY);
+        }
+        if (mRequest != null) {
+            searchRequest.setText(mRequest);
+        }
+
         initializePresenter();
-        configSpinner();
+        configSpinner(mCity);
         presenter.bindView(this);
 
         return dialogView;
     }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(KEY_CITY, (String) spinner.getSelectedItem());
+        outState.putString(KEY_REQUEST, searchRequest.getText().toString());
+    }
+
 
     @Override
     public void onDestroyView() {
@@ -117,7 +139,7 @@ public class DialogRequest extends BaseDialog implements
     }
 
     @Override
-    public void configSpinner() {
+    public void configSpinner(@Nullable String city) {
         String[] cities = (getResources().getStringArray(R.array.cities));
         Arrays.sort(cities);
         List<String> items = new ArrayList<>();
@@ -133,11 +155,21 @@ public class DialogRequest extends BaseDialog implements
                 R.layout.spinner_item, items);
         adapter.setDropDownViewResource(R.layout.dropdown_item);
         spinner.setAdapter(adapter);
+
+        // Restore saved state
+        if (city != null) {
+            for (int i = 0; i < items.size(); i++) {
+                if (city.equals(items.get(i))) {
+                    spinner.setSelection(i);
+                }
+            }
+        }
     }
 
     @Override
-    public void dismiss() {
-        super.dismiss();
+    public void onDestroy() {
+        mCallback.dialogDismissed();
+        super.onDestroy();
     }
 
     @OnClick({R.id.closeButton, R.id.button_ok})
@@ -154,8 +186,8 @@ public class DialogRequest extends BaseDialog implements
                 }
                 REQUEST = textRequest + " / " + cityRequest;
 
-                if (mCallbackInterface != null) {
-                    mCallbackInterface.onTakeRequest(REQUEST);
+                if (mCallback != null) {
+                    mCallback.onTakeRequest(REQUEST);
                 }
 
                 presenter.onButtonClicked(textRequest, cityRequest);
@@ -165,9 +197,11 @@ public class DialogRequest extends BaseDialog implements
 
     public interface DialogRequestCallbackListener {
         void onTakeRequest(String request);
+
+        void dialogDismissed();
     }
 
     public void setCallback(DialogRequestCallbackListener callbackInterface) {
-        mCallbackInterface = callbackInterface;
+        mCallback = callbackInterface;
     }
 }

@@ -35,8 +35,6 @@ public class DialogDownloading extends BaseDialog {
     @BindView(R.id.vacancy_count_text_view) TextView mVacancyCountTextView;
     Unbinder unbinder;
 
-    private DialogDownloadCallbackListener mDialogDownloadCallbackListener;
-
     public static DialogDownloading newInstance(boolean animationOn, int totalVacanciesCount) {
         DialogDownloading dialog = new DialogDownloading();
         Bundle args = new Bundle();
@@ -86,17 +84,8 @@ public class DialogDownloading extends BaseDialog {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.button_ok:
-                mDialogDownloadCallbackListener.onDismissDialogDownloading();
                 dismiss();
                 break;
         }
-    }
-
-    public interface DialogDownloadCallbackListener {
-        void onDismissDialogDownloading();
-    }
-
-    public void setCallback(DialogDownloadCallbackListener listener) {
-        mDialogDownloadCallbackListener = listener;
     }
 }

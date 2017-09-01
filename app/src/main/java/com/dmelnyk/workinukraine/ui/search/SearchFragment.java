@@ -57,12 +57,12 @@ public class SearchFragment extends Fragment implements
         Contract.ISearchView,
         SearchAdapter.AdapterCallback,
         DialogRequest.DialogRequestCallbackListener,
-        DialogDelete.DialogDeleteCallbackListener,
-        DialogDownloading.DialogDownloadCallbackListener {
+        DialogDelete.DialogDeleteCallbackListener {
 
     private static final String TAG_DIALOG_DOWNLOADING = "downloading_dialog";
     private static final String TAG_DIALOG_REQUEST = "request_dialog";
     private static final String TAG_DIALOG_DELETE = "delete_dialog";
+    private static final String KEY_DIALOG_STACK_LEVEL = "dialog_stack_level";
     private static final int REQUEST_CODE_VACANCY_ACTIVITY = 1001;
 
     @BindView(R.id.backImageView) ImageView mBackImageView;
@@ -102,6 +102,8 @@ public class SearchFragment extends Fragment implements
                     sTotalVacanciesCount = intent.getIntExtra(SearchVacanciesService.KEY_TOTAL_VACANCIES_COUNT, -1);
                     sDownloadingIsFinished = true;
                     mDialogDownloading.downloadingFinished(sTotalVacanciesCount);
+
+                    resetDialogDownloading();
                     presenter.bindView(SearchFragment.this);
                     break;
 
@@ -112,6 +114,14 @@ public class SearchFragment extends Fragment implements
             }
         }
     };
+
+    private void resetDialogDownloading() {
+        mDialogDownloading = null;
+        enableDialogButtons(true);
+        mDialogStackLevel = 0;
+    }
+
+    private int mDialogStackLevel = 0;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -141,6 +151,11 @@ public class SearchFragment extends Fragment implements
         presenter.bindView(this);
 
         createMenu();
+
+        // Restores state
+        if (savedInstanceState != null) {
+            mDialogStackLevel = savedInstanceState.getInt(KEY_DIALOG_STACK_LEVEL);
+        }
         return view;
     }
 
@@ -183,8 +198,9 @@ public class SearchFragment extends Fragment implements
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(KEY_DIALOG_STACK_LEVEL, mDialogStackLevel);
     }
 
     @Override
@@ -212,14 +228,11 @@ public class SearchFragment extends Fragment implements
                 ft.remove(mDialogDownloading);
                 mDialogDownloading = DialogDownloading.newInstance(false, sTotalVacanciesCount);
                 mDialogDownloading.show(ft, TAG_DIALOG_DOWNLOADING);
-                // create new dialog
             }
-            mDialogDownloading.setCallback(this);
         }
 
         // restoring RequestDialog if needed
-        mDialogRequest = (DialogRequest) getFragmentManager()
-                .findFragmentByTag(TAG_DIALOG_REQUEST);
+        mDialogRequest = (DialogRequest) getFragmentManager().findFragmentByTag(TAG_DIALOG_REQUEST);
         if (mDialogRequest != null) {
             mDialogRequest.setCallback(this);
         }
@@ -260,21 +273,39 @@ public class SearchFragment extends Fragment implements
                 break;
             case R.id.buttonSearch:
                 showDialogDownloading();
-                startSearchVacanciesService();
                 break;
         }
     }
 
     private void showDialogRequest() {
-        mDialogRequest = DialogRequest.getInstance();
-        mDialogRequest.setCallback(this);
-        mDialogRequest.show(getFragmentManager(), TAG_DIALOG_REQUEST);
+        // Prevents creating more then one dialog at a time
+        if (mDialogStackLevel == 0) {
+            mDialogStackLevel = 1;
+
+            enableDialogButtons(false);
+
+            mDialogRequest = DialogRequest.getInstance();
+            mDialogRequest.setCallback(this);
+            mDialogRequest.show(getFragmentManager(), TAG_DIALOG_REQUEST);
+        }
     }
 
     private void showDialogDownloading() {
-        mDialogDownloading = DialogDownloading.newInstance(true, 0);
-        mDialogDownloading.setCallback(this);
-        mDialogDownloading.show(getFragmentManager(), TAG_DIALOG_DOWNLOADING);
+        // Prevents creating more then one dialog at a time
+        if (mDialogStackLevel == 0) {
+            mDialogStackLevel = 1;
+            enableDialogButtons(false);
+
+            startSearchVacanciesService();
+
+            mDialogDownloading = DialogDownloading.newInstance(true, 0);
+            mDialogDownloading.show(getFragmentManager(), TAG_DIALOG_DOWNLOADING);
+        }
+    }
+
+    private void enableDialogButtons(boolean disable) {
+        mButtonAdd.setEnabled(disable);
+        mButtonSearch.setEnabled(disable);
     }
 
     private void startSearchVacanciesService() {
@@ -358,6 +389,18 @@ public class SearchFragment extends Fragment implements
     @Override
     public void onTakeRequest(String request) {
         presenter.addNewRequest(request);
+        resetDialogRequest();
+    }
+
+    @Override
+    public void dialogDismissed() {
+        resetDialogRequest();
+    }
+
+    private void resetDialogRequest() {
+        mDialogRequest = null;
+        enableDialogButtons(true);
+        mDialogStackLevel = 0;
     }
 
     // DialogRequestCallbackListener remove item
@@ -365,14 +408,6 @@ public class SearchFragment extends Fragment implements
     public void onRemoveRequest() {
         Timber.d("onRemoveRequest clicked. Item = " + sItemClickedRequest);
         presenter.removeRequest(sItemClickedRequest);
-    }
-
-    // DialogDownloadCallbackListener dismiss dialog
-    @Override
-    public void onDismissDialogDownloading() {
-        // TODO: remove this method
-//        sIsDialogDownloadingOpen = false;
-        sTotalVacanciesCount = 0;
     }
 
     public interface OnFragmentInteractionListener {

@@ -26,6 +26,7 @@ import com.dmelnyk.workinukraine.services.SearchVacanciesService;
 import com.dmelnyk.workinukraine.ui.dialogs.delete.DialogDelete;
 import com.dmelnyk.workinukraine.ui.dialogs.downloading.DialogDownloading;
 import com.dmelnyk.workinukraine.ui.dialogs.request.DialogRequest;
+import com.dmelnyk.workinukraine.ui.dialogs.request.DialogRequest2;
 import com.dmelnyk.workinukraine.ui.search.Contract.ISearchPresenter;
 import com.dmelnyk.workinukraine.ui.search.di.DaggerSearchComponent;
 import com.dmelnyk.workinukraine.ui.search.di.SearchModule;
@@ -178,7 +179,9 @@ public class SearchFragment extends Fragment implements
             switch (view.getItemId()) {
                 case R.id.menu_clear_requests:
                     Toast.makeText(getContext(), "Todo: Clearing all requests!", Toast.LENGTH_SHORT).show();
-                    presenter.clearAllRequest();
+//                    presenter.clearAllRequest();
+                    DialogRequest2 dialogRequest2 = new DialogRequest2();
+                    dialogRequest2.show(getFragmentManager(), null);
                     break;
             }
             return true;

@@ -193,10 +193,10 @@
         <item name="android:textColorHint">@color/textColorSecondary</item>
         <!-- Label color in TRUE state and bar color FALSE and TRUE State -->
         <item name="colorAccent">@color/grey</item>
-        <item name="colorControlNormal">@color/violet</item>
-        <item name="colorControlActivated">@color/violet_lighter</item>
-        <item name="colorControlHighlight">@color/textColorSecondary</item>
-        <item name="backgroundTint">@color/violet_lighter</item>
+        <item name="colorControlNormal">@color/colorAccent</item>
+        <item name="colorControlActivated">@color/colorAccent</item>
+        <item name="colorControlHighlight">@color/colorPrimary</item>
+        <item name="backgroundTint">@color/colorAccent</item>
     </style>
 
     <!-- Settings styles -->

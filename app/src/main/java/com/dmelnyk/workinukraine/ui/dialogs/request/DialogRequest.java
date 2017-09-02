@@ -50,7 +50,6 @@ public class DialogRequest extends BaseDialog implements
     @BindView(R.id.button_ok) Button button;
 
     private View dialogView;
-    private DialogRequest dialog;
     private DialogRequestPresenter presenter;
 
     public static DialogRequest getInstance() {
@@ -61,13 +60,6 @@ public class DialogRequest extends BaseDialog implements
 
     String mRequest;
     String mCity;
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-
-    }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {

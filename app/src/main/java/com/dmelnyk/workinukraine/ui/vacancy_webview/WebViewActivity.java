@@ -166,7 +166,8 @@ public class WebViewActivity extends AppCompatActivity implements Contract.View{
             mWebView.goBack();
         }
         else {
-            finish(); //supportFinishAfterTransition();
+            finish();
+            overridePendingTransition(R.anim.slide_from_left, R.anim.slide_to_right);
         }
     }
 

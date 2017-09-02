@@ -23,7 +23,10 @@
         <item name="android:popupMenuStyle">@style/PopupMenu</item>
     </style>
 
-    <style name="VacancyTheme" parent="AppTheme" />
+    <style name="VacancyTheme" parent="AppTheme">
+        <item name="android:windowEnterAnimation">@anim/slide_up</item>
+        <item name="android:windowExitAnimation">@anim/slide_down</item>
+    </style>
 
     <style name="ThemeLight" parent="Theme.AppCompat.Light"/>
 

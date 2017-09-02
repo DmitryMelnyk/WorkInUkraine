@@ -370,6 +370,7 @@ public class SearchFragment extends Fragment implements
         Intent vacancyActivityIntent = new Intent(getContext(), VacancyActivity.class);
         vacancyActivityIntent.setAction(itemRequestTitle);
         startActivityForResult(vacancyActivityIntent, REQUEST_CODE_VACANCY_ACTIVITY);
+        getActivity().overridePendingTransition(R.anim.slide_from_right, R.anim.slide_to_left);
     }
 
     @Override

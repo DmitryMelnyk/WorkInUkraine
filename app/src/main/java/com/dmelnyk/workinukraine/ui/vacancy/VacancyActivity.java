@@ -137,6 +137,7 @@ public class VacancyActivity extends AppCompatActivity implements
         presenter.clear();
         setResult(RESULT_OK);
         finish();
+        overridePendingTransition(R.anim.slide_from_left, R.anim.slide_to_right);
     }
 
     @Override
@@ -165,6 +166,7 @@ public class VacancyActivity extends AppCompatActivity implements
     public void onFragmentInteractionItemClicked(VacancyModel vacancy, View bodyTextView) {
         Intent webview = WebViewActivity.newInstance(this, vacancy.title(), vacancy.url());
         startActivity(webview);
+        overridePendingTransition(R.anim.slide_from_right, R.anim.slide_to_left);
     }
 
     @Override
@@ -229,6 +231,7 @@ public class VacancyActivity extends AppCompatActivity implements
     public void exitActivity() {
         setResult(RESULT_CANCELED);
         finish();
+        overridePendingTransition(R.anim.slide_from_left, R.anim.slide_to_right);
     }
 
     public void initializeButtonTabs(boolean withNewVacanciesTab) {

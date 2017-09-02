@@ -15,6 +15,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.dmelnyk.workinukraine.R;
 import com.dmelnyk.workinukraine.utils.BaseDialog;
@@ -27,6 +28,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import butterknife.Unbinder;
 
 /**
@@ -91,5 +93,12 @@ public class DialogRequest2 extends BaseDialog {
         MyBounceInterpolator interpolator = new MyBounceInterpolator(0.5, 20);
         scaleAnimation.setInterpolator(interpolator);
         textInputLayout.startAnimation(scaleAnimation);
+    }
+
+    @OnClick(R.id.ok_button)
+    public void onViewClicked() {
+        startSearchRequestAnimation();
+        Toast.makeText(getActivity(), getResources().getString
+                (R.string.minimal_request_length), Toast.LENGTH_SHORT).show();
     }
 }

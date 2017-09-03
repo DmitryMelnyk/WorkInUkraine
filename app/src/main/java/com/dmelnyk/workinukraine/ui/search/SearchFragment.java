@@ -11,6 +11,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,7 +27,6 @@ import com.dmelnyk.workinukraine.services.SearchVacanciesService;
 import com.dmelnyk.workinukraine.ui.dialogs.delete.DialogDelete;
 import com.dmelnyk.workinukraine.ui.dialogs.downloading.DialogDownloading;
 import com.dmelnyk.workinukraine.ui.dialogs.request.DialogRequest;
-import com.dmelnyk.workinukraine.ui.dialogs.request.DialogRequest2;
 import com.dmelnyk.workinukraine.ui.search.Contract.ISearchPresenter;
 import com.dmelnyk.workinukraine.ui.search.di.DaggerSearchComponent;
 import com.dmelnyk.workinukraine.ui.search.di.SearchModule;
@@ -100,7 +100,7 @@ public class SearchFragment extends Fragment implements
             String request = intent.getStringExtra(SearchVacanciesService.KEY_REQUEST);
             switch (intent.getAction()) {
                 case SearchVacanciesService.ACTION_FINISHED:
-                    sTotalVacanciesCount = intent.getIntExtra(SearchVacanciesService.KEY_TOTAL_VACANCIES_COUNT, -1);
+                    sTotalVacanciesCount = intent.getIntExtra(SearchVacanciesService.KEY_TOTAL_VACANCIES_COUNT, 0);
                     sDownloadingIsFinished = true;
                     mDialogDownloading.downloadingFinished(sTotalVacanciesCount);
 
@@ -178,10 +178,7 @@ public class SearchFragment extends Fragment implements
         popupMenu.setOnMenuItemClickListener(view -> {
             switch (view.getItemId()) {
                 case R.id.menu_clear_requests:
-                    Toast.makeText(getContext(), "Todo: Clearing all requests!", Toast.LENGTH_SHORT).show();
-//                    presenter.clearAllRequest();
-                    DialogRequest2 dialogRequest2 = new DialogRequest2();
-                    dialogRequest2.show(getFragmentManager(), null);
+                    presenter.clearAllRequest();
                     break;
             }
             return true;
@@ -287,9 +284,9 @@ public class SearchFragment extends Fragment implements
 
             enableDialogButtons(false);
 
-            mDialogRequest = DialogRequest.getInstance();
-            mDialogRequest.setCallback(this);
+            mDialogRequest = new DialogRequest();
             mDialogRequest.show(getFragmentManager(), TAG_DIALOG_REQUEST);
+            mDialogRequest.setCallback(this);
         }
     }
 
@@ -348,8 +345,8 @@ public class SearchFragment extends Fragment implements
 
     @Override
     public void showErrorMessage(String message) {
-        Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
-//        Toast.makeText(getContext(), getString(R.string.errors_db_request_already_exists), Toast.LENGTH_SHORT).show();
+//        Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
+        Toast.makeText(getContext(), getString(R.string.errors_db_request_already_exists), Toast.LENGTH_SHORT).show();
     }
 
     // SearchAdapter.AdapterCallback for open DialogDelete
@@ -375,6 +372,7 @@ public class SearchFragment extends Fragment implements
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.e("888", "onActivityResult is calling");
         if (requestCode == REQUEST_CODE_VACANCY_ACTIVITY) {
             switch (resultCode) {
                 case RESULT_OK:

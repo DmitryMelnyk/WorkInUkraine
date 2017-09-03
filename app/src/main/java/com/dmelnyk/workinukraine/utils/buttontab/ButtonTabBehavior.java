@@ -1,9 +1,8 @@
-package com.dmelnyk.workinukraine.utils;
+package com.dmelnyk.workinukraine.utils.buttontab;
 
 import android.graphics.Rect;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
-import android.util.Log;
 import android.view.View;
 
 import static android.view.View.GONE;

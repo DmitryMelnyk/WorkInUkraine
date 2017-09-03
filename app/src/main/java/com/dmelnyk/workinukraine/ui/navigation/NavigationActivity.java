@@ -1,20 +1,16 @@
 package com.dmelnyk.workinukraine.ui.navigation;
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.ColorInt;
 import android.support.annotation.ColorRes;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
@@ -28,6 +24,7 @@ import com.dmelnyk.workinukraine.ui.navigation.menu.SimpleItem;
 import com.dmelnyk.workinukraine.ui.navigation.menu.SpaceItem;
 import com.dmelnyk.workinukraine.ui.search.SearchFragment;
 import com.dmelnyk.workinukraine.ui.settings.SettingsFragment;
+import com.dmelnyk.workinukraine.utils.BaseAnimationActivity;
 import com.yarolegovich.slidingrootnav.SlidingRootNav;
 import com.yarolegovich.slidingrootnav.SlidingRootNavBuilder;
 
@@ -38,7 +35,7 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
-public class NavigationActivity extends AppCompatActivity implements
+public class NavigationActivity extends BaseAnimationActivity implements
         Contract.INavigationView,
         DrawerAdapter.OnItemSelectedListener,
         SearchFragment.OnFragmentInteractionListener,
@@ -168,6 +165,15 @@ public class NavigationActivity extends AppCompatActivity implements
     @Override
     public void restoreSavedState(String time) {
         // TODO
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (navigator.isMenuHidden()) {
+            navigator.openMenu(true);
+        } else {
+            finish();
+        }
     }
 
     @Override

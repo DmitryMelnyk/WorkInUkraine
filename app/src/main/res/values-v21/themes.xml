@@ -42,9 +42,5 @@
         <!-- For transparent status bar -->
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
-
-        <!-- appearing / disappearing animation -->
-        <item name="android:windowEnterAnimation">@anim/slide_from_right</item>
-        <item name="android:windowExitAnimation">@anim/slide_to_right</item>
     </style>
 </resources>

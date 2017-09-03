@@ -133,6 +133,13 @@ public class VacancyPresenter implements Contract.IVacancyPresenter {
     }
 
     @Override
+    public boolean isVacancyFavorite(VacancyModel vacancy) {
+        return sDataCache.get(IVacancyInteractor.DATA_OTHER_TABS)
+                .get(IVacancyInteractor.VACANCIES_FAVORITE)
+                .contains(vacancy);
+    }
+
+    @Override
     public void unbindView() {
         view = null;
         sIsDisplayed = false;

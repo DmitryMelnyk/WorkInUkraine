@@ -8,11 +8,9 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
-import android.view.Window;
 import android.view.WindowManager;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -27,7 +25,8 @@ import com.dmelnyk.workinukraine.ui.vacancy.core.VacancyCardViewAdapter;
 import com.dmelnyk.workinukraine.ui.vacancy.core.ScreenSlidePagerAdapter;
 import com.dmelnyk.workinukraine.ui.vacancy.di.DaggerVacancyComponent;
 import com.dmelnyk.workinukraine.ui.vacancy.di.VacancyModule;
-import com.dmelnyk.workinukraine.utils.ButtonTabs;
+import com.dmelnyk.workinukraine.utils.BaseAnimationActivity;
+import com.dmelnyk.workinukraine.utils.buttontab.ButtonTabs;
 
 import java.util.List;
 import java.util.Map;
@@ -40,7 +39,7 @@ import butterknife.OnClick;
 import timber.log.Timber;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
-public class VacancyActivity extends AppCompatActivity implements
+public class VacancyActivity extends BaseAnimationActivity implements
         BaseTabFragment.OnFragmentInteractionListener,
         SitesTabFragment.OnFragmentInteractionListener,
         Contract.IVacancyView {
@@ -49,6 +48,7 @@ public class VacancyActivity extends AppCompatActivity implements
     private static final String KEY_TAB_TITLES = "tab_titles";
     private static final String KEY_TAB_VACANCY_COUNT = "tab_vacancy_count";
     private static final String KEY_ORIENTATION_CHANGED = "orientation_changed";
+    private static final int WEBVIEW_REQUEST_CODE = 1002;
 
     @Inject Contract.IVacancyPresenter presenter;
 
@@ -81,6 +81,7 @@ public class VacancyActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_vacancy);
         ButterKnife.bind(this);
 
+        setResult(RESULT_OK);
         // Makes status bar transparent
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             getWindow().setNavigationBarColor(Color.BLACK);
@@ -135,9 +136,7 @@ public class VacancyActivity extends AppCompatActivity implements
     @Override
     public void onBackPressed() {
         presenter.clear();
-        setResult(RESULT_OK);
         finish();
-        overridePendingTransition(R.anim.slide_from_left, R.anim.slide_to_right);
     }
 
     @Override
@@ -164,9 +163,9 @@ public class VacancyActivity extends AppCompatActivity implements
 
     @Override
     public void onFragmentInteractionItemClicked(VacancyModel vacancy, View bodyTextView) {
-        Intent webview = WebViewActivity.newInstance(this, vacancy.title(), vacancy.url());
-        startActivity(webview);
-        overridePendingTransition(R.anim.slide_from_right, R.anim.slide_to_left);
+        boolean isVacancyFavorite = presenter.isVacancyFavorite(vacancy);
+        Intent webview = WebViewActivity.newInstance(this, vacancy, isVacancyFavorite);
+        startActivityForResult(webview, WEBVIEW_REQUEST_CODE);
     }
 
     @Override
@@ -231,7 +230,6 @@ public class VacancyActivity extends AppCompatActivity implements
     public void exitActivity() {
         setResult(RESULT_CANCELED);
         finish();
-        overridePendingTransition(R.anim.slide_from_left, R.anim.slide_to_right);
     }
 
     public void initializeButtonTabs(boolean withNewVacanciesTab) {
@@ -269,6 +267,30 @@ public class VacancyActivity extends AppCompatActivity implements
         mTabVacancyCount[2] = vacancies.size();
         if (mViewPager.getCurrentItem() == 2) {
             updateTitleView(2);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+//        super.onActivityResult(requestCode, resultCode, data);
+        Log.e("888", "onActivityResult in VacancyActivity");
+        if (requestCode == WEBVIEW_REQUEST_CODE) {
+            switch (resultCode) {
+                case WebViewActivity.RESULT_ADD_TO_FAVORITES:
+                    presenter.onItemPopupMenuClicked(
+                            (VacancyModel) data.getParcelableExtra(WebViewActivity.EXTRA_VACANCY),
+                            VacancyCardViewAdapter.MENU_SAVE
+                    );
+                    break;
+                case WebViewActivity.RESULT_REMOVE_FROM_FAVORITES:
+                    presenter.onItemPopupMenuClicked(
+                            (VacancyModel) data.getParcelableExtra(WebViewActivity.EXTRA_VACANCY),
+                            VacancyCardViewAdapter.MENU_REMOVE
+                    );
+                    break;
+                default:
+                    /* NOP */
+            }
         }
     }
 }

@@ -1,4 +1,4 @@
-package com.dmelnyk.workinukraine.utils;
+package com.dmelnyk.workinukraine.utils.buttontab;
 
 import android.graphics.Canvas;
 import android.graphics.ColorFilter;

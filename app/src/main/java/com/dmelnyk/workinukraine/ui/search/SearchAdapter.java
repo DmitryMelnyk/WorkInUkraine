@@ -1,21 +1,26 @@
 package com.dmelnyk.workinukraine.ui.search;
 
+import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.PopupMenu;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.dmelnyk.workinukraine.R;
 import com.dmelnyk.workinukraine.data.RequestModel;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import timber.log.Timber;
 
 /**
  * Created by d264 on 6/16/17.
@@ -104,6 +109,33 @@ class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.MyViewHolder> {
         public MyViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+
+            final PopupMenu popupMenu = new PopupMenu(itemView.getContext(), itemView);
+            try {
+                Field field = popupMenu.getClass().getDeclaredField("mPopup");
+                field.setAccessible(true);
+                Object menuPopupHelper = field.get(popupMenu);
+                Method setForceIcons = menuPopupHelper.getClass().getDeclaredMethod("setForceShowIcon", Boolean.TYPE);
+                setForceIcons.invoke(menuPopupHelper, true);
+            } catch (Exception e) {
+                Timber.e(e);
+            }
+
+            popupMenu.getMenuInflater().inflate(R.menu.search_request, popupMenu.getMenu());
+
+            popupMenu.setOnMenuItemClickListener(view -> {
+                switch (view.getItemId()) {
+                    case R.id.popup_remove_item:
+                        mCallback.onButtonRemoveClicked(getFullRequest());
+                        break;
+                }
+                return true;
+            });
+
+            mItemLayout.setOnLongClickListener(view -> {
+                popupMenu.show();
+                return false;
+            });
         }
 
         @OnClick({R.id.item_layout})
@@ -113,11 +145,18 @@ class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.MyViewHolder> {
 //                    mCallback.onButtonRemoveClicked(mRequestTextView.getText().toString());
 //                    break;
                 case R.id.item_layout:
-                    String fullRequest = mRequestTextView.getText().toString()
-                            + SPLITTER + mCityTextView.getText().toString();
-                    mCallback.onItemClicked(fullRequest);
+                    getFullRequest();
+                    mCallback.onItemClicked(getFullRequest());
                     break;
             }
         }
+
+        @NonNull
+        private String getFullRequest() {
+            return mRequestTextView.getText().toString()
+                                    + SPLITTER + mCityTextView.getText().toString();
+        }
     }
+
+
 }

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -7,74 +8,84 @@
     android:orientation="vertical"
     android:background="@color/colorBackground">
 
-    <!-- Toolbar -->
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/toolbar"
+    <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/fragment_toolbar_height"
-        android:background="@color/colorPrimary"
-        android:contentInsetLeft="0dp"
-        android:contentInsetStart="0dp"
-        app:contentInsetLeft="0dp"
-        app:contentInsetStart="0dp"
-        app:popupTheme="@style/AppTheme.PopupOverlay"
-        >
+        android:layout_height="wrap_content">
 
-        <RelativeLayout
-            android:layout_alignParentTop="true"
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center_vertical"
+            android:layout_height="45dp"
+            android:background="@color/colorPrimary"
+            android:contentInsetLeft="0dp"
+            android:contentInsetStart="0dp"
+            app:contentInsetLeft="0dp"
+            app:contentInsetStart="0dp"
+            app:popupTheme="@style/AppTheme.PopupOverlay"
+            app:layout_collapseMode="parallax"
+            app:layout_scrollFlags="scroll|enterAlways|snap"
             >
 
-            <ImageView
-                android:id="@+id/back_image_view"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@mipmap/search_fragment_back_arrow" />
-
-            <ImageView
-                android:id="@+id/start_image_view"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"
-                android:layout_marginRight="10dp"
-                android:layout_marginLeft="10dp"
-                android:src="@drawable/ic_nav_favorites"
-                />
-
-            <TextView
-                android:id="@+id/title_text_view"
-                android:transitionName="@string/transition.webview_title"
+            <RelativeLayout
+                android:layout_alignParentTop="true"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_toRightOf="@id/back_image_view"
-                android:layout_toLeftOf="@id/start_image_view"
-                android:gravity="center_vertical"
-                android:text="Fake title"
-                android:textColor="@color/white"
-                android:textSize="18sp"
-                fontPath="fonts/FranckerCYR-ExtraBold.otf"
-                tools:ignore="MissingPrefix"
-                />
+                android:gravity="top"
+                >
 
-        </RelativeLayout>
-    </android.support.v7.widget.Toolbar>
+                <ImageView
+                    android:id="@+id/back_image_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/fragment_toolbar_height"
+                    android:src="@mipmap/search_fragment_back_arrow" />
 
-    <ProgressBar
-        android:id="@+id/progress_bar"
+                <ImageView
+                    android:id="@+id/favorite_image_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/fragment_toolbar_height"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginLeft="10dp"
+                    />
+
+                <TextView
+                    android:id="@+id/title_text_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/fragment_toolbar_height"
+                    android:layout_toRightOf="@id/back_image_view"
+                    android:layout_toLeftOf="@id/favorite_image_view"
+                    android:gravity="center_vertical"
+                    android:maxLines="1"
+                    android:text="Fake title"
+                    android:textColor="@color/white"
+                    android:textSize="18sp"
+                    fontPath="fonts/FranckerCYR-ExtraBold.otf"
+                    tools:ignore="MissingPrefix" />
+
+                <ProgressBar
+                    android:id="@+id/progress_bar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/title_text_view"
+                    android:layout_alignParentBottom="true"
+                    android:background="@color/colorPrimary"
+                    style="?android:attr/progressBarStyleHorizontal"/>
+            </RelativeLayout>
+        </android.support.v7.widget.Toolbar>
+    </android.support.design.widget.AppBarLayout>
+
+    <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_alignParentTop="true"
-        android:visibility="visible"
-        android:background="?attr/colorPrimary"
-        style="?android:attr/progressBarStyleHorizontal"/>
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        <WebView
+            android:id="@+id/web_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:isScrollContainer="false"/>
+    </android.support.v4.widget.NestedScrollView>
 
 
-    <WebView xmlns:android="http://schemas.android.com/apk/res/android"
-             android:id="@+id/web_view"
-             android:layout_width="fill_parent"
-             android:layout_height="fill_parent"/>
-
-</LinearLayout>
+</android.support.design.widget.CoordinatorLayout>

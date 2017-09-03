@@ -41,5 +41,7 @@ public class Contract {
                 VacancyModel vacancy, @VacancyCardViewAdapter.VacancyPopupMenuType int type);
 
         void clear();
+
+        boolean isVacancyFavorite(VacancyModel vacancy);
     }
 }

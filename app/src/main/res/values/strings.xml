@@ -39,7 +39,7 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="dialog_search_spinner_prompt">Выберите город поиска</string>
-    <string name="dialog_search_edittext_hint">Введите ключевые слова поиска</string>
+    <string name="dialog_search_edittext_hint">Введите запрос</string>
     <string name="title_activity_test">TestActivity</string>
 
     <!-- Dialog Delete -->

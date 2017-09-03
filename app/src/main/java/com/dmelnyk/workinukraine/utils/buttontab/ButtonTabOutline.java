@@ -1,4 +1,4 @@
-package com.dmelnyk.workinukraine.utils;
+package com.dmelnyk.workinukraine.utils.buttontab;
 
 import android.graphics.Outline;
 import android.os.Build;

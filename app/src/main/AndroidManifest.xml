@@ -40,7 +40,9 @@
             android:theme="@style/VacancyTheme">
         </activity>
 
-        <activity android:name=".ui.vacancy_webview.WebViewActivity" />
+        <activity
+            android:name=".ui.vacancy_webview.WebViewActivity"
+            android:configChanges="orientation|screenSize"/>
     </application>
 
 </manifest>

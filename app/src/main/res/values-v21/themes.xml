@@ -40,8 +40,6 @@
 
     <style name="VacancyTheme" parent="AppTheme">
         <!-- For transparent status bar -->
-        <!--<item name="android:windowTranslucentStatus">true</item>-->
-        <!--<item name="android:windowTranslucentNavigation">true</item>-->
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>

@@ -49,6 +49,8 @@ public class SearchServiceRepository implements ISearchServiceRepository {
         Cursor cursor = db.query(SELECT_ALL_FROM + table + WHERE_ + "'" + request + "'");
         List<VacancyContainer> oldVacancies = new ArrayList<>();
 
+        int previousNewVacancies = 0;
+
         if (cursor.moveToFirst()) {
             do {
                 String type = Db.getString(cursor, Tables.SearchSites.Columns.TYPE);
@@ -63,7 +65,12 @@ public class SearchServiceRepository implements ISearchServiceRepository {
                         .setUrl(url)
                         .build();
 
-                 oldVacancies.add(VacancyContainer.create(vacancy, type));
+                oldVacancies.add(VacancyContainer.create(vacancy, type));
+
+                // Counting previous new vacancies
+                if (type.equals(Tables.SearchSites.TYPE_NEW)) {
+                    previousNewVacancies++;
+                }
             } while (cursor.moveToNext());
         }
 
@@ -92,15 +99,15 @@ public class SearchServiceRepository implements ISearchServiceRepository {
 
         if (newVacanciesCount == 0) return;
         // clear previous vacancies
-        clearVacanciesFromAllTable(request);
+        clearVacanciesFromSitesTable(request);
         // write all vacancies to corresponding table
-        writeVacanciesToAllTable(allVacancies);
+        writeVacanciesToSitesTable(allVacancies);
         // updating Requests table
         updateRequestTable(
-                request, allVacancies.size(), newVacanciesCount, System.currentTimeMillis());
+                request, allVacancies.size(), newVacanciesCount + previousNewVacancies, System.currentTimeMillis());
     }
 
-    private void clearVacanciesFromAllTable(String request) {
+    private void clearVacanciesFromSitesTable(String request) {
         Timber.d("\nclearing all vacancies with request=%s", request);
         db.delete(Tables.SearchSites.TABLE_ALL_SITES, Tables.SearchSites.Columns.REQUEST
                 + " = '" + request + "'");
@@ -134,7 +141,7 @@ public class SearchServiceRepository implements ISearchServiceRepository {
         return copy;
     }
 
-    private void writeVacanciesToAllTable(List<VacancyContainer> list) {
+    private void writeVacanciesToSitesTable(List<VacancyContainer> list) {
         Timber.d("\nWriting into All table %d vacancies", list.size());
         BriteDatabase.Transaction transaction = db.newTransaction();
         try {

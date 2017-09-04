@@ -1,9 +1,7 @@
 package com.dmelnyk.workinukraine.ui.search;
 
-import android.util.Log;
-
 import com.dmelnyk.workinukraine.business.search.ISearchInteractor;
-import com.dmelnyk.workinukraine.data.RequestModel;
+import com.dmelnyk.workinukraine.models.RequestModel;
 import com.dmelnyk.workinukraine.ui.search.Contract.ISearchView;
 
 import java.text.SimpleDateFormat;

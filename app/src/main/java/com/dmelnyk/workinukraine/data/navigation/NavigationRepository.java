@@ -1,4 +1,4 @@
-package com.dmelnyk.workinukraine.model.navigation;
+package com.dmelnyk.workinukraine.data.navigation;
 
 import android.content.Context;
 

@@ -1,11 +1,8 @@
-package com.dmelnyk.workinukraine.model.search_service;
+package com.dmelnyk.workinukraine.data.search_service;
 
-import com.dmelnyk.workinukraine.data.VacancyContainer;
-import com.dmelnyk.workinukraine.data.VacancyModel;
-import com.squareup.sqlbrite2.BriteDatabase;
+import com.dmelnyk.workinukraine.models.VacancyContainer;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by d264 on 7/25/17.

@@ -47,7 +47,7 @@ public class DialogDownloading extends BaseDialog {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.dialog_downloading2, container, false);
+        View view = inflater.inflate(R.layout.dialog_downloading, container, false);
         unbinder = ButterKnife.bind(this, view);
         setCancelable(false);
 

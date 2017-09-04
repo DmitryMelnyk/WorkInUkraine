@@ -3,7 +3,7 @@ package com.dmelnyk.workinukraine.ui.vacancy;
 import android.util.Log;
 
 import com.dmelnyk.workinukraine.business.vacancy.IVacancyInteractor;
-import com.dmelnyk.workinukraine.data.VacancyModel;
+import com.dmelnyk.workinukraine.models.VacancyModel;
 import com.dmelnyk.workinukraine.ui.vacancy.core.VacancyCardViewAdapter;
 
 import java.util.ArrayList;

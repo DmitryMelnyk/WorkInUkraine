@@ -2,8 +2,8 @@ package com.dmelnyk.workinukraine.ui.navigation.di;
 
 import android.content.Context;
 
-import com.dmelnyk.workinukraine.model.navigation.INavigationRepository;
-import com.dmelnyk.workinukraine.model.navigation.NavigationRepository;
+import com.dmelnyk.workinukraine.data.navigation.INavigationRepository;
+import com.dmelnyk.workinukraine.data.navigation.NavigationRepository;
 import com.dmelnyk.workinukraine.ui.navigation.Contract;
 import com.dmelnyk.workinukraine.ui.navigation.NavUtil;
 import com.dmelnyk.workinukraine.ui.navigation.NavigationPresenter;

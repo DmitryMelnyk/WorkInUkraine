@@ -1,6 +1,6 @@
-package com.dmelnyk.workinukraine.model.vacancy;
+package com.dmelnyk.workinukraine.data.vacancy;
 
-import com.dmelnyk.workinukraine.data.VacancyModel;
+import com.dmelnyk.workinukraine.models.VacancyModel;
 
 import java.util.List;
 import java.util.Map;

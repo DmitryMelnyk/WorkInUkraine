@@ -1,9 +1,9 @@
-package com.dmelnyk.workinukraine.model.search;
+package com.dmelnyk.workinukraine.data.search;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.dmelnyk.workinukraine.data.RequestModel;
+import com.dmelnyk.workinukraine.models.RequestModel;
 import java.util.List;
 
 import io.reactivex.Completable;

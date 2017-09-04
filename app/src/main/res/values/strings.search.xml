@@ -6,4 +6,5 @@
     <string name="menu_clear">Очистись запросы</string>
     <string name="title">Искать</string>
     <string name="no_vacancies_found">По данному запросу нет ни одной вакансии. Попытайтесь поискать позже.</string>
+    <string name="search_toolbar_remove_all_requests">Удалить все запросы?</string>
 </resources>

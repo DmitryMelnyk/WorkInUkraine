@@ -21,7 +21,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.dmelnyk.workinukraine.R;
-import com.dmelnyk.workinukraine.data.RequestModel;
+import com.dmelnyk.workinukraine.models.RequestModel;
 import com.dmelnyk.workinukraine.db.di.DbModule;
 import com.dmelnyk.workinukraine.services.SearchVacanciesService;
 import com.dmelnyk.workinukraine.ui.dialogs.delete.DialogDelete;
@@ -151,7 +151,7 @@ public class SearchFragment extends Fragment implements
 
         presenter.bindView(this);
 
-        createMenu();
+        createToolbarMenu();
 
         // Restores state
         if (savedInstanceState != null) {
@@ -160,7 +160,7 @@ public class SearchFragment extends Fragment implements
         return view;
     }
 
-    private void createMenu() {
+    private void createToolbarMenu() {
         final PopupMenu popupMenu = new PopupMenu(getContext(), mSettingsImageView);
         try {
             Field field = popupMenu.getClass().getDeclaredField("mPopup");
@@ -178,7 +178,11 @@ public class SearchFragment extends Fragment implements
         popupMenu.setOnMenuItemClickListener(view -> {
             switch (view.getItemId()) {
                 case R.id.menu_clear_requests:
-                    presenter.clearAllRequest();
+                    mDialogDelete = DialogDelete.getInstance(
+                            getString(R.string.search_toolbar_remove_all_requests),
+                            DialogDelete.REMOVE_ALL_REQUESTS);
+                    mDialogDelete.setCallback(this);
+                    mDialogDelete.show(getFragmentManager(), TAG_DIALOG_DELETE);
                     break;
             }
             return true;
@@ -354,7 +358,7 @@ public class SearchFragment extends Fragment implements
     public void onButtonRemoveClicked(String item) {
         Timber.d("onButtonRemoveClicked on item " + item);
         sItemClickedRequest = item;
-        mDialogDelete = DialogDelete.getInstance(getString(R.string.delete_request));
+        mDialogDelete = DialogDelete.getInstance(getString(R.string.delete_request), DialogDelete.REMOVE_ONE_REQUEST);
         mDialogDelete.setCallback(this);
         mDialogDelete.show(getFragmentManager(), TAG_DIALOG_DELETE);
     }
@@ -407,9 +411,17 @@ public class SearchFragment extends Fragment implements
 
     // DialogRequestCallbackListener remove item
     @Override
-    public void onRemoveRequest() {
-        Timber.d("onRemoveRequest clicked. Item = " + sItemClickedRequest);
-        presenter.removeRequest(sItemClickedRequest);
+    public void onRemoveClicked(@DialogDelete.RemoveCode String removeCode) {
+        Timber.d("onRemoveClicked clicked. RequestCode=" + removeCode);
+
+        switch (removeCode) {
+            case DialogDelete.REMOVE_ALL_REQUESTS:
+                presenter.clearAllRequest();
+                break;
+            case DialogDelete.REMOVE_ONE_REQUEST:
+                presenter.removeRequest(sItemClickedRequest);
+                break;
+        }
     }
 
     public interface OnFragmentInteractionListener {

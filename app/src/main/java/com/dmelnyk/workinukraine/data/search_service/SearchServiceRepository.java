@@ -1,10 +1,10 @@
-package com.dmelnyk.workinukraine.model.search_service;
+package com.dmelnyk.workinukraine.data.search_service;
 
 import android.database.Cursor;
 import android.util.Log;
 
-import com.dmelnyk.workinukraine.data.VacancyContainer;
-import com.dmelnyk.workinukraine.data.VacancyModel;
+import com.dmelnyk.workinukraine.models.VacancyContainer;
+import com.dmelnyk.workinukraine.models.VacancyModel;
 import com.dmelnyk.workinukraine.db.Db;
 import com.dmelnyk.workinukraine.db.DbItems;
 import com.dmelnyk.workinukraine.db.Tables;

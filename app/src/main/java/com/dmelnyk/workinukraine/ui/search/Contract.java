@@ -1,10 +1,8 @@
 package com.dmelnyk.workinukraine.ui.search;
 
-import com.dmelnyk.workinukraine.business.search.model.SearchRequestModel;
-import com.dmelnyk.workinukraine.data.RequestModel;
+import com.dmelnyk.workinukraine.models.RequestModel;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by d264 on 6/14/17.

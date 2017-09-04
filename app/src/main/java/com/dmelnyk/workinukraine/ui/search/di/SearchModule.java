@@ -1,12 +1,10 @@
 package com.dmelnyk.workinukraine.ui.search.di;
 
-import android.content.Context;
-
 
 import com.dmelnyk.workinukraine.business.search.ISearchInteractor;
 import com.dmelnyk.workinukraine.business.search.SearchInteractor;
-import com.dmelnyk.workinukraine.model.search.ISearchRepository;
-import com.dmelnyk.workinukraine.model.search.SearchRepository;
+import com.dmelnyk.workinukraine.data.search.ISearchRepository;
+import com.dmelnyk.workinukraine.data.search.SearchRepository;
 import com.dmelnyk.workinukraine.ui.search.Contract;
 import com.dmelnyk.workinukraine.ui.search.SearchPresenter;
 import com.squareup.sqlbrite2.BriteDatabase;

@@ -1,9 +1,9 @@
-package com.dmelnyk.workinukraine.model.search;
+package com.dmelnyk.workinukraine.data.search;
 
 import android.support.annotation.NonNull;
 import android.util.Log;
 
-import com.dmelnyk.workinukraine.data.RequestModel;
+import com.dmelnyk.workinukraine.models.RequestModel;
 import com.dmelnyk.workinukraine.db.DbItems;
 import com.dmelnyk.workinukraine.db.Tables;
 import com.squareup.sqlbrite2.BriteDatabase;

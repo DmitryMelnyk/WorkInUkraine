@@ -82,6 +82,7 @@ public class DialogRequest extends BaseDialog {
     public void onDestroyView() {
         super.onDestroyView();
         unbinder.unbind();
+        mCallback.dialogDismissed();
         mCallback = null;
     }
 

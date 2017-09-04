@@ -1,7 +1,7 @@
 package com.dmelnyk.workinukraine.business.search;
 
-import com.dmelnyk.workinukraine.data.RequestModel;
-import com.dmelnyk.workinukraine.model.search.ISearchRepository;
+import com.dmelnyk.workinukraine.models.RequestModel;
+import com.dmelnyk.workinukraine.data.search.ISearchRepository;
 
 import java.util.List;
 

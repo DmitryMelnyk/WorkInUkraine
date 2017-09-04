@@ -14,14 +14,12 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.dmelnyk.workinukraine.R;
-import com.dmelnyk.workinukraine.data.VacancyModel;
+import com.dmelnyk.workinukraine.models.VacancyModel;
 import com.h6ah4i.android.tablayouthelper.TabLayoutHelper;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import timber.log.Timber;
 
 /**
  * A simple {@link Fragment} subclass.

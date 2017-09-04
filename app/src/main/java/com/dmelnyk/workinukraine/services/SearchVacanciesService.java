@@ -5,11 +5,11 @@ import android.content.Intent;
 import android.support.annotation.IntDef;
 import android.support.v4.content.LocalBroadcastManager;
 
-import com.dmelnyk.workinukraine.data.RequestModel;
-import com.dmelnyk.workinukraine.data.VacancyContainer;
+import com.dmelnyk.workinukraine.models.RequestModel;
+import com.dmelnyk.workinukraine.models.VacancyContainer;
 import com.dmelnyk.workinukraine.db.di.DaggerDbComponent;
 import com.dmelnyk.workinukraine.db.di.DbModule;
-import com.dmelnyk.workinukraine.model.search_service.ISearchServiceRepository;
+import com.dmelnyk.workinukraine.data.search_service.ISearchServiceRepository;
 import com.dmelnyk.workinukraine.parsing.ParserHeadHunters;
 import com.dmelnyk.workinukraine.parsing.ParserJobsUa;
 import com.dmelnyk.workinukraine.parsing.ParserRabotaUa;

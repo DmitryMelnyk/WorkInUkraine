@@ -1,9 +1,11 @@
 package com.dmelnyk.workinukraine.services;
 
 import android.app.IntentService;
+import android.content.BroadcastReceiver;
 import android.content.Intent;
 import android.support.annotation.IntDef;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 
 import com.dmelnyk.workinukraine.models.RequestModel;
 import com.dmelnyk.workinukraine.models.VacancyContainer;
@@ -37,21 +39,20 @@ import timber.log.Timber;
 
 public class SearchVacanciesService extends IntentService {
 
-    // MODE_SEARCH - for DialogDownloading, SERVICE - for BroadcastReceiver
+    // MODE_SEARCH - for DialogDownloading, MODE_REPEATING_SEARCH - for BroadcastReceiver
     public static final int MODE_SEARCH = -1;
-    public static final int SERVICE = -2;
+    public static final int MODE_REPEATING_SEARCH = -2;
     public static final String ACTION_FINISHED = "downloading finished";
+    public static final String ACTION_FINISHED_REPEATING_SEARCH = "downloading_finished_repeating_mode";
     public static final String ACTION_DOWNLOADING_IN_PROGRESS = "downloading in process";
 
-    @IntDef({MODE_SEARCH, SERVICE })
+    @IntDef({MODE_SEARCH, MODE_REPEATING_SEARCH})
     @Retention(RetentionPolicy.CLASS)
     public @interface Mode {}
 
-    @Inject
-    ISearchServiceRepository repository;
+    @Inject ISearchServiceRepository repository;
 
     public static final String KEY_MODE = "mode";
-    public static final String KEY_REQUESTS = "requests";
     public static final String KEY_REQUEST = "downloading request";
     public static final String KEY_TOTAL_VACANCIES_COUNT = "vacancies count";
 
@@ -62,6 +63,7 @@ public class SearchVacanciesService extends IntentService {
     private final static int WORKUA        = 4;
 
     private Map<String, Integer> vacancyInfos;
+    private int mMode;
 
     public SearchVacanciesService() {
         super(SearchVacanciesService.class.getName());
@@ -70,24 +72,27 @@ public class SearchVacanciesService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         Timber.d("\nSearching vacancies started!");
+        Log.e("999", "SearchVacanciesService started!");
+
         vacancyInfos = new HashMap<>();
 
-        long startTime = System.currentTimeMillis();
-
-        DaggerDbComponent
-                .builder()
+        DaggerDbComponent.builder()
                 .dbModule(new DbModule(getApplicationContext()))
                 .build()
                 .inject(this);
 
-        ArrayList<RequestModel> requests = intent.getParcelableArrayListExtra(KEY_REQUESTS);
-        int mode = intent.getIntExtra(KEY_MODE, -2);
+        mMode = intent.getIntExtra(KEY_MODE, -2);
 
-        if (mode == MODE_SEARCH) {
-        }
+        repository.getRequests()
+                .subscribe(requests -> {
+                    startSearching(requests);
+                });
+    }
 
+    private void startSearching(List<RequestModel> requests) {
         ExecutorService pool = Executors.newCachedThreadPool();
         // Creating parallel search tasks for each search request
+        long startTime = System.currentTimeMillis();
         List<Future> futures = new ArrayList<>();
         for (RequestModel request : requests) {
             CallableSearchTask[] callables = new CallableSearchTask[5];
@@ -128,13 +133,27 @@ public class SearchVacanciesService extends IntentService {
     private void sendBroadcastMessage(String action, String request, int vacanciesCount) {
         Timber.d(" Sending broadcast: " + action);
 
-        Intent broadcast;
+        Intent broadcast = null;
         switch (action) {
             case ACTION_FINISHED:
-                broadcast = new Intent(ACTION_FINISHED);
-                broadcast.putExtra(KEY_TOTAL_VACANCIES_COUNT, vacanciesCount);
+                switch (mMode) {
+
+                    // Searching when the app is running
+                    case MODE_SEARCH:
+                        broadcast = new Intent(ACTION_FINISHED);
+                        broadcast.putExtra(KEY_TOTAL_VACANCIES_COUNT, vacanciesCount);
+                        break;
+
+                    // Searching in repeated process when the app is shut down
+                    case MODE_REPEATING_SEARCH:
+                        broadcast = new Intent(ACTION_FINISHED_REPEATING_SEARCH);
+                        // no need in known vacancies count;
+                        break;
+                }
+
                 LocalBroadcastManager.getInstance(this).sendBroadcast(broadcast);
                 break;
+
 
             case ACTION_DOWNLOADING_IN_PROGRESS:
                 broadcast = new Intent(ACTION_DOWNLOADING_IN_PROGRESS);
@@ -177,7 +196,6 @@ public class SearchVacanciesService extends IntentService {
                     break;
             }
 
-//            repository.saveVacancies(Tables.SearchSites.TYPE_SITES[code], list);
             saveData(request, list);
             sendBroadcastMessage(ACTION_DOWNLOADING_IN_PROGRESS, request, list.size());
 
@@ -205,6 +223,7 @@ public class SearchVacanciesService extends IntentService {
 
         data.get(request).addAll(list);
 
+        // Saving vacancies after getting results from all 5 sites
         if (count.get(request) == 5) {
             repository.saveVacancies(data.get(request));
         }

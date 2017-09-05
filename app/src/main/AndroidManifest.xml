@@ -43,6 +43,9 @@
         <activity
             android:name=".ui.vacancy_webview.WebViewActivity"
             android:configChanges="orientation|screenSize"/>
+
+        <receiver android:name=".services.alarm.AlarmReceiver"/>
+        <receiver android:name=".services.alarm.BootReceiver"/>
     </application>
 
 </manifest>

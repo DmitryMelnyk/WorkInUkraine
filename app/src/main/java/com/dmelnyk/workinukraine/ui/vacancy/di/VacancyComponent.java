@@ -14,5 +14,5 @@ import dagger.Component;
 @Component(modules = { VacancyModule.class, DbModule.class })
 @Singleton
 public interface VacancyComponent {
-    void inject(VacancyActivity fragment);
+    void inject(VacancyActivity activity);
 }

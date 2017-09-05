@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -102,6 +103,7 @@ public class SearchFragment extends Fragment implements
                 case SearchVacanciesService.ACTION_FINISHED:
                     sTotalVacanciesCount = intent.getIntExtra(SearchVacanciesService.KEY_TOTAL_VACANCIES_COUNT, 0);
                     sDownloadingIsFinished = true;
+
                     mDialogDownloading.downloadingFinished(sTotalVacanciesCount);
 
                     resetDialogDownloading();
@@ -235,6 +237,7 @@ public class SearchFragment extends Fragment implements
             }
         }
 
+
         // restoring RequestDialog if needed
         mDialogRequest = (DialogRequest) getFragmentManager().findFragmentByTag(TAG_DIALOG_REQUEST);
         if (mDialogRequest != null) {
@@ -300,6 +303,7 @@ public class SearchFragment extends Fragment implements
             mDialogStackLevel = 1;
             enableDialogButtons(false);
 
+            // starts searching service
             startSearchVacanciesService();
 
             mDialogDownloading = DialogDownloading.newInstance(true, 0);
@@ -315,7 +319,6 @@ public class SearchFragment extends Fragment implements
     private void startSearchVacanciesService() {
         Intent searchService = new Intent(
                 getContext().getApplicationContext(), SearchVacanciesService.class);
-        searchService.putParcelableArrayListExtra(SearchVacanciesService.KEY_REQUESTS, mRequestsList);
         searchService.putExtra(SearchVacanciesService.KEY_MODE, SearchVacanciesService.MODE_SEARCH);
         getContext().startService(searchService);
     }

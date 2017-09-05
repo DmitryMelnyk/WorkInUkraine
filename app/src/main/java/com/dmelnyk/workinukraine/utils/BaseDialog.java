@@ -1,9 +1,9 @@
 package com.dmelnyk.workinukraine.utils;
 
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.view.Window;
-import android.view.animation.AccelerateInterpolator;
 
 import com.dmelnyk.workinukraine.R;
 
@@ -24,6 +24,13 @@ public abstract class BaseDialog extends DialogFragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         getDialog().getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        setStyle(DialogFragment.STYLE_NO_TITLE, R.style.DialogStyle);
     }
 
     // View-to-point reduction animation

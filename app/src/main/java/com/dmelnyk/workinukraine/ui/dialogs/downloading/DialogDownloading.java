@@ -26,7 +26,7 @@ import timber.log.Timber;
 
 public class DialogDownloading extends BaseDialog {
 
-    private static final String ARG_ANIMATION_ON = "animation_is_on";
+    private static final String ARG_IS_DOWNLOADING = "animation_is_on";
     private static final java.lang.String ARG_TOTAL_VACANCIES_COUNT = "total_vacancies_count";
     @BindView(R.id.button_ok) Button buttonOk;
     @BindView(R.id.rotateLoading) RotateLoading rotateLoading;
@@ -35,10 +35,10 @@ public class DialogDownloading extends BaseDialog {
     @BindView(R.id.vacancy_count_text_view) TextView mVacancyCountTextView;
     Unbinder unbinder;
 
-    public static DialogDownloading newInstance(boolean animationOn, int totalVacanciesCount) {
+    public static DialogDownloading newInstance(boolean isDownloading, int totalVacanciesCount) {
         DialogDownloading dialog = new DialogDownloading();
         Bundle args = new Bundle();
-        args.putBoolean(ARG_ANIMATION_ON, animationOn);
+        args.putBoolean(ARG_IS_DOWNLOADING, isDownloading);
         args.putInt(ARG_TOTAL_VACANCIES_COUNT, totalVacanciesCount);
         dialog.setArguments(args);
         return dialog;
@@ -51,15 +51,12 @@ public class DialogDownloading extends BaseDialog {
         unbinder = ButterKnife.bind(this, view);
         setCancelable(false);
 
-        boolean animationIsOn = getArguments().getBoolean(ARG_ANIMATION_ON);
-        if (animationIsOn) {
+        boolean isDownloading = getArguments().getBoolean(ARG_IS_DOWNLOADING);
+        if (isDownloading) {
             rotateLoading.start();
         } else {
             int totalVacanciesCount = getArguments().getInt(ARG_TOTAL_VACANCIES_COUNT);
-            downloadingStartedLayout.setVisibility(View.GONE);
-            downloadingFinishedLayout.setVisibility(View.VISIBLE);
-            mVacancyCountTextView.setText("" + totalVacanciesCount);
-            buttonOk.setEnabled(true);
+            showFinishedView(totalVacanciesCount);
         }
         return view;
     }
@@ -70,14 +67,18 @@ public class DialogDownloading extends BaseDialog {
         unbinder.unbind();
     }
 
-    // TODO: add (String, int) and create new view to show how many vacancies has found.
     public void downloadingFinished(int count) {
         Timber.d("downloadingFinished()");
         rotateLoading.stop();
+        showFinishedView(count);
+    }
+
+    private void showFinishedView(int count) {
         downloadingStartedLayout.setVisibility(View.GONE);
         downloadingFinishedLayout.setVisibility(View.VISIBLE);
         mVacancyCountTextView.setText("" + count);
         buttonOk.setEnabled(true);
+        buttonOk.setVisibility(View.VISIBLE);
     }
 
     @OnClick(R.id.button_ok)

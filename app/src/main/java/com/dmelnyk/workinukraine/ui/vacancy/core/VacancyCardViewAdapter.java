@@ -107,7 +107,7 @@ public class VacancyCardViewAdapter extends RecyclerView.Adapter<VacancyCardView
         int menu = 0;
         switch (mCardViewType) {
             case TYPE_STANDARD:
-                icon = R.drawable.vacancy_standart_blue;
+                icon = R.drawable.vacancy_standard_blue;
                 menu = R.menu.card_menu_tabview;
                 break;
             case TYPE_FAVORITE:

@@ -1,10 +1,11 @@
-package com.dmelnyk.workinukraine.model.search_service;
+package com.dmelnyk.workinukraine.data.search_service;
 
 import android.database.Cursor;
 import android.util.Log;
 
-import com.dmelnyk.workinukraine.data.VacancyContainer;
-import com.dmelnyk.workinukraine.data.VacancyModel;
+import com.dmelnyk.workinukraine.models.RequestModel;
+import com.dmelnyk.workinukraine.models.VacancyContainer;
+import com.dmelnyk.workinukraine.models.VacancyModel;
 import com.dmelnyk.workinukraine.db.Db;
 import com.dmelnyk.workinukraine.db.DbItems;
 import com.dmelnyk.workinukraine.db.Tables;
@@ -13,6 +14,7 @@ import com.squareup.sqlbrite2.BriteDatabase;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.reactivex.Observable;
 import timber.log.Timber;
 
 /**
@@ -23,6 +25,7 @@ public class SearchServiceRepository implements ISearchServiceRepository {
 
     private final BriteDatabase db;
 
+    private static final String REQUEST_TABLE = Tables.SearchRequest.TABLE_REQUEST;
     private static final String SELECT_ALL_FROM = "SELECT * FROM ";
     private static final String WHERE_ = " WHERE "
             + Tables.SearchSites.Columns.REQUEST + " = ";
@@ -38,6 +41,13 @@ public class SearchServiceRepository implements ISearchServiceRepository {
     }
 
     @Override
+    public Observable<List<RequestModel>> getRequests() {
+        Timber.d("\nloadRequestList()");
+        return db.createQuery(REQUEST_TABLE, "SELECT * FROM " + REQUEST_TABLE)
+                .mapToList(RequestModel.MAPPER);
+    }
+
+    @Override
     public void saveVacancies(List<VacancyContainer> allVacancies) {
         Log.e("!!!", "map=" + allVacancies);
         // don't do any changes if no vacancies has found
@@ -46,8 +56,8 @@ public class SearchServiceRepository implements ISearchServiceRepository {
         String table = Tables.SearchSites.TABLE_ALL_SITES;
         String request = allVacancies.get(0).getVacancy().request();
 
-        Cursor cursor = db.query(SELECT_ALL_FROM + table + WHERE_ + "'" + request + "'");
         List<VacancyContainer> oldVacancies = new ArrayList<>();
+        Cursor cursor = db.query(SELECT_ALL_FROM + table + WHERE_ + "'" + request + "'");
 
         if (cursor.moveToFirst()) {
             do {
@@ -63,20 +73,27 @@ public class SearchServiceRepository implements ISearchServiceRepository {
                         .setUrl(url)
                         .build();
 
-                 oldVacancies.add(VacancyContainer.create(vacancy, type));
+                oldVacancies.add(VacancyContainer.create(vacancy, type));
             } while (cursor.moveToNext());
         }
 
         cursor.close();
 
-        int newVacanciesCount = 0;
+        // Counting previous new vacancies
+        int previousNewVacancies = 0;
+        Cursor newVacanciesCursor = db.query(
+                SELECT_ALL_FROM + Tables.SearchSites.TABLE_FAV_NEW_REC
+                + WHERE_ + "'" + request + "' AND "
+                + Tables.SearchSites.Columns.TYPE + "='" + Tables.SearchSites.TYPE_NEW + "'");
+        previousNewVacancies = newVacanciesCursor.getCount();
+        Timber.d("Previous new vacancies count=" + previousNewVacancies);
 
-        Log.e("!!!", "old vacancies = " + oldVacancies);
+        int newVacanciesCount = 0;
         if (!oldVacancies.isEmpty()) {
             List<VacancyContainer> newVacancies = extractNewVacancy(oldVacancies, allVacancies);
             newVacanciesCount = newVacancies.size();
 
-            Log.e("!!!", "new vacancies = " + newVacancies);
+            Timber.d("new vacancies =%d", newVacancies);
             if (!newVacancies.isEmpty()) {
                 // clearing new and recent vacancies
                 clearVacanciesFromFavNewRecTable(Tables.SearchSites.TYPE_RECENT, request);
@@ -85,22 +102,21 @@ public class SearchServiceRepository implements ISearchServiceRepository {
             }
         } else {
             // all vacancies are new
-            Log.e("!!!", "Writing vacancies NEW " + allVacancies.size());
             writeVacanciesToFavNewRecTable(Tables.SearchSites.TYPE_NEW, allVacancies);
             newVacanciesCount = allVacancies.size();
         }
 
         if (newVacanciesCount == 0) return;
         // clear previous vacancies
-        clearVacanciesFromAllTable(request);
+        clearVacanciesFromSitesTable(request);
         // write all vacancies to corresponding table
-        writeVacanciesToAllTable(allVacancies);
+        writeVacanciesToSitesTable(allVacancies);
         // updating Requests table
         updateRequestTable(
-                request, allVacancies.size(), newVacanciesCount, System.currentTimeMillis());
+                request, allVacancies.size(), newVacanciesCount + previousNewVacancies, System.currentTimeMillis());
     }
 
-    private void clearVacanciesFromAllTable(String request) {
+    private void clearVacanciesFromSitesTable(String request) {
         Timber.d("\nclearing all vacancies with request=%s", request);
         db.delete(Tables.SearchSites.TABLE_ALL_SITES, Tables.SearchSites.Columns.REQUEST
                 + " = '" + request + "'");
@@ -114,7 +130,6 @@ public class SearchServiceRepository implements ISearchServiceRepository {
 
     public void updateRequestTable(
             String request, int vacancyCount, int newVacanciesCount, long lastUpdateTime) {
-        Log.e("444", "new vacancies=" + newVacanciesCount);
         Timber.d("\nUpdating request info. Request=%s, vacancyCount=%d, newVacanciesCount=%d, lastUpdateTime=%d",
                 request, vacancyCount, newVacanciesCount, lastUpdateTime);
 
@@ -134,7 +149,7 @@ public class SearchServiceRepository implements ISearchServiceRepository {
         return copy;
     }
 
-    private void writeVacanciesToAllTable(List<VacancyContainer> list) {
+    private void writeVacanciesToSitesTable(List<VacancyContainer> list) {
         Timber.d("\nWriting into All table %d vacancies", list.size());
         BriteDatabase.Transaction transaction = db.newTransaction();
         try {

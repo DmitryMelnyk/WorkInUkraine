@@ -1,4 +1,4 @@
-package com.dmelnyk.workinukraine.utils;
+package com.dmelnyk.workinukraine.ui.vacancy.core;
 
 import android.content.Context;
 import android.support.v4.view.ViewPager;
@@ -9,7 +9,7 @@ import android.view.MotionEvent;
  * Created by d264 on 8/17/17.
  */
 
-// This ViewPager has disabled swiping
+// ViewPager with disabled swiping
 public class CustomViewPager extends ViewPager {
 
     public CustomViewPager(Context context) {

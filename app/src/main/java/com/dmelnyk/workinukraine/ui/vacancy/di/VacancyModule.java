@@ -4,9 +4,8 @@ import android.content.Context;
 
 import com.dmelnyk.workinukraine.business.vacancy.IVacancyInteractor;
 import com.dmelnyk.workinukraine.business.vacancy.VacancyInteractor;
-import com.dmelnyk.workinukraine.data.VacancyModel;
-import com.dmelnyk.workinukraine.model.vacancy.IVacancyRepository;
-import com.dmelnyk.workinukraine.model.vacancy.VacancyRepository;
+import com.dmelnyk.workinukraine.data.vacancy.IVacancyRepository;
+import com.dmelnyk.workinukraine.data.vacancy.VacancyRepository;
 import com.dmelnyk.workinukraine.ui.vacancy.Contract;
 import com.dmelnyk.workinukraine.ui.vacancy.VacancyPresenter;
 import com.squareup.sqlbrite2.BriteDatabase;

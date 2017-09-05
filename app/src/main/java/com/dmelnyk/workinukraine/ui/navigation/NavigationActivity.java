@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 import com.dmelnyk.workinukraine.R;
 import com.dmelnyk.workinukraine.application.WorkInUaApplication;
+import com.dmelnyk.workinukraine.services.alarm.AlarmClockUtil;
 import com.dmelnyk.workinukraine.ui.navigation.Contract.INavigationPresenter;
 import com.dmelnyk.workinukraine.ui.navigation.di.NavigationModule;
 import com.dmelnyk.workinukraine.ui.navigation.menu.DrawerAdapter;
@@ -48,10 +49,9 @@ public class NavigationActivity extends BaseAnimationActivity implements
 
     private TextView nearestAlarm;
 
-    @Inject
-    INavigationPresenter presenter;
-    @Inject
-    NavUtil navUtil;
+    @Inject INavigationPresenter presenter;
+    @Inject NavUtil navUtil;
+    @Inject AlarmClockUtil alarmUtil;
 
     private static final int NAV_SEARCH_POSITION = 0;
     private static final int NAV_REFRESH_POSITION = 1;
@@ -105,6 +105,12 @@ public class NavigationActivity extends BaseAnimationActivity implements
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        alarmUtil.stopAlarmClock();
+    }
+
+    @Override
     public void onItemSelected(int position) {
         Fragment fragment = null;
 
@@ -154,6 +160,12 @@ public class NavigationActivity extends BaseAnimationActivity implements
     @Override
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        alarmUtil.startAlarmClock();
     }
 
     @Override

@@ -2,7 +2,7 @@ package com.dmelnyk.workinukraine.business.vacancy;
 
 import android.support.annotation.StringDef;
 
-import com.dmelnyk.workinukraine.data.VacancyModel;
+import com.dmelnyk.workinukraine.models.VacancyModel;
 import com.dmelnyk.workinukraine.ui.vacancy.core.VacancyCardViewAdapter;
 
 import java.lang.annotation.Retention;

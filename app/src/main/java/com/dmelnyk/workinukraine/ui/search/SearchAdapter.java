@@ -6,21 +6,17 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.PopupMenu;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.dmelnyk.workinukraine.R;
-import com.dmelnyk.workinukraine.data.RequestModel;
+import com.dmelnyk.workinukraine.models.RequestModel;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import timber.log.Timber;
 
 /**
  * Created by d264 on 6/16/17.
@@ -110,30 +106,9 @@ class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.MyViewHolder> {
             super(itemView);
             ButterKnife.bind(this, itemView);
 
-            final PopupMenu popupMenu = new PopupMenu(itemView.getContext(), itemView);
-            try {
-                Field field = popupMenu.getClass().getDeclaredField("mPopup");
-                field.setAccessible(true);
-                Object menuPopupHelper = field.get(popupMenu);
-                Method setForceIcons = menuPopupHelper.getClass().getDeclaredMethod("setForceShowIcon", Boolean.TYPE);
-                setForceIcons.invoke(menuPopupHelper, true);
-            } catch (Exception e) {
-                Timber.e(e);
-            }
-
-            popupMenu.getMenuInflater().inflate(R.menu.search_request, popupMenu.getMenu());
-
-            popupMenu.setOnMenuItemClickListener(view -> {
-                switch (view.getItemId()) {
-                    case R.id.popup_remove_item:
-                        mCallback.onButtonRemoveClicked(getFullRequest());
-                        break;
-                }
-                return true;
-            });
-
+            // OnLongClick listener for removing request
             mItemLayout.setOnLongClickListener(view -> {
-                popupMenu.show();
+                mCallback.onButtonRemoveClicked(getFullRequest());
                 return false;
             });
         }
@@ -141,9 +116,6 @@ class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.MyViewHolder> {
         @OnClick({R.id.item_layout})
         public void onViewClicked(View view) {
             switch (view.getId()) {
-//                case R.id.button_remove:
-//                    mCallback.onButtonRemoveClicked(mRequestTextView.getText().toString());
-//                    break;
                 case R.id.item_layout:
                     getFullRequest();
                     mCallback.onItemClicked(getFullRequest());

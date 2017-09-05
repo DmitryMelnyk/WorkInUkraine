@@ -1,4 +1,4 @@
-package com.dmelnyk.workinukraine.model.settings;
+package com.dmelnyk.workinukraine.data.settings;
 
 import android.content.Context;
 

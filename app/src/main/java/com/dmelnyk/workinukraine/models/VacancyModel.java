@@ -1,4 +1,4 @@
-package com.dmelnyk.workinukraine.data;
+package com.dmelnyk.workinukraine.models;
 
 import android.database.Cursor;
 import android.os.Parcelable;

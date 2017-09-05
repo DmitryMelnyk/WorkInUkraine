@@ -4,8 +4,8 @@ import android.content.Context;
 
 import com.dmelnyk.workinukraine.business.settings.ISettingsInteractor;
 import com.dmelnyk.workinukraine.business.settings.SettingsInteractor;
-import com.dmelnyk.workinukraine.model.settings.ISettingsRepository;
-import com.dmelnyk.workinukraine.model.settings.SettingsRepository;
+import com.dmelnyk.workinukraine.data.settings.ISettingsRepository;
+import com.dmelnyk.workinukraine.data.settings.SettingsRepository;
 import com.dmelnyk.workinukraine.ui.settings.Contract.ISettingsPresenter;
 import com.dmelnyk.workinukraine.ui.settings.SettingsPresenter;
 

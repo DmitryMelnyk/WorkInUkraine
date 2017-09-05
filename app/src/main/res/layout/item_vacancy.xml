@@ -24,7 +24,7 @@
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
             android:layout_margin="5dp"
-            android:src="@drawable/vacancy_standart_blue"/>
+            android:src="@drawable/vacancy_standard_blue"/>
 
         <ImageButton
             android:id="@+id/popup_menu"

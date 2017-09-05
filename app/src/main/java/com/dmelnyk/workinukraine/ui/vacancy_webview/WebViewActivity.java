@@ -18,7 +18,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.dmelnyk.workinukraine.R;
-import com.dmelnyk.workinukraine.data.VacancyModel;
+import com.dmelnyk.workinukraine.models.VacancyModel;
 import com.dmelnyk.workinukraine.utils.BaseAnimationActivity;
 
 import butterknife.BindView;

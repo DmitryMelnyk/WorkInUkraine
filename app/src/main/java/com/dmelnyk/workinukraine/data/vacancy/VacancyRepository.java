@@ -1,4 +1,4 @@
-package com.dmelnyk.workinukraine.model.vacancy;
+package com.dmelnyk.workinukraine.data.vacancy;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -6,8 +6,8 @@ import android.util.Log;
 
 import com.dmelnyk.workinukraine.R;
 import com.dmelnyk.workinukraine.business.vacancy.IVacancyInteractor;
-import com.dmelnyk.workinukraine.data.VacancyContainer;
-import com.dmelnyk.workinukraine.data.VacancyModel;
+import com.dmelnyk.workinukraine.models.VacancyContainer;
+import com.dmelnyk.workinukraine.models.VacancyModel;
 import com.dmelnyk.workinukraine.db.Db;
 import com.dmelnyk.workinukraine.db.DbItems;
 import com.dmelnyk.workinukraine.db.Tables;

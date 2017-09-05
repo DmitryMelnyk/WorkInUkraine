@@ -3,7 +3,7 @@ package com.dmelnyk.workinukraine.ui.search;
 import android.util.Log;
 
 import com.dmelnyk.workinukraine.business.search.ISearchInteractor;
-import com.dmelnyk.workinukraine.data.RequestModel;
+import com.dmelnyk.workinukraine.models.RequestModel;
 import com.dmelnyk.workinukraine.ui.search.Contract.ISearchView;
 
 import java.text.SimpleDateFormat;
@@ -42,6 +42,7 @@ public class SearchPresenter implements Contract.ISearchPresenter {
         disposableRequests = interactor.getRequests()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(requestsList -> {
+                    Log.e("999", "all vacancies count=" + countAllVacancies(requestsList));
                     view.updateData((ArrayList<RequestModel>) requestsList);
                     view.updateVacanciesCount(countAllVacancies(requestsList));
                     view.updateNewVacanciesCount(countAllNewVacancies(requestsList));

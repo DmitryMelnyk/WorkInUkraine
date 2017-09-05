@@ -1,12 +1,11 @@
 package com.dmelnyk.workinukraine.db.di;
 
-import android.app.Application;
 import android.content.Context;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.dmelnyk.workinukraine.db.DbOpenHelper;
-import com.dmelnyk.workinukraine.model.search_service.ISearchServiceRepository;
-import com.dmelnyk.workinukraine.model.search_service.SearchServiceRepository;
+import com.dmelnyk.workinukraine.data.search_service.ISearchServiceRepository;
+import com.dmelnyk.workinukraine.data.search_service.SearchServiceRepository;
 import com.squareup.sqlbrite2.BriteDatabase;
 import com.squareup.sqlbrite2.SqlBrite;
 

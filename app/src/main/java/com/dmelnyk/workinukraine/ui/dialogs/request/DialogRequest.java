@@ -1,5 +1,6 @@
 package com.dmelnyk.workinukraine.ui.dialogs.request;
 
+import android.content.DialogInterface;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -44,12 +45,6 @@ public class DialogRequest extends BaseDialog {
     Unbinder unbinder;
     private DialogRequestCallbackListener mCallback;
 
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setStyle(DialogFragment.STYLE_NO_TITLE, R.style.DialogStyle);
-    }
-
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -82,6 +77,16 @@ public class DialogRequest extends BaseDialog {
     public void onDestroyView() {
         super.onDestroyView();
         unbinder.unbind();
+    }
+
+    @Override
+    public void onCancel(DialogInterface dialog) {
+        super.onCancel(dialog);
+        sendFeedback();
+    }
+
+    private void sendFeedback() {
+        mCallback.dialogDismissed();
         mCallback = null;
     }
 
@@ -97,6 +102,7 @@ public class DialogRequest extends BaseDialog {
     public void onViewClicked() {
         if (isRequestCorrect()) {
             mCallback.onTakeRequest(getRequest());
+            mCallback = null;
             dismiss();
         } else {
             startSearchRequestAnimation();

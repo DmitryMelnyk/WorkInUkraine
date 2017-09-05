@@ -2,8 +2,8 @@ package com.dmelnyk.workinukraine.db;
 
 import android.content.ContentValues;
 
-import com.dmelnyk.workinukraine.data.VacancyContainer;
-import com.dmelnyk.workinukraine.data.VacancyModel;
+import com.dmelnyk.workinukraine.models.VacancyContainer;
+import com.dmelnyk.workinukraine.models.VacancyModel;
 
 /**
  * Created by d264 on 7/19/17.

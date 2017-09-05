@@ -5,8 +5,8 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.dmelnyk.workinukraine.application.WorkInUaApplication;
-import com.dmelnyk.workinukraine.data.VacancyContainer;
-import com.dmelnyk.workinukraine.data.VacancyModel;
+import com.dmelnyk.workinukraine.models.VacancyContainer;
+import com.dmelnyk.workinukraine.models.VacancyModel;
 import com.dmelnyk.workinukraine.db.Tables;
 import com.dmelnyk.workinukraine.utils.CityUtils;
 import com.dmelnyk.workinukraine.utils.NetUtils;
@@ -19,12 +19,8 @@ import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
-import java.util.List;
 
 import javax.inject.Inject;
-
-import timber.log.Timber;
 
 /**
  * Created by dmitry on 07.03.17.

@@ -1,9 +1,7 @@
 package com.dmelnyk.workinukraine.business.search;
 
-import com.dmelnyk.workinukraine.business.search.model.SearchRequestModel;
-import com.dmelnyk.workinukraine.data.RequestModel;
+import com.dmelnyk.workinukraine.models.RequestModel;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.Completable;

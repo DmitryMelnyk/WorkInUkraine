@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:background="@color/colorPrimaryDark">
+    android:background="@color/white_soft">
 
 
     <TextView
+        android:id="@+id/request_text_view"
         android:layout_alignParentTop="true"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="100dp"
         android:gravity="center"
         android:padding="10dp"
-        android:text="@string/dialog_delete_shore"
+        android:textColor="@color/colorPrimary"
         fontPath="fonts/FranckerCYR-ExtraBold.otf"
         tools:ignore="MissingPrefix" />
 
@@ -23,16 +23,18 @@
         android:layout_alignParentBottom="true"
         android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="50dp">
 
         <Button
             style="@style/ButtonDelete"
             android:id="@+id/buttonCancel"
+            android:background="@color/pink"
             android:text="@string/dialog_delete_cancel"/>
 
         <Button
             style="@style/ButtonDelete"
             android:id="@+id/buttonRemove"
+            android:background="@color/blue_dark"
             android:text="@string/dialog_delete_remove"/>
 
     </LinearLayout>

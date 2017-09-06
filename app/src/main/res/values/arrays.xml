@@ -61,8 +61,7 @@
     <string-array name="nav_titles">
         <item>Искать вакансиии</item>
         <item>Обновить вакансии</item>
-        <item>Избранные вакансии</item>
-        <item>Черный список</item>
+        <item>Информация</item>
         <item>Настройки</item>
         <item />
         <item>Выйти</item>
@@ -71,8 +70,7 @@
     <array name="nav_titles_icon">
         <item>@drawable/ic_nav_search_vacancies</item>
         <item>@drawable/ic_nav_refresh</item>
-        <item>@drawable/ic_nav_favorites</item>
-        <item>@drawable/ic_nav_black_list</item>
+        <item>@drawable/ic_nav_about</item>
         <item>@drawable/ic_nav_settings</item>
         <item>0</item>
         <item>@drawable/ic_nav_exit</item>

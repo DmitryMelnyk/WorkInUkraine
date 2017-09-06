@@ -33,9 +33,12 @@ public class SearchPresenter implements Contract.ISearchPresenter {
     @Override
     public void bindView(ISearchView view) {
         this.view = view;
-        if (view != null) {
-            getRequests(view);
-        }
+        getRequests(view);
+    }
+
+    @Override
+    public void updateData() {
+        getRequests(view);
     }
 
     private void getRequests(ISearchView view) {

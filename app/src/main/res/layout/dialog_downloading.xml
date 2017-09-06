@@ -74,7 +74,7 @@
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/vacancy_standard_blue"/>
+                    android:src="@mipmap/ic_vacancy_blue"/>
                 <TextView
                     android:id="@+id/vacancy_count_text_view"
                     android:layout_width="wrap_content"

@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +22,7 @@ import com.dmelnyk.workinukraine.ui.dialogs.period_chooser.DialogPeriodChooser;
 import com.dmelnyk.workinukraine.ui.dialogs.time_picker.DialogTimePicker;
 import com.dmelnyk.workinukraine.ui.settings.Contract.ISettingsPresenter;
 import com.dmelnyk.workinukraine.ui.settings.di.SettingsModule;
+import com.dmelnyk.workinukraine.utils.BaseFragment;
 
 import javax.inject.Inject;
 
@@ -35,7 +37,7 @@ import butterknife.Unbinder;
  * {@link OnFragmentInteractionListener} interface
  * to handle interaction events.
  */
-public class SettingsFragment extends Fragment implements
+public class SettingsFragment extends BaseFragment implements
         Contract.ISettingsView,
         DialogPeriodChooser.OnDialogPeriodInteractionListener,
         DialogTimePicker.OnDialogTimePickerInteractionListener {
@@ -67,6 +69,8 @@ public class SettingsFragment extends Fragment implements
 
         WorkInUaApplication.get(getContext()).getAppComponent()
                 .add(new SettingsModule()).inject(this);
+
+        Log.e("1010", "SettingsFragment onCreate");
     }
 
     @Override
@@ -104,6 +108,12 @@ public class SettingsFragment extends Fragment implements
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+//        closeMainMenuCallback();
+    }
+
+    @Override
     public void onDetach() {
         super.onDetach();
         mListener = null;
@@ -136,7 +146,7 @@ public class SettingsFragment extends Fragment implements
         switch (view.getId()) {
             case R.id.backImageView:
                 // opens navigation drawer
-                mListener.onFragmentInteraction();
+                openMainMenuCallback();
                 break;
             case R.id.periodItem:
                 presenter.onPeriodItemClicked();
@@ -220,19 +230,5 @@ public class SettingsFragment extends Fragment implements
     @Override
     public void updateToTextView(String time) {
         mTextViewTo.setText(getString(R.string.time_picker_to) + " " + time);
-    }
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnFragmentInteractionListener {
-        void onFragmentInteraction();
     }
 }

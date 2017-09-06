@@ -7,10 +7,13 @@ import android.support.annotation.ColorInt;
 import android.support.annotation.ColorRes;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
@@ -26,6 +29,7 @@ import com.dmelnyk.workinukraine.ui.navigation.menu.SpaceItem;
 import com.dmelnyk.workinukraine.ui.search.SearchFragment;
 import com.dmelnyk.workinukraine.ui.settings.SettingsFragment;
 import com.dmelnyk.workinukraine.utils.BaseAnimationActivity;
+import com.dmelnyk.workinukraine.utils.BaseFragment;
 import com.yarolegovich.slidingrootnav.SlidingRootNav;
 import com.yarolegovich.slidingrootnav.SlidingRootNavBuilder;
 
@@ -36,18 +40,20 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
+import static com.dmelnyk.workinukraine.ui.search.SearchFragment.ARGS_RUN_SEARCHING;
+
 public class NavigationActivity extends BaseAnimationActivity implements
         Contract.INavigationView,
         DrawerAdapter.OnItemSelectedListener,
         SearchFragment.OnFragmentInteractionListener,
-        SettingsFragment.OnFragmentInteractionListener {
+        BaseFragment.OnFragmentInteractionListener {
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
     @BindView(R.id.container)
     FrameLayout container;
 
-    private TextView nearestAlarm;
+    private TextView mVacanciesCountTextView;
 
     @Inject INavigationPresenter presenter;
     @Inject NavUtil navUtil;
@@ -55,10 +61,9 @@ public class NavigationActivity extends BaseAnimationActivity implements
 
     private static final int NAV_SEARCH_POSITION = 0;
     private static final int NAV_REFRESH_POSITION = 1;
-    private static final int NAV_FAVORITES_POSITION = 2;
-    private static final int NAV_BLACKLIST_POSITION = 3;
-    private static final int NAV_SETTINGS_POSITION = 4;
-    private static final int NAV_EXIT_POSITION = 6;
+    private static final int NAV_ABOUT_POSITION = 2;
+    private static final int NAV_SETTINGS_POSITION = 3;
+    private static final int NAV_EXIT_POSITION = 5;
 
     private String[] screenTitles;
     private Drawable[] screenIcons;
@@ -79,7 +84,7 @@ public class NavigationActivity extends BaseAnimationActivity implements
                 .withMenuLayout(R.layout.menu_drawer)
                 .inject();
 
-        nearestAlarm = (TextView) findViewById(R.id.menu_nearest_alarm);
+        mVacanciesCountTextView = (TextView) findViewById(R.id.menu_nearest_alarm);
 
         screenTitles = navUtil.getNavTitles();
         screenIcons = navUtil.getNavIcons();
@@ -87,8 +92,7 @@ public class NavigationActivity extends BaseAnimationActivity implements
         DrawerAdapter adapter = new DrawerAdapter(Arrays.asList(
                 createItemFor(NAV_SEARCH_POSITION).setChecked(true),
                 createItemFor(NAV_REFRESH_POSITION),
-                createItemFor(NAV_FAVORITES_POSITION),
-                createItemFor(NAV_BLACKLIST_POSITION),
+                createItemFor(NAV_ABOUT_POSITION),
                 createItemFor(NAV_SETTINGS_POSITION),
                 new SpaceItem(48),
                 createItemFor(NAV_EXIT_POSITION)));
@@ -110,6 +114,8 @@ public class NavigationActivity extends BaseAnimationActivity implements
         alarmUtil.stopAlarmClock();
     }
 
+    private static final String FRAGMENT_SEARCH = SearchFragment.class.getName();
+
     @Override
     public void onItemSelected(int position) {
         Fragment fragment = null;
@@ -122,26 +128,49 @@ public class NavigationActivity extends BaseAnimationActivity implements
                 fragment = new SearchFragment();
                 break;
             case NAV_REFRESH_POSITION:
-                // TODO
-                break;
-            case NAV_FAVORITES_POSITION:
-                // TODO
-                break;
-            case NAV_BLACKLIST_POSITION:
-                // TODO
+                fragment = getSupportFragmentManager().findFragmentByTag(FRAGMENT_SEARCH);
+                if (fragment != null) {
+                    replaceFragment(fragment);
+                    ((SearchFragment)fragment).showDialogDownloading();
+                    return;
+                } else {
+                    fragment = new SearchFragment();
+                    Bundle args = new Bundle();
+                    args.putBoolean(ARGS_RUN_SEARCHING, true);
+                    fragment.setArguments(args);
+                }
                 break;
             case NAV_SETTINGS_POSITION:
                 fragment = new SettingsFragment();
                 break;
         }
-        // TODO: remove string below after implementing TODOs above
-//        fragment = new Fragment();
-        if (fragment != null) {
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.container, fragment)
+
+        // Checks if user click the same menu item.
+        // Closes menu in that case.
+        boolean isFragmentInBackStack = replaceFragment(fragment);
+        if (isFragmentInBackStack) {
+            navigator.closeMenu();
+        }
+    }
+
+    private boolean replaceFragment(Fragment fragment) {
+        String fragmentTag = fragment.getClass().getName();
+
+        FragmentManager fm = getSupportFragmentManager();
+        boolean fragmentPopped = fm.popBackStackImmediate(fragmentTag, 0);
+        boolean backStackContainsFragment = fm.findFragmentByTag(fragmentTag) != null;
+
+        Log.e("1010", "fragmentPopped="+ fragmentPopped);
+        Log.e("1010", "fragment is in backstack=" + backStackContainsFragment);
+        if (!fragmentPopped && !backStackContainsFragment) {
+            fm.beginTransaction()
+                    .replace(R.id.container, fragment, fragmentTag)
+                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                    .addToBackStack(fragmentTag)
                     .commit();
         }
-        navigator.closeMenu();
+
+        return backStackContainsFragment;
     }
 
     private DrawerItem createItemFor(int position) {
@@ -189,7 +218,21 @@ public class NavigationActivity extends BaseAnimationActivity implements
     }
 
     @Override
-    public void onFragmentInteraction() {
-        navigator.openMenu();
+    public void onOpenMainMenuCallback() {
+        if (navigator.isMenuHidden()) {
+            navigator.openMenu();
+        }
+    }
+
+    @Override
+    public void onCloseMainMenuCallback() {
+        if (!navigator.isMenuHidden()) {
+            navigator.closeMenu();
+        }
+    }
+
+    @Override
+    public void setVacanciesCount(int vacancies) {
+        mVacanciesCountTextView.setText("" + vacancies);
     }
 }

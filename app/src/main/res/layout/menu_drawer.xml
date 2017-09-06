@@ -4,7 +4,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/white"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:overScrollMode="never"
+    >
 
     <Space
         android:layout_width="wrap_content"
@@ -17,8 +19,10 @@
         android:paddingRight="24dp"
         android:paddingStart="24dp"
         android:text="@string/nav_founded_vacancies"
-        android:textColor="@color/textColor"
-        android:textSize="12sp"
+        android:textColor="@color/colorPrimary"
+        android:textSize="10sp"
+        fontPath="fonts/FranckerCYR-ExtraBold.otf"
+        tools:ignore="MissingPrefix"
         />
 
     <LinearLayout
@@ -26,25 +30,26 @@
         android:layout_height="wrap_content"
         android:baselineAligned="false"
         android:orientation="horizontal"
+        android:overScrollMode="never"
         android:paddingLeft="24dp"
         android:paddingRight="24dp">
 
         <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
             android:layout_marginTop="6dp"
-            android:src="@drawable/ic_nav_vacancy" />
+            android:src="@mipmap/ic_vacancy_blue" />
 
         <TextView
             android:id="@+id/menu_nearest_alarm"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingLeft="24dp"
+            android:paddingLeft="8dp"
             android:paddingRight="24dp"
             android:layout_marginTop="6dp"
             android:textSize="36sp"
-            android:text="84"
-            android:textColor="@color/textColor"
+            android:text="0"
+            android:textColor="@color/colorPrimary"
             fontPath="fonts/FranckerCYR-ExtraBold.otf"
             tools:ignore="MissingPrefix" />
 
@@ -57,7 +62,9 @@
     <android.support.v7.widget.RecyclerView
         android:id="@+id/list"
         android:layout_width="240dp"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:overScrollMode="never"
+        />
 
     <Space
         android:layout_width="wrap_content"

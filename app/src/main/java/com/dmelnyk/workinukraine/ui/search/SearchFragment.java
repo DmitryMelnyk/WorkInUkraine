@@ -4,7 +4,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -32,6 +31,7 @@ import com.dmelnyk.workinukraine.ui.search.Contract.ISearchPresenter;
 import com.dmelnyk.workinukraine.ui.search.di.DaggerSearchComponent;
 import com.dmelnyk.workinukraine.ui.search.di.SearchModule;
 import com.dmelnyk.workinukraine.ui.vacancy.VacancyActivity;
+import com.dmelnyk.workinukraine.utils.BaseFragment;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -55,9 +55,10 @@ import static android.app.Activity.RESULT_OK;
  * {@link OnFragmentInteractionListener} interface
  * to handle interaction events.
  */
-public class SearchFragment extends Fragment implements
+public class SearchFragment extends BaseFragment implements
         Contract.ISearchView,
         SearchAdapter.AdapterCallback,
+        DialogDownloading.CallbackLister,
         DialogRequest.DialogRequestCallbackListener,
         DialogDelete.DialogDeleteCallbackListener {
 
@@ -66,6 +67,8 @@ public class SearchFragment extends Fragment implements
     private static final String TAG_DIALOG_DELETE = "delete_dialog";
     private static final String KEY_DIALOG_STACK_LEVEL = "dialog_stack_level";
     private static final int REQUEST_CODE_VACANCY_ACTIVITY = 1001;
+
+    public static final String ARGS_RUN_SEARCHING = "run_downloading";
 
     @BindView(R.id.backImageView) ImageView mBackImageView;
     @BindView(R.id.settings_image_view) ImageView mSettingsImageView;
@@ -105,9 +108,10 @@ public class SearchFragment extends Fragment implements
                     sDownloadingIsFinished = true;
 
                     mDialogDownloading.downloadingFinished(sTotalVacanciesCount);
-
                     resetDialogDownloading();
-                    presenter.bindView(SearchFragment.this);
+
+                    // updating data after searching vacancies
+                    presenter.updateData();
                     break;
 
                 case SearchVacanciesService.ACTION_DOWNLOADING_IN_PROGRESS:
@@ -117,6 +121,8 @@ public class SearchFragment extends Fragment implements
             }
         }
     };
+
+    private boolean mRunDownloading;
 
     private void resetDialogDownloading() {
         mDialogDownloading = null;
@@ -136,6 +142,11 @@ public class SearchFragment extends Fragment implements
                 .inject(this);
 
         mRequestsList = new ArrayList<>();
+        mRunDownloading = getArguments() != null
+                ? getArguments().getBoolean(ARGS_RUN_SEARCHING)
+                : false;
+
+        Log.e("1010", "SearchFragment onCreate");
     }
 
     @Override
@@ -192,6 +203,16 @@ public class SearchFragment extends Fragment implements
     }
 
     @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof OnFragmentInteractionListener) {
+            mListener = (OnFragmentInteractionListener) context;
+        } else {
+            throw new ClassCastException(context.getClass() + " must implement SearchFragment.OnFragmentInteractionListener");
+        }
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
         restoreDialogs();
@@ -201,6 +222,11 @@ public class SearchFragment extends Fragment implements
         filter.addAction(SearchVacanciesService.ACTION_DOWNLOADING_IN_PROGRESS);
         LocalBroadcastManager.getInstance(getContext())
                 .registerReceiver(mDownloadingBroadcastReceiver, filter);
+
+        if (mRunDownloading) {
+            showDialogDownloading();
+            mRunDownloading = false;
+        }
     }
 
     @Override
@@ -234,6 +260,7 @@ public class SearchFragment extends Fragment implements
                 ft.remove(mDialogDownloading);
                 mDialogDownloading = DialogDownloading.newInstance(false, sTotalVacanciesCount);
                 mDialogDownloading.show(ft, TAG_DIALOG_DOWNLOADING);
+                mDialogDownloading.setCallbackListener(this);
             }
         }
 
@@ -242,17 +269,6 @@ public class SearchFragment extends Fragment implements
         mDialogRequest = (DialogRequest) getFragmentManager().findFragmentByTag(TAG_DIALOG_REQUEST);
         if (mDialogRequest != null) {
             mDialogRequest.setCallback(this);
-        }
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnDialogPeriodInteractionListener");
         }
     }
 
@@ -273,7 +289,7 @@ public class SearchFragment extends Fragment implements
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.backImageView:
-                mListener.onFragmentInteraction();
+                openMainMenuCallback();
                 break;
             case R.id.buttonAdd:
                 showDialogRequest();
@@ -297,7 +313,10 @@ public class SearchFragment extends Fragment implements
         }
     }
 
-    private void showDialogDownloading() {
+    /**
+     * Runs service for search vacancies. Also can be called from NavigationActivity
+     */
+    public void showDialogDownloading() {
         // Prevents creating more then one dialog at a time
         if (mDialogStackLevel == 0) {
             mDialogStackLevel = 1;
@@ -307,6 +326,7 @@ public class SearchFragment extends Fragment implements
             startSearchVacanciesService();
 
             mDialogDownloading = DialogDownloading.newInstance(true, 0);
+            mDialogDownloading.setCallbackListener(this);
             mDialogDownloading.show(getFragmentManager(), TAG_DIALOG_DOWNLOADING);
         }
     }
@@ -343,6 +363,7 @@ public class SearchFragment extends Fragment implements
     @Override
     public void updateVacanciesCount(int allVacanciesCount) {
         mVacanciesCountTextView.setText("" + allVacanciesCount);
+        mListener.setVacanciesCount(allVacanciesCount);
     }
 
     @Override
@@ -394,6 +415,13 @@ public class SearchFragment extends Fragment implements
         }
     }
 
+    @Override
+    public void onOkClickedInDownloadingDialog() {
+        // close NavigationActivity's menu in case
+        // downloading was started from NavigationActivity
+        closeMainMenuCallback();
+    }
+
     // DialogRequestCallbackListener add item
     @Override
     public void onTakeRequest(String request) {
@@ -428,7 +456,7 @@ public class SearchFragment extends Fragment implements
     }
 
     public interface OnFragmentInteractionListener {
-        // for open NavigationDrawer
-        void onFragmentInteraction();
+        // for updating vacancies number count
+        void setVacanciesCount(int vacancies);
     }
 }

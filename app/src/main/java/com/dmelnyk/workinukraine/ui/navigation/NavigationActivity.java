@@ -68,6 +68,7 @@ public class NavigationActivity extends BaseAnimationActivity implements
     private String[] screenTitles;
     private Drawable[] screenIcons;
     private SlidingRootNav navigator;
+    private boolean wasHomePressed;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -150,6 +151,7 @@ public class NavigationActivity extends BaseAnimationActivity implements
         boolean isFragmentInBackStack = replaceFragment(fragment);
         if (isFragmentInBackStack) {
             navigator.closeMenu();
+            wasHomePressed = false;
         }
     }
 
@@ -218,6 +220,12 @@ public class NavigationActivity extends BaseAnimationActivity implements
     }
 
     @Override
+    protected void onUserLeaveHint() {
+        super.onUserLeaveHint();
+        wasHomePressed = true;
+    }
+
+    @Override
     public void onOpenMainMenuCallback() {
         if (navigator.isMenuHidden()) {
             navigator.openMenu();
@@ -227,7 +235,11 @@ public class NavigationActivity extends BaseAnimationActivity implements
     @Override
     public void onCloseMainMenuCallback() {
         if (!navigator.isMenuHidden()) {
-            navigator.closeMenu();
+            // don't restore Fragment when user click Home - button
+            // and navagation menu was opened
+            if (!wasHomePressed) {
+                navigator.closeMenu();
+            }
         }
     }
 

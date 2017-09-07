@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Settings styles -->
+    <style name="LinearLayout.SettingsItem">
+        <item name="android:layout_marginLeft">@dimen/settings_item_margin</item>
+        <item name="android:layout_marginTop">@dimen/settings_item_margin</item>
+        <item name="android:layout_marginBottom">@dimen/settings_item_margin</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
+    </style>
+
+    <style name="LinearLayout.SettingsItem.TextViews" >
+        <item name="android:layout_marginLeft">@dimen/settings_between_image_item_margin</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:background">@color/transparent</item>
+
+    </style>
+
+    <style name="LinearLayout.SettingsItem.Support" parent="LinearLayout.SettingsItem">
+        <item name="android:layout_marginTop">@dimen/settings_item_support_vertical_margin</item>
+    </style>
+
+    <style name="TextView.SettingsItem">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/colorPrimary</item>
+        <item name="fontPath">fonts/FranckerCYR-ExtraBold.otf</item>
+    </style>
+
+    <style name="TextView.SettingsItem.First" parent="TextView.SettingsItem">
+        <item name="android:textSize">@dimen/settings_item_first_textsize</item>
+    </style>
+
+    <style name="TextView.SettingsItem.Second" parent="TextView.SettingsItem">
+        <item name="android:textSize">@dimen/settings_item_second_textsize</item>
+    </style>
+</resources>

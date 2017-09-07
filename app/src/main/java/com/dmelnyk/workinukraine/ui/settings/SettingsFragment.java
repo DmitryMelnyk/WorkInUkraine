@@ -141,7 +141,8 @@ public class SettingsFragment extends BaseFragment implements
         presenter.unbindView();
     }
 
-    @OnClick({R.id.backImageView, R.id.periodItem, R.id.soundItem, R.id.vibroItem, R.id.text_view_from, R.id.text_view_to, R.id.sendFeedback, R.id.about, R.id.thumbUp, R.id.share, R.id.male})
+    @OnClick({R.id.backImageView, R.id.periodItem, R.id.soundItem, R.id.vibroItem, R.id.disturbItem,
+            R.id.text_view_from, R.id.text_view_to, R.id.sendFeedback, R.id.about, R.id.thumbUp, R.id.share, R.id.male})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.backImageView:
@@ -156,6 +157,9 @@ public class SettingsFragment extends BaseFragment implements
                 break;
             case R.id.vibroItem:
                 presenter.onSwitcherChecked(1, !mVibroSwitcher.isChecked());
+                break;
+            case R.id.disturbItem:
+                presenter.onSwitcherChecked(2, !mDisturbSwitcher.isChecked());
                 break;
             case R.id.text_view_from:
                 presenter.onDontDisturbTimeModeChose(SettingsPresenter.TIME_FROM);
@@ -219,7 +223,6 @@ public class SettingsFragment extends BaseFragment implements
     @Override
     public void onTimeSet(String time) {
         presenter.onTimeSelected(time);
-        Toast.makeText(getContext(), "Selected time = " + time, Toast.LENGTH_SHORT).show();
     }
 
     @Override

@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/dialog_request_bg"
+    android:background="@color/colorBackground"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <LinearLayout
@@ -62,25 +62,18 @@
             </RelativeLayout>
         </LinearLayout>
 
-        <RelativeLayout
-            android:background="@drawable/dialog_request_relativelayout_bg"
+        <Button
+            android:layout_centerInParent="true"
+            android:id="@+id/button_ok"
             android:layout_width="match_parent"
-            android:layout_height="100dp">
-
-            <Button
-                android:layout_centerInParent="true"
-                android:id="@+id/button_ok"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/dialog_horizontal_margin"
-                android:layout_marginRight="@dimen/dialog_horizontal_margin"
-                android:gravity="center"
-                android:text="@android:string/ok"
-                android:textColor="@color/textColorSecondary"
-                android:background="@drawable/button_bg2"
-                />
-
-        </RelativeLayout>
+            android:layout_height="50dp"
+            android:layout_marginLeft="@dimen/dialog_horizontal_margin"
+            android:layout_marginRight="@dimen/dialog_horizontal_margin"
+            android:gravity="center"
+            android:text="@android:string/ok"
+            android:textColor="@color/textColorSecondary"
+            android:background="@drawable/button_ok_green"
+            />
 
     </LinearLayout>
 

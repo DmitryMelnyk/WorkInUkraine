@@ -9,7 +9,7 @@
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/white_soft"
+        android:background="@color/colorBackground"
         >
         <ImageView
             android:id="@+id/magnifier_image_view"
@@ -79,7 +79,7 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:theme="@style/TextLabelInputLayout"
-                    android:backgroundTint="@color/colorBackground"
+                    android:backgroundTint="@color/grey"
                     android:textAlignment="center"
                     >
 
@@ -102,9 +102,9 @@
             android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            android:background="@color/colorAccent"
+            android:background="@drawable/button_ok_green"
             android:text="ok"
-            android:textColor="@color/white_soft"
+            android:textColor="@color/white"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/table_layout"

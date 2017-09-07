@@ -107,8 +107,9 @@ public class SearchFragment extends BaseFragment implements
                     sTotalVacanciesCount = intent.getIntExtra(SearchVacanciesService.KEY_TOTAL_VACANCIES_COUNT, 0);
                     sDownloadingIsFinished = true;
 
+                    Log.e("1010", "sDownloadingCount=" + sTotalVacanciesCount);
                     mDialogDownloading.downloadingFinished(sTotalVacanciesCount);
-                    resetDialogDownloading();
+//                    resetDialogDownloading();
 
                     // updating data after searching vacancies
                     presenter.updateData();
@@ -417,9 +418,11 @@ public class SearchFragment extends BaseFragment implements
 
     @Override
     public void onOkClickedInDownloadingDialog() {
+        resetDialogDownloading();
         // close NavigationActivity's menu in case
         // downloading was started from NavigationActivity
         closeMainMenuCallback();
+
     }
 
     // DialogRequestCallbackListener add item

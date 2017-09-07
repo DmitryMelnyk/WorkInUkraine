@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Dialog Delete -->
+    <style name="ButtonDelete" parent="Base.TextAppearance.AppCompat.Button">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_margin">0dp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="fontPath">fonts/FranckerCYR-ExtraBold.otf</item>
+    </style>
+
+    <style name="SearchTextViewBold">
+        <item name="android:textColor">@color/white_soft</item>
+        <item name="android:gravity">center</item>
+        <item name="fontPath">fonts/FranckerCYR-ExtraBold.otf</item>
+    </style>
+
+    <!--<style name="SearchTextView">-->
+        <!--<item name="android:textColor">@color/white_soft</item>-->
+        <!--<item name="android:gravity">center</item>-->
+    <!--</style>-->
+
+    <style name="TextLabelInputLayout" parent="TextAppearance.AppCompat">
+        <!-- Hint color and label color in FALSE state -->
+        <item name="android:textColorHint">@color/colorAccent</item>
+        <!-- Label color in TRUE state and bar color FALSE and TRUE State -->
+        <item name="colorAccent">@color/grey</item>
+        <item name="colorControlNormal">@color/colorAccent</item>
+        <item name="colorControlActivated">@color/colorAccent</item>
+        <item name="colorControlHighlight">@color/colorPrimary</item>
+        <item name="backgroundTint">@color/colorAccent</item>
+    </style>
+</resources>

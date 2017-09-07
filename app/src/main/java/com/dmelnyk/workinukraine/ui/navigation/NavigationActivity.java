@@ -82,7 +82,7 @@ public class NavigationActivity extends BaseAnimationActivity implements
         navigator = new SlidingRootNavBuilder(this)
                 .withMenuOpened(true)
                 .withSavedState(savedInstanceState)
-                .withMenuLayout(R.layout.menu_drawer)
+                .withMenuLayout(R.layout.navigation_menu_drawer)
                 .inject();
 
         mVacanciesCountTextView = (TextView) findViewById(R.id.menu_nearest_alarm);

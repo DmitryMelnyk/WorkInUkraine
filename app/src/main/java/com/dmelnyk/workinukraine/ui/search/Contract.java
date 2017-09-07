@@ -26,9 +26,9 @@ public class Contract {
         void bindView(ISearchView view);
         void unbindView();
 
-        void addNewRequest(String request);
+        void addRequest(String request);
 
-        void removeRequest(String mItemClicked);
+        void removeRequest(String request);
 
         void clearAllRequest();
 

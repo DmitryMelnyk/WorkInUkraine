@@ -92,7 +92,7 @@ public class SearchPresenter implements Contract.ISearchPresenter {
     }
 
     @Override
-    public void addNewRequest(String request) {
+    public void addRequest(String request) {
         interactor.saveRequest(request)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(() -> { },

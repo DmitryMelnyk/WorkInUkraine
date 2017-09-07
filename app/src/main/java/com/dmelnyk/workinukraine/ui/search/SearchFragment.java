@@ -47,6 +47,8 @@ import timber.log.Timber;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
+import static com.dmelnyk.workinukraine.ui.search.SearchAdapter.MENU_EDIT;
+import static com.dmelnyk.workinukraine.ui.search.SearchAdapter.MENU_REMOVE;
 
 
 /**
@@ -293,7 +295,7 @@ public class SearchFragment extends BaseFragment implements
                 openMainMenuCallback();
                 break;
             case R.id.buttonAdd:
-                showDialogRequest();
+                showDialogRequest(null);
                 break;
             case R.id.buttonSearch:
                 showDialogDownloading();
@@ -301,7 +303,7 @@ public class SearchFragment extends BaseFragment implements
         }
     }
 
-    private void showDialogRequest() {
+    private void showDialogRequest(@Nullable String request) {
         // Prevents creating more then one dialog at a time
         if (mDialogStackLevel == 0) {
             mDialogStackLevel = 1;
@@ -309,6 +311,12 @@ public class SearchFragment extends BaseFragment implements
             enableDialogButtons(false);
 
             mDialogRequest = new DialogRequest();
+            if (request != null) {
+                Bundle args = new Bundle();
+                args.putString(DialogRequest.ARG_EDIT_REQUEST, request);
+                mDialogRequest.setArguments(args);
+            }
+
             mDialogRequest.show(getFragmentManager(), TAG_DIALOG_REQUEST);
             mDialogRequest.setCallback(this);
         }
@@ -380,10 +388,24 @@ public class SearchFragment extends BaseFragment implements
 
     // SearchAdapter.AdapterCallback for open DialogDelete
     @Override
-    public void onButtonRemoveClicked(String item) {
-        Timber.d("onButtonRemoveClicked on item " + item);
-        sItemClickedRequest = item;
-        mDialogDelete = DialogDelete.getInstance(getString(R.string.delete_request), DialogDelete.REMOVE_ONE_REQUEST);
+    public void onMenuItemClicked(String request, @SearchAdapter.MenuType int menu) {
+        Timber.d("onMenuItemClicked on item " + request);
+        sItemClickedRequest = request;
+
+        switch (menu) {
+            case MENU_EDIT:
+                showDialogRequest(request);
+                break;
+            case MENU_REMOVE:
+                createDeleteDialog();
+                break;
+        }
+    }
+
+    private void createDeleteDialog() {
+        mDialogDelete = DialogDelete.getInstance(
+                getString(R.string.delete_request),
+                DialogDelete.REMOVE_ONE_REQUEST);
         mDialogDelete.setCallback(this);
         mDialogDelete.show(getFragmentManager(), TAG_DIALOG_DELETE);
     }
@@ -427,8 +449,18 @@ public class SearchFragment extends BaseFragment implements
 
     // DialogRequestCallbackListener add item
     @Override
-    public void onTakeRequest(String request) {
-        presenter.addNewRequest(request);
+    public void onTakeRequest(String request, @DialogRequest.MODE int mode) {
+        Log.e("1010", "DialogRequest. Mode=" + mode);
+        switch (mode) {
+            case DialogRequest.MODE_ADD_REQUEST:
+                presenter.addRequest(request);
+                break;
+            case DialogRequest.MODE_EDIT_REQUEST:
+                presenter.removeRequest(sItemClickedRequest);
+                presenter.addRequest(request);
+                break;
+        }
+
         resetDialogRequest();
     }
 

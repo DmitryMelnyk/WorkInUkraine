@@ -3,9 +3,9 @@ package com.dmelnyk.workinukraine.ui.dialogs.request;
 import android.content.DialogInterface;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
+import android.support.annotation.IntDef;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputLayout;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.AppCompatEditText;
 import android.view.LayoutInflater;
@@ -19,6 +19,7 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.dmelnyk.workinukraine.R;
+import com.dmelnyk.workinukraine.ui.search.SearchAdapter;
 import com.dmelnyk.workinukraine.utils.BaseDialog;
 import com.dmelnyk.workinukraine.utils.MyBounceInterpolator;
 
@@ -38,6 +39,13 @@ import butterknife.Unbinder;
 
 public class DialogRequest extends BaseDialog {
 
+    public static final String ARG_EDIT_REQUEST = "edit_request";
+    public static final int MODE_EDIT_REQUEST = 1;
+    public static final int MODE_ADD_REQUEST = 2;
+
+    @IntDef ({MODE_ADD_REQUEST, MODE_EDIT_REQUEST})
+    public @interface MODE {}
+
     @BindView(R.id.search_dialog_spinner) Spinner mCitySpinner;
     @BindView(R.id.search_dialog_keywords) AppCompatEditText mRequestTextInputLayout;
     @BindView(R.id.ok_button) Button mOkButton;
@@ -45,24 +53,56 @@ public class DialogRequest extends BaseDialog {
     Unbinder unbinder;
     private DialogRequestCallbackListener mCallback;
 
+    private Bundle mArgs;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        // args == null in case of adding new request
+        // and != null in case of editing old request
+        mArgs = getArguments();
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.dialog_request, container);
         unbinder = ButterKnife.bind(this, view);
 
-        configSpinner();
+        String request = null;
+        String city = null;
+        if (mArgs != null) {
+            String fullRequest = mArgs.getString(ARG_EDIT_REQUEST);
+            request = fullRequest.split(" / ")[0];
+            city = fullRequest.split(" / ")[1];
+        }
+
+        configSpinner(request, city);
         return view;
     }
 
-    public void configSpinner() {
+    public void configSpinner(@Nullable String request, @Nullable String city) {
         String[] cities = (getResources().getStringArray(R.array.cities));
         Arrays.sort(cities);
         List<String> items = new ArrayList<>();
-        items.add("Киев");
+        items.add(getResources().getString(R.string.city_kiev));
         Collections.addAll(items, cities);
 
-        mCitySpinner.setSelection(0);
+        // in case of editing request
+        if (city != null && request != null) {
+            // restores request
+            mRequestTextInputLayout.setSelected(true);
+            mRequestTextInputLayout.setText(request);
+
+            // restores city
+            int position = Collections.binarySearch(items, city);
+            mCitySpinner.setSelection(position);
+        } else {
+            // sets "Kiev" to first position in spinner
+            mCitySpinner.setSelection(0);
+        }
+
         mCitySpinner.getBackground().setColorFilter(
                 ContextCompat.getColor(getContext(), R.color.colorPrimary),
                 PorterDuff.Mode.SRC_ATOP);
@@ -90,7 +130,7 @@ public class DialogRequest extends BaseDialog {
         mCallback = null;
     }
 
-    private void startSearchRequestAnimation() {
+    private void startErrorAnimation() {
         // initialize animations;
         Animation scaleAnimation = AnimationUtils.loadAnimation(getContext(), R.anim.scale_anim);
         MyBounceInterpolator interpolator = new MyBounceInterpolator(0.5, 20);
@@ -101,11 +141,16 @@ public class DialogRequest extends BaseDialog {
     @OnClick(R.id.ok_button)
     public void onViewClicked() {
         if (isRequestCorrect()) {
-            mCallback.onTakeRequest(getRequest());
+            int mode = mArgs != null
+                    ? MODE_EDIT_REQUEST
+                    : MODE_ADD_REQUEST;
+
+            mCallback.onTakeRequest(getRequest(), mode);
             mCallback = null;
             dismiss();
         } else {
-            startSearchRequestAnimation();
+            // show error notification with animation
+            startErrorAnimation();
             Toast.makeText(getActivity(), getResources().getString
                     (R.string.minimal_request_length), Toast.LENGTH_SHORT).show();
         }
@@ -122,7 +167,7 @@ public class DialogRequest extends BaseDialog {
     }
 
     public interface DialogRequestCallbackListener {
-        void onTakeRequest(String request);
+        void onTakeRequest(String request, @MODE int mode);
 
         void dialogDismissed();
     }

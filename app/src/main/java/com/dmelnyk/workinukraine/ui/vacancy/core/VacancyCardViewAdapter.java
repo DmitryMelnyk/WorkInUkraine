@@ -123,10 +123,9 @@ public class VacancyCardViewAdapter extends RecyclerView.Adapter<VacancyCardView
                 menu = R.menu.vacancy_item_default;
                 break;
         }
-
+        popupMenu.getMenuInflater().inflate(menu, popupMenu.getMenu());
         holder.mIconImageView.setImageDrawable(ContextCompat.getDrawable(
                 mContext, icon));
-        popupMenu.getMenuInflater().inflate(menu, popupMenu.getMenu());
 
         popupMenu.setOnMenuItemClickListener(view -> {
             switch (view.getItemId()) {

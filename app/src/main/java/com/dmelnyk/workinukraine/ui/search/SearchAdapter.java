@@ -1,37 +1,48 @@
 package com.dmelnyk.workinukraine.ui.search;
 
+import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.PopupMenu;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.dmelnyk.workinukraine.R;
 import com.dmelnyk.workinukraine.models.RequestModel;
 
+import java.lang.annotation.Retention;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import timber.log.Timber;
 
 /**
  * Created by d264 on 6/16/17.
  */
 
-class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.MyViewHolder> {
+public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.MyViewHolder> {
 
     public static final String SPLITTER = " / ";
     private ArrayList<RequestModel> mRequestModels;
     private AdapterCallback mCallback;
 
+    public static final int MENU_EDIT = 1;
+    public static final int MENU_REMOVE = 2;
+    @IntDef({MENU_EDIT, MENU_REMOVE}) public @interface MenuType {}
+
     // Callback interface
     public interface AdapterCallback {
         void onItemClicked(String item);
-        void onButtonRemoveClicked(String item);
+        void onMenuItemClicked(String item, @MenuType int menu);
     }
 
     public void setAdapterListener(AdapterCallback mCallback) {
@@ -106,9 +117,35 @@ class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.MyViewHolder> {
             super(itemView);
             ButterKnife.bind(this, itemView);
 
+            PopupMenu popupMenu;
+            popupMenu = new PopupMenu(itemView.getContext(), mLetterTextView, Gravity.CENTER_VERTICAL);
+
+            try {
+                Field field = popupMenu.getClass().getDeclaredField("mPopup");
+                field.setAccessible(true);
+                Object menuPopupHelper = field.get(popupMenu);
+                Method setForceIcons = menuPopupHelper.getClass().getDeclaredMethod("setForceShowIcon", Boolean.TYPE);
+                setForceIcons.invoke(menuPopupHelper, true);
+            } catch (Exception e) {
+                Timber.e(e);
+            }
+
+            popupMenu.getMenuInflater().inflate(R.menu.search_request, popupMenu.getMenu());
             // OnLongClick listener for removing request
             mItemLayout.setOnLongClickListener(view -> {
-                mCallback.onButtonRemoveClicked(getFullRequest());
+                popupMenu.show();
+                return false;
+            });
+
+            popupMenu.setOnMenuItemClickListener(view -> {
+                switch (view.getItemId()) {
+                    case R.id.popup_edit_item:
+                        mCallback.onMenuItemClicked(getFullRequest(), MENU_EDIT);
+                        break;
+                    case R.id.popup_remove_item:
+                        mCallback.onMenuItemClicked(getFullRequest(), MENU_REMOVE);
+                        break;
+                }
                 return false;
             });
         }

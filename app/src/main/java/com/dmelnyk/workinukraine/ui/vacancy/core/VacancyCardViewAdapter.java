@@ -24,6 +24,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.List;
 
 import timber.log.Timber;
 
@@ -174,7 +175,7 @@ public class VacancyCardViewAdapter extends RecyclerView.Adapter<VacancyCardView
     }
 
     public interface OnAdapterInteractionListener {
-        void onAdapterInteractionItemClicked(VacancyModel vacancyClicked);
+        void onAdapterInteractionItemClicked(VacancyModel vacancyClicked, List<VacancyModel> vacancies);
         void onAdapterInteractionPopupMenuClicked(VacancyModel vacancyClicked, @VacancyPopupMenuType int type);
     }
 
@@ -193,7 +194,7 @@ public class VacancyCardViewAdapter extends RecyclerView.Adapter<VacancyCardView
         if (mListener == null) {
             throw new ClassCastException(PARENT_CLASS
                     + " must implement " + OnAdapterInteractionListener.class);
-        } else mListener.onAdapterInteractionItemClicked(mDataSet.get(position));
+        } else mListener.onAdapterInteractionItemClicked(mDataSet.get(position), mDataSet);
     }
 
 }

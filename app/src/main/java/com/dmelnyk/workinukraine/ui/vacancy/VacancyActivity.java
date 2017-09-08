@@ -164,20 +164,6 @@ public class VacancyActivity extends BaseAnimationActivity implements
     }
 
     @Override
-    public void onFragmentInteractionItemClicked(VacancyModel vacancy) {
-        boolean isVacancyFavorite = presenter.isVacancyFavorite(vacancy);
-        // TODO: remove this class
-//        Intent webview = WebViewActivity.newInstance(this, vacancy, isVacancyFavorite);
-//        startActivityForResult(webview, WEBVIEW_REQUEST_CODE);
-
-        List<VacancyModel> vacancies = new ArrayList<>();
-        vacancies.add(vacancy);
-        // Activity with 1 vacancy
-        Intent vacancyContainerIntent = VacancyContainerActivity.getIntent(this, vacancies, vacancy);
-        startActivity(vacancyContainerIntent);
-    }
-
-    @Override
     public void onFragmentInteractionItemClicked(VacancyModel vacancyModel, List<VacancyModel> vacancies) {
         // Activity with multiple vacancy
         Intent vacancyContainerIntent = VacancyContainerActivity.getIntent(this, vacancies, vacancyModel);

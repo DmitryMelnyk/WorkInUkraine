@@ -113,7 +113,7 @@ public class BaseTabFragment extends Fragment implements
     }
 
     @Override
-    public void onAdapterInteractionItemClicked(VacancyModel vacancyClicked) {
+    public void onAdapterInteractionItemClicked(VacancyModel vacancyClicked, List<VacancyModel> vacancies) {
         mListener.onFragmentInteractionItemClicked(vacancyClicked, mItems);
     }
 

@@ -2,11 +2,11 @@ package com.dmelnyk.workinukraine.utils.di;
 
 import com.dmelnyk.workinukraine.application.ApplicationComponent;
 import com.dmelnyk.workinukraine.application.ApplicationScope;
-import com.dmelnyk.workinukraine.parsing.ParserHeadHunters;
-import com.dmelnyk.workinukraine.parsing.ParserJobsUa;
-import com.dmelnyk.workinukraine.parsing.ParserRabotaUa;
-import com.dmelnyk.workinukraine.parsing.ParserWorkNewInfo;
-import com.dmelnyk.workinukraine.parsing.ParserWorkUa;
+import com.dmelnyk.workinukraine.utils.parsing.ParserHeadHunters;
+import com.dmelnyk.workinukraine.utils.parsing.ParserJobsUa;
+import com.dmelnyk.workinukraine.utils.parsing.ParserRabotaUa;
+import com.dmelnyk.workinukraine.utils.parsing.ParserWorkNewInfo;
+import com.dmelnyk.workinukraine.utils.parsing.ParserWorkUa;
 
 import dagger.Component;
 

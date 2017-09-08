@@ -2,53 +2,41 @@
     <string name="app_name">Work In Ukraine</string>
 
     <!-- Settings -->
-    <string name="settings_messages">Оповещения</string>
-    <string name="settings_sound_enable">Использовать звуковые оповещения</string>
-    <string name="settings_sound_settings">Настройка звука</string>
-    <string name="settings_summary_message">Звук и вибрация включены</string>
-    <string name="settings_sound_dialog">Выберите настройки</string>
-    <string name="settings_sound_period">Проверять наличие новых вакансий с периодом</string>
-    <string name="settings_sound_period_summary">Каждые 3 часа</string>
-    <string name="settings_sound_period_default">3 часа</string>
-    <string name="settings_category_theme">Оформление</string>
-    <string name="settings_theme">Тема оформления</string>
-    <string name="settings_theme_default">Тёмная</string>
-    <string name="settings_theme_dialog">Выберите тему оформления</string>
+    <!--<string name="settings_messages">Оповещения</string>-->
+    <!--<string name="settings_sound_enable">Использовать звуковые оповещения</string>-->
+    <!--<string name="settings_sound_settings">Настройка звука</string>-->
+    <!--<string name="settings_summary_message">Звук и вибрация включены</string>-->
+    <!--<string name="settings_sound_dialog">Выберите настройки</string>-->
+    <!--<string name="settings_sound_period">Проверять наличие новых вакансий с периодом</string>-->
+    <!--<string name="settings_sound_period_summary">Каждые 3 часа</string>-->
+    <!--<string name="settings_sound_period_default">3 часа</string>-->
+    <!--<string name="settings_category_theme">Оформление</string>-->
+    <!--<string name="settings_theme">Тема оформления</string>-->
+    <!--<string name="settings_theme_default">Тёмная</string>-->
+    <!--<string name="settings_theme_dialog">Выберите тему оформления</string>-->
 
     <!-- Settings keys -->
-    <string name="key_sound_switcher">key_sound_switcher</string>
-    <string name="key_list_preferences">key_list_preferences</string>
-    <string name="key_sound_period">key_sound_period</string>
-    <string name="key_settings_theme">key_settings_theme</string>
-    <string name="top_star_text">Избранные вакансии</string>
-    <string name="empty_list_text">К сожалению вакансии, соответствующие критериям поиска, не найдены.</string>
-    <string name="downloading_started">Загрузка началась!</string>
-    <string name="dialog_title">Найдено вакансий</string>
+    <!--<string name="key_sound_switcher">key_sound_switcher</string>-->
+    <!--<string name="key_list_preferences">key_list_preferences</string>-->
+    <!--<string name="key_sound_period">key_sound_period</string>-->
+    <!--<string name="key_settings_theme">key_settings_theme</string>-->
+    <!--<string name="top_star_text">Избранные вакансии</string>-->
+    <!--<string name="empty_list_text">К сожалению вакансии, соответствующие критериям поиска, не найдены.</string>-->
+    <!--<string name="downloading_started">Загрузка началась!</string>-->
+    <!--<string name="dialog_title">Найдено вакансий</string>-->
 
     <!-- Sites -->
-    <string name="headhuntersua">hh.ua</string>
-    <string name="workua">work.ua</string>
-    <string name="rabotaua">rabota.ua</string>
-    <string name="jobsua">jobs.ua</string>
-    <string name="worknewinfo">worknew.info</string>
-    <string name="action_settings">Настройки</string>
+    <!--<string name="headhuntersua">hh.ua</string>-->
+    <!--<string name="workua">work.ua</string>-->
+    <!--<string name="rabotaua">rabota.ua</string>-->
+    <!--<string name="jobsua">jobs.ua</string>-->
+    <!--<string name="worknewinfo">worknew.info</string>-->
+    <!--<string name="action_settings">Настройки</string>-->
     <string name="minimal_request_length">Минимальная длина запроса 3 символа</string>
 
     <!-- Navigation drawer -->
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-
-    <string name="dialog_search_spinner_prompt">Выберите город поиска</string>
-    <string name="dialog_search_edittext_hint">Введите запрос</string>
-    <string name="title_activity_test">TestActivity</string>
-
-    <!-- Dialog Delete -->
-    <string name="dialog_delete_remove">Удалить</string>
-    <string name="dialog_delete_cancel">Отмена</string>
-    <string name="dialog_delete_clear_toast">Список вакансий очищено!</string>
-    <string name="card_view_adapter_job_added_to_favorite">Вакансия добавлена в список избранных!</string>
-    <string name="card_view_adapter_job_exists_in_table">Вакансия уже существует в списке избранных!</string>
-    <string name="card_view_adapter_job_removed_from_favorite">Вакансия удалена из списка избранных!</string>
 
     <!-- NavigationDrawer menu items -->
     <string name="navmenu_new_search">Искать вакансии</string>
@@ -64,17 +52,12 @@
     <string name="notification_summary">Всего найдено вакансий: </string>
 
     <!-- BaseActivity -->
-    <string name="base_activity_title_favorite">Список избранных вакансий</string>
-    <string name="base_activity_title_recent">Список недавних вакансий</string>
-    <string name="base_activity_title_new">Список новых вакансий</string>
-    <string name="base_activity_favorite_empty">Список вакансий пуст</string>
-    <string name="base_activity_recent_empty">Список недавних вакансий пуст</string>
+    <!--<string name="base_activity_title_favorite">Список избранных вакансий</string>-->
+    <!--<string name="base_activity_title_recent">Список недавних вакансий</string>-->
+    <!--<string name="base_activity_title_new">Список новых вакансий</string>-->
+    <!--<string name="base_activity_favorite_empty">Список вакансий пуст</string>-->
+    <!--<string name="base_activity_recent_empty">Список недавних вакансий пуст</string>-->
 
-    <!-- Crash Report -->
-    <string name="crash_dialog_text">Произошла ошибка! Пожалуйста, отправьте отчёт для того чтобы исправить ситуацию.</string>
-    <string name="crash_dialog_title"><![CDATA[Oups >|<]]></string>
-    <string name="crash_dialog_comment_promt">Можете добавить свой комментарий ниже</string>
-    <string name="crash_dialog_ok_toast">Благодарю!</string>
     <string name="settings_activity_title">Настройки</string>
     <string name="webview_menu_add_to_favorite">Добавить в список избранных</string>
     <string name="card_view_popup_share">Поделиться</string>
@@ -83,29 +66,13 @@
     <string name="no_internet_connection">Нет доступа к интернету. Проверьте подключение и повторите попытку позже!</string>
     <string name="nav_founded_vacancies">Найдено вакансий</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="search_item_edit">Редактировать</string>
-    <string name="search_item_remove">Удалить</string>
-    <string name="search_item_blacklist">Исключить</string>
-
-    <!-- Settings Fragment -->
-    <string name="settings_toolbar">Настройки</string>
-    <string name="settings_notification">УВЕДОМЛЕНИЯ</string>
-    <string name="settings_item_period">Проверять наличие новых вакансий</string>
-    <string name="settings_sound_notification">Использовать звуковые оповещения</string>
-    <string name="settings_vibro_notification">Использовать вибрацию</string>
-    <string name="settings_dont_disturb">Не беспокоить</string>
-    <string name="settings_support">ПОДДЕРЖКА</string>
-    <string name="settings_send_feedback">Отправить отзыв</string>
-    <string name="settings_about">О приложении</string>
-    <string name="settings_cheched_on">Включено</string>
-    <string name="settings_cheched_of">Выключено</string>
-    <string name="time_picker_from">С</string>
-    <string name="time_picker_to">До</string>
+    <!--&lt;!&ndash; TODO: Remove or change this placeholder text &ndash;&gt;-->
+    <!--<string name="hello_blank_fragment">Hello blank fragment</string>-->
+    <!--<string name="search_item_edit">Редактировать</string>-->
+    <!--<string name="search_item_remove">Удалить</string>-->
+    <!--<string name="search_item_blacklist">Исключить</string>-->
 
     <!---->
-    <string name="delete_request">Удалить запрос?</string>
     <string name="title_activity_vacancy">Поиск вакансий</string>
     <string name="transition.webview_title">tr_webview_title</string>
 

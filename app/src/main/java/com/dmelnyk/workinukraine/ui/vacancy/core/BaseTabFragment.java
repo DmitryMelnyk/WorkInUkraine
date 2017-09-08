@@ -34,8 +34,6 @@ public class BaseTabFragment extends Fragment implements
     public static final String FRAGMENT_RECENT = "recent";
     public static final String ARG_CARD_TYPE = "card_adapter_type";
 
-    private List<VacancyModel> mCache;
-
     private RecyclerView mRecyclerView;
     private int mCardAdapterType;
 
@@ -62,14 +60,6 @@ public class BaseTabFragment extends Fragment implements
         fragment.setArguments(args);
 
         return fragment;
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-//        mItems = getArguments().getParcelableArrayList(ARG_ITEMS);
-//        mCardAdapterType = getArguments().getInt(ARG_CARD_TYPE);
-//        createProperAdapter();
     }
 
     @Override
@@ -123,8 +113,8 @@ public class BaseTabFragment extends Fragment implements
     }
 
     @Override
-    public void onAdapterInteractionItemClicked(VacancyModel vacancyClicked, View bodyTextView) {
-        mListener.onFragmentInteractionItemClicked(vacancyClicked, bodyTextView);
+    public void onAdapterInteractionItemClicked(VacancyModel vacancyClicked, List<VacancyModel> vacancies) {
+        mListener.onFragmentInteractionItemClicked(vacancyClicked, mItems);
     }
 
     @Override
@@ -142,7 +132,7 @@ public class BaseTabFragment extends Fragment implements
      * activity.
      */
     public interface OnFragmentInteractionListener {
-        void onFragmentInteractionItemClicked(VacancyModel vacancyModel, View bodyTextView);
+        void onFragmentInteractionItemClicked(VacancyModel vacancyModel, List<VacancyModel> vacancies);
 
         void onFragmentInteractionPopupMenuClicked(VacancyModel vacancy,
                                                    @VacancyCardViewAdapter.VacancyPopupMenuType int type);

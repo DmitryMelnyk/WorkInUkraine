@@ -63,17 +63,17 @@ public class SearchRepository implements ISearchRepository {
     }
 
     @Override
-    public Completable saveRequest(String request) {
-        Timber.d("\nsaveRequest: " + request);
+    public Completable addRequest(String request) {
+        Timber.d("\naddRequest: " + request);
         return Completable.fromCallable(() ->
-            db.insert(REQUEST_TABLE, DbItems.createRequestItem(request, 0, 0, -1l)));
+            db.insert(REQUEST_TABLE, DbItems.createRequestItem(request, 0, 0, 0l)));
     }
 
     @Override
     public void updateRequest(@NonNull String oldRequest, String newRequest) {
         Timber.d("\nupdateRequest");
         removeRequest(oldRequest);
-        saveRequest(newRequest);
+        addRequest(newRequest);
     }
 
     private String where(String request) {

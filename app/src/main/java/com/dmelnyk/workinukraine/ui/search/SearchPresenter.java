@@ -33,57 +33,9 @@ public class SearchPresenter implements Contract.ISearchPresenter {
     @Override
     public void bindView(ISearchView view) {
         this.view = view;
-        getRequests(view);
+        getRequests();
     }
 
-    @Override
-    public void updateData() {
-        getRequests(view);
-    }
-
-    private void getRequests(ISearchView view) {
-        disposableRequests = interactor.getRequests()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(requestsList -> {
-                    Log.e("999", "all vacancies count=" + countAllVacancies(requestsList));
-                    view.updateData((ArrayList<RequestModel>) requestsList);
-                    view.updateVacanciesCount(countAllVacancies(requestsList));
-                    view.updateNewVacanciesCount(countAllNewVacancies(requestsList));
-                    updateLastUpdateTime(requestsList);
-                });
-    }
-
-    private void updateLastUpdateTime(List<RequestModel> requestsList) {
-        if (requestsList.isEmpty()) {
-
-        } else {
-            long time = requestsList.get(0).updated();
-            SimpleDateFormat timeFormat = new SimpleDateFormat("EE, HH:mm", Locale.getDefault());
-            String updated = timeFormat.format(new Date(time));
-            view.updateLastSearchTime(updated);
-        }
-    }
-
-    @Override
-    public void getFreshRequests() {
-        getRequests(view);
-    }
-
-    private int countAllNewVacancies(List<RequestModel> requestsList) {
-        int allNewVacancies = 0;
-        for (RequestModel requestModel : requestsList) {
-            allNewVacancies += requestModel.newVacanciesCount();
-        }
-        return allNewVacancies;
-    }
-
-    private int countAllVacancies(List<RequestModel> requestsList) {
-        int allVacancies = 0;
-        for (RequestModel requestModel : requestsList) {
-            allVacancies += requestModel.vacanciesCount();
-        }
-        return allVacancies;
-    }
 
     @Override
     public void unbindView() {
@@ -92,7 +44,7 @@ public class SearchPresenter implements Contract.ISearchPresenter {
     }
 
     @Override
-    public void addNewRequest(String request) {
+    public void addRequest(String request) {
         interactor.saveRequest(request)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(() -> { },
@@ -109,7 +61,59 @@ public class SearchPresenter implements Contract.ISearchPresenter {
     }
 
     @Override
+    public void getFreshRequests() {
+        getRequests();
+    }
+
+    private void getRequests() {
+        disposableRequests = interactor.getRequests()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(requestsList -> {
+                    Log.e("999", "all vacancies count=" + countAllVacancies(requestsList));
+                    view.updateData((ArrayList<RequestModel>) requestsList);
+                    view.updateVacanciesCount(countAllVacancies(requestsList));
+                    view.updateNewVacanciesCount(countAllNewVacancies(requestsList));
+
+                    // TODO: fix adding request in a first time if (requestsList.get(0).updated())
+                    updateLastUpdateTime(requestsList);
+                });
+    }
+
+    @Override
     public void removeRequest(String request) {
         interactor.removeRequest(request);
+    }
+
+    @Override
+    public void updateData() {
+        getRequests();
+    }
+
+    private void updateLastUpdateTime(List<RequestModel> requestsList) {
+        if (requestsList.isEmpty()) {
+
+        } else {
+            long time = requestsList.get(0).updated();
+            SimpleDateFormat timeFormat = new SimpleDateFormat("EE, HH:mm", Locale.getDefault());
+            String updated = timeFormat.format(new Date(time));
+            Log.e("1010", "updated time=" + updated);
+            view.updateLastSearchTime(updated);
+        }
+    }
+
+    private int countAllNewVacancies(List<RequestModel> requestsList) {
+        int allNewVacancies = 0;
+        for (RequestModel requestModel : requestsList) {
+            allNewVacancies += requestModel.newVacanciesCount();
+        }
+        return allNewVacancies;
+    }
+
+    private int countAllVacancies(List<RequestModel> requestsList) {
+        int allVacancies = 0;
+        for (RequestModel requestModel : requestsList) {
+            allVacancies += requestModel.vacanciesCount();
+        }
+        return allVacancies;
     }
 }

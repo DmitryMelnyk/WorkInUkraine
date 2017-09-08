@@ -24,6 +24,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.List;
 
 import timber.log.Timber;
 
@@ -123,10 +124,9 @@ public class VacancyCardViewAdapter extends RecyclerView.Adapter<VacancyCardView
                 menu = R.menu.vacancy_item_default;
                 break;
         }
-
+        popupMenu.getMenuInflater().inflate(menu, popupMenu.getMenu());
         holder.mIconImageView.setImageDrawable(ContextCompat.getDrawable(
                 mContext, icon));
-        popupMenu.getMenuInflater().inflate(menu, popupMenu.getMenu());
 
         popupMenu.setOnMenuItemClickListener(view -> {
             switch (view.getItemId()) {
@@ -147,7 +147,7 @@ public class VacancyCardViewAdapter extends RecyclerView.Adapter<VacancyCardView
 
         holder.mCardviewLayout.setOnClickListener( view -> {
             if (view.getId() != R.id.popup_menu) {
-                itemClicked(position, holder.mBodyTextView);
+                itemClicked(position);
             }
         });
     }
@@ -175,7 +175,7 @@ public class VacancyCardViewAdapter extends RecyclerView.Adapter<VacancyCardView
     }
 
     public interface OnAdapterInteractionListener {
-        void onAdapterInteractionItemClicked(VacancyModel vacancyClicked, View textView);
+        void onAdapterInteractionItemClicked(VacancyModel vacancyClicked, List<VacancyModel> vacancies);
         void onAdapterInteractionPopupMenuClicked(VacancyModel vacancyClicked, @VacancyPopupMenuType int type);
     }
 
@@ -190,11 +190,11 @@ public class VacancyCardViewAdapter extends RecyclerView.Adapter<VacancyCardView
         } else mListener.onAdapterInteractionPopupMenuClicked(mDataSet.get(position), action);
     }
 
-    private void itemClicked(int position, View body) {
+    private void itemClicked(int position) {
         if (mListener == null) {
             throw new ClassCastException(PARENT_CLASS
                     + " must implement " + OnAdapterInteractionListener.class);
-        } else mListener.onAdapterInteractionItemClicked(mDataSet.get(position), body);
+        } else mListener.onAdapterInteractionItemClicked(mDataSet.get(position), mDataSet);
     }
 
 }

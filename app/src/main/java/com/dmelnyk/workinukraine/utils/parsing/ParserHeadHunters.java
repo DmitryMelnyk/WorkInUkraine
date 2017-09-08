@@ -1,4 +1,4 @@
-package com.dmelnyk.workinukraine.parsing;
+package com.dmelnyk.workinukraine.utils.parsing;
 
 import android.content.Context;
 import android.support.annotation.NonNull;

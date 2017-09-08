@@ -8,4 +8,20 @@
     <string name="no_vacancies_found">По данному запросу нет ни одной вакансии. Попытайтесь поискать позже.</string>
     <string name="search_toolbar_remove_all_requests">Удалить все запросы?</string>
     <string name="dialog_search_processing">Идет поиск вакансий...</string>
+    <string name="popup_edit_item">Редактировать</string>
+
+    <string name="delete_request">Удалить запрос?</string>
+    <string name="city_kiev">Киев</string>
+
+    <string name="dialog_search_spinner_prompt">Выберите город поиска</string>
+    <string name="dialog_search_edittext_hint">Введите запрос</string>
+    <string name="dialog_search_edittext_hint_error">недопустимые символы!</string>
+
+    <!-- Dialog Delete -->
+    <string name="dialog_delete_remove">Удалить</string>
+    <string name="dialog_delete_cancel">Отмена</string>
+    <string name="dialog_delete_clear_toast">Список вакансий очищено!</string>
+    <string name="card_view_adapter_job_added_to_favorite">Вакансия добавлена в список избранных!</string>
+    <string name="card_view_adapter_job_exists_in_table">Вакансия уже существует в списке избранных!</string>
+    <string name="card_view_adapter_job_removed_from_favorite">Вакансия удалена из списка избранных!</string>
 </resources>

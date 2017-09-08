@@ -37,15 +37,16 @@
         <activity
             android:name=".ui.vacancy.VacancyActivity"
             android:label="@string/title_activity_vacancy"
-            android:theme="@style/VacancyTheme">
-        </activity>
-
+            android:theme="@style/VacancyTheme"></activity>
         <activity
             android:name=".ui.vacancy_webview.WebViewActivity"
-            android:configChanges="orientation|screenSize"/>
+            android:configChanges="orientation|screenSize" />
 
-        <receiver android:name=".services.alarm.AlarmReceiver"/>
-        <receiver android:name=".services.alarm.BootReceiver"/>
+        <receiver android:name=".services.alarm.AlarmReceiver" />
+        <receiver android:name=".services.alarm.BootReceiver" />
+
+        <activity android:name=".ui.vacancy_webview.VacancyContainerActivity"
+            android:configChanges="orientation|screenSize" />
     </application>
 
 </manifest>

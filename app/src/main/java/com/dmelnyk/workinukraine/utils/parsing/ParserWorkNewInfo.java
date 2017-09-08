@@ -1,4 +1,4 @@
-package com.dmelnyk.workinukraine.parsing;
+package com.dmelnyk.workinukraine.utils.parsing;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -25,15 +25,16 @@ import javax.inject.Inject;
  * Created by dmitry on 07.03.17.
  */
 
-public class ParserWorkUa {
+public class ParserWorkNewInfo {
 
-    private static final String TAG = "TAG.ParserWorkUa";
+    private static final String TAG = "TAG.ParserWorkNewInfo";
     @Inject
     NetUtils netUtils;
 
-    @Inject CityUtils cities;
+    @Inject
+    CityUtils cities;
 
-    public ParserWorkUa(Context context) {
+    public ParserWorkNewInfo(Context context) {
         DaggerUtilComponent.builder()
                 .applicationComponent(WorkInUaApplication.get(context).getAppComponent())
                 .build()
@@ -53,10 +54,10 @@ public class ParserWorkUa {
 
         ArrayList<VacancyContainer> vacancies = new ArrayList<>();
 
-        String cityId = cities.getCityId(CityUtils.SITE.WORKUA, city);
+        String cityId = cities.getCityId(CityUtils.SITE.WORKNEWINFO, city);
         String correctedRequest = netUtils.replaceSpacesWithPlus(jobRequest);
-        String urlRequest = "https://www.work.ua/jobs-" +
-                cityId + "-" + correctedRequest;
+        String urlRequest = "http://worknew.info/job/search/?q=" + correctedRequest +
+                "&ct=" + cityId + "&s=0|0|1";
 
         String response = netUtils.getHtmlPage(urlRequest);
         if (response == null) {
@@ -65,12 +66,12 @@ public class ParserWorkUa {
         }
 
         Document doc = Jsoup.parse(response);
-        Elements links = doc.getElementsByTag("h2").select("a");
+        Elements links = doc.getElementsByTag("div").select("li[class=even]");
         for (Element link : links) {
-            String title = link.text();
-            String url = "https://www.work.ua" + link.attr("href");
-            String date = link.attr("title")
-                    .substring(title.length() + ", вакансия от ".length());
+            String urlRaw =  link.select("a").attr("href");
+            String url = "http://worknew.info" + urlRaw;
+            String date = link.select("span[class=svadded]").select("b").text();
+            String title = link.select("a[href=" + urlRaw + "]").text().replace(" ... →", "");
 
             VacancyModel vacancyModel = VacancyModel.builder()
                     .setDate(date)
@@ -78,11 +79,10 @@ public class ParserWorkUa {
                     .setTitle(title)
                     .setUrl(url)
                     .build();
-
-            vacancies.add(VacancyContainer.create(vacancyModel, Tables.SearchSites.TYPE_SITES[4]));
+            vacancies.add(VacancyContainer.create(vacancyModel, Tables.SearchSites.TYPE_SITES[3]));
         }
-        Log.d(TAG, "found " + vacancies.size() + " vacancies");
 
+        Log.d(TAG, "found " + vacancies.size() + " vacancies");
         return vacancies;
     }
 }

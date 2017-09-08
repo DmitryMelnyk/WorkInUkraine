@@ -122,9 +122,6 @@ public class NavigationActivity extends BaseAnimationActivity implements
         Fragment fragment = null;
 
         switch (position) {
-            case NAV_EXIT_POSITION:
-                finish();
-                return;
             case NAV_SEARCH_POSITION:
                 fragment = new SearchFragment();
                 break;
@@ -141,9 +138,16 @@ public class NavigationActivity extends BaseAnimationActivity implements
                     fragment.setArguments(args);
                 }
                 break;
+            case NAV_ABOUT_POSITION:
+                // TODO
+                break;
             case NAV_SETTINGS_POSITION:
                 fragment = new SettingsFragment();
                 break;
+            case NAV_EXIT_POSITION:
+                finish();
+                return;
+
         }
 
         // Checks if user click the same menu item.

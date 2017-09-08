@@ -18,6 +18,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.dmelnyk.workinukraine.R;
+import com.dmelnyk.workinukraine.models.VacancyContainer;
 import com.dmelnyk.workinukraine.models.VacancyModel;
 import com.dmelnyk.workinukraine.utils.BaseAnimationActivity;
 
@@ -37,12 +38,9 @@ public class WebViewActivity extends BaseAnimationActivity {
     public static final int RESULT_REMOVE_FROM_FAVORITES = 2001;
     public static final int RESULT_ADD_TO_FAVORITES = 2002;
 
-    @BindView(R.id.title_text_view)
-    TextView mTitleTextView;
-    @BindView(R.id.progress_bar)
-    ProgressBar mBar;
-    @BindView(R.id.web_view)
-    WebView mWebView;
+    @BindView(R.id.title_text_view) TextView mTitleTextView;
+    @BindView(R.id.progress_bar) ProgressBar mBar;
+    @BindView(R.id.web_view) WebView mWebView;
     @BindView(R.id.favorite_image_view)
     ImageView mFavoriteImageView;
 

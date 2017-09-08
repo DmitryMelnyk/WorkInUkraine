@@ -85,7 +85,7 @@
                     fontPath="fonts/FranckerCYR-ExtraBold.otf"
                     >
 
-                    <android.support.v7.widget.AppCompatEditText
+                    <EditText
                         android:id="@+id/search_dialog_keywords"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -96,7 +96,7 @@
                         android:textColor="@color/colorPrimary"
                         android:textSize="18sp"
                         fontPath="fonts/FranckerCYR-ExtraBold.otf"
-                        />
+                        tools:ignore="MissingPrefix" />
                 </android.support.design.widget.TextInputLayout>
             </TableRow>
         </TableLayout>
@@ -106,7 +106,8 @@
             android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            android:background="@drawable/button_ok_green"
+            android:background="@drawable/button_ok_grey"
+            android:enabled="false"
             android:text="ok"
             android:textColor="@color/white"
             app:layout_constraintStart_toStartOf="parent"

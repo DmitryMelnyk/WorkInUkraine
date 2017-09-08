@@ -121,8 +121,8 @@ public class SitesTabFragment extends Fragment {
         }
 
         @Override
-        public void onAdapterInteractionItemClicked(VacancyModel vacancyClicked, View bodyTextView) {
-            mListener.onFragmentInteractionItemClicked(vacancyClicked, bodyTextView);
+        public void onAdapterInteractionItemClicked(VacancyModel vacancyClicked) {
+            mListener.onFragmentInteractionItemClicked(vacancyClicked);
         }
 
         @Override
@@ -166,7 +166,7 @@ public class SitesTabFragment extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFragmentInteractionListener {
-        void onFragmentInteractionItemClicked(VacancyModel vacancyModel, View bodyTextView);
+        void onFragmentInteractionItemClicked(VacancyModel vacancyModel);
 
         void onFragmentInteractionPopupMenuClicked(VacancyModel vacancy,
                                                    @VacancyCardViewAdapter.VacancyPopupMenuType int type);

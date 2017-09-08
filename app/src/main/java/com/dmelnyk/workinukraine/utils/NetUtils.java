@@ -5,6 +5,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import java.io.IOException;
 
+import okhttp3.Call;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -16,7 +17,19 @@ import static android.content.Context.CONNECTIVITY_SERVICE;
  */
 
 public class NetUtils {
-    private OkHttpClient client = new OkHttpClient.Builder()
+
+    private static NetUtils singleton;
+
+    private NetUtils() { }
+
+    public static NetUtils getInstance() {
+        if (singleton == null) {
+             singleton = new NetUtils();
+        }
+        return singleton;
+    }
+
+    private final OkHttpClient client = new OkHttpClient.Builder()
             .retryOnConnectionFailure(false)
             .build();
 
@@ -26,7 +39,8 @@ public class NetUtils {
                 .build();
 
         try {
-            Response response = client.newCall(request).execute();
+            Call call = client.newCall(request);
+            Response response = call.execute();
             if (response.code() == 200) { // response OK
                 return response.body().string();
             }

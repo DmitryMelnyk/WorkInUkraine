@@ -18,6 +18,7 @@ import android.widget.Toast;
 import com.dmelnyk.workinukraine.R;
 import com.dmelnyk.workinukraine.models.VacancyModel;
 import com.dmelnyk.workinukraine.db.di.DbModule;
+import com.dmelnyk.workinukraine.ui.vacancy_webview.VacancyContainerActivity;
 import com.dmelnyk.workinukraine.ui.vacancy_webview.WebViewActivity;
 import com.dmelnyk.workinukraine.ui.vacancy.core.BaseTabFragment;
 import com.dmelnyk.workinukraine.ui.vacancy.core.SitesTabFragment;
@@ -28,6 +29,7 @@ import com.dmelnyk.workinukraine.ui.vacancy.di.VacancyModule;
 import com.dmelnyk.workinukraine.utils.BaseAnimationActivity;
 import com.dmelnyk.workinukraine.utils.buttontab.ButtonTabs;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -162,10 +164,24 @@ public class VacancyActivity extends BaseAnimationActivity implements
     }
 
     @Override
-    public void onFragmentInteractionItemClicked(VacancyModel vacancy, View bodyTextView) {
+    public void onFragmentInteractionItemClicked(VacancyModel vacancy) {
         boolean isVacancyFavorite = presenter.isVacancyFavorite(vacancy);
-        Intent webview = WebViewActivity.newInstance(this, vacancy, isVacancyFavorite);
-        startActivityForResult(webview, WEBVIEW_REQUEST_CODE);
+        // TODO: remove this class
+//        Intent webview = WebViewActivity.newInstance(this, vacancy, isVacancyFavorite);
+//        startActivityForResult(webview, WEBVIEW_REQUEST_CODE);
+
+        List<VacancyModel> vacancies = new ArrayList<>();
+        vacancies.add(vacancy);
+        // Activity with 1 vacancy
+        Intent vacancyContainerIntent = VacancyContainerActivity.getIntent(this, vacancies, vacancy);
+        startActivity(vacancyContainerIntent);
+    }
+
+    @Override
+    public void onFragmentInteractionItemClicked(VacancyModel vacancyModel, List<VacancyModel> vacancies) {
+        // Activity with multiple vacancy
+        Intent vacancyContainerIntent = VacancyContainerActivity.getIntent(this, vacancies, vacancyModel);
+        startActivity(vacancyContainerIntent);
     }
 
     @Override

@@ -7,7 +7,8 @@ import android.support.annotation.IntDef;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.AppCompatEditText;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,11 +16,11 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.dmelnyk.workinukraine.R;
-import com.dmelnyk.workinukraine.ui.search.SearchAdapter;
 import com.dmelnyk.workinukraine.utils.BaseDialog;
 import com.dmelnyk.workinukraine.utils.MyBounceInterpolator;
 
@@ -32,6 +33,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
+import io.reactivex.Observable;
+import io.reactivex.annotations.NonNull;
+import io.reactivex.functions.Consumer;
 
 /**
  * Created by d264 on 9/2/17.
@@ -47,7 +51,7 @@ public class DialogRequest extends BaseDialog {
     public @interface MODE {}
 
     @BindView(R.id.search_dialog_spinner) Spinner mCitySpinner;
-    @BindView(R.id.search_dialog_keywords) AppCompatEditText mRequestTextInputLayout;
+    @BindView(R.id.search_dialog_keywords) EditText mRequestTextInputLayout;
     @BindView(R.id.ok_button) Button mOkButton;
     @BindView(R.id.textInputLayout) TextInputLayout mTextInputLayout;
     Unbinder unbinder;
@@ -79,7 +83,90 @@ public class DialogRequest extends BaseDialog {
         }
 
         configSpinner(request, city);
+        createCorrectTextFieldRequest();
         return view;
+    }
+
+    private void createCorrectTextFieldRequest() {
+        Observable<String> observableEditText = Observable.create(
+                emitter -> {
+                    mRequestTextInputLayout.addTextChangedListener(new TextWatcher() {
+
+                        @Override
+                        public void onTextChanged(CharSequence s, int start, int before, int count) {
+                            emitter.onNext(s.toString());
+                        }
+
+                        @Override
+                        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                        }
+
+                        @Override
+                        public void afterTextChanged(Editable s) {
+
+                        }
+                    });
+                });
+
+        observableEditText
+                .filter(request -> {
+                    enableButton(false);
+                    if (!requestIsCorrect(request)) {
+                        showError(true);
+                        return false;
+                    } else {
+                        showError(false);
+                        return request.length() >= 3;
+                    }
+                })
+                .subscribe(new Consumer<String>() {
+                    @Override
+                    public void accept(@NonNull String s) throws Exception {
+                        enableButton(true);
+                    }
+                });
+
+
+    }
+
+    private void enableButton(boolean isEnable) {
+        mOkButton.setEnabled(isEnable);
+        mOkButton.setBackground(isEnable
+                ? ContextCompat.getDrawable(getContext(), R.drawable.button_ok_green)
+                : ContextCompat.getDrawable(getContext(), R.drawable.button_ok_grey)
+        );
+    }
+
+    private void showError(boolean showError) {;
+
+        // change hint color
+        mRequestTextInputLayout.setTextColor(showError
+                ? ContextCompat.getColor(getContext(), R.color.pink)
+                : ContextCompat.getColor(getContext(), R.color.colorPrimary)
+        );
+
+        // change text hint
+        mTextInputLayout.setHint(showError
+                ? getResources().getText(R.string.dialog_search_edittext_hint_error)
+                : getResources().getText(R.string.dialog_search_edittext_hint)
+        );
+
+        if (showError) {
+            startErrorAnimation();
+        }
+    }
+
+    private boolean requestIsCorrect(String request) {
+        for (int i = 0; i < request.length(); i++) {
+            if (Character.isLetterOrDigit(request.charAt(i))
+                    || " -".contains(request.substring(i, i+1))) {
+                continue;
+            } else {
+                return false;
+            }
+        }
+        return true;
     }
 
     public void configSpinner(@Nullable String request, @Nullable String city) {
@@ -89,20 +176,6 @@ public class DialogRequest extends BaseDialog {
         items.add(getResources().getString(R.string.city_kiev));
         Collections.addAll(items, cities);
 
-        // in case of editing request
-        if (city != null && request != null) {
-            // restores request
-            mRequestTextInputLayout.setSelected(true);
-            mRequestTextInputLayout.setText(request);
-
-            // restores city
-            int position = Collections.binarySearch(items, city);
-            mCitySpinner.setSelection(position);
-        } else {
-            // sets "Kiev" to first position in spinner
-            mCitySpinner.setSelection(0);
-        }
-
         mCitySpinner.getBackground().setColorFilter(
                 ContextCompat.getColor(getContext(), R.color.colorPrimary),
                 PorterDuff.Mode.SRC_ATOP);
@@ -111,6 +184,27 @@ public class DialogRequest extends BaseDialog {
                 R.layout.spinner_item, items);
         adapter.setDropDownViewResource(R.layout.dropdown_item);
         mCitySpinner.setAdapter(adapter);
+
+        // in case of editing request
+        if (city != null && request != null) {
+            // restores request
+//            mRequestTextInputLayout.setSelected(true);
+            mRequestTextInputLayout.setText(request);
+
+            // restores city
+            int positionInSpinner = 0;
+            for (int i = 0; i < items.size(); i++) {
+                if (items.get(i).equals(city)) {
+                    positionInSpinner = i;
+                    break;
+                }
+            }
+
+            mCitySpinner.setSelection(positionInSpinner);
+        } else {
+            // sets "Kiev" to first position in spinner
+            mCitySpinner.setSelection(0);
+        }
     }
 
     @Override

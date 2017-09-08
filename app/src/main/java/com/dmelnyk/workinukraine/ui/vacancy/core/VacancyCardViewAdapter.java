@@ -146,7 +146,7 @@ public class VacancyCardViewAdapter extends RecyclerView.Adapter<VacancyCardView
 
         holder.mCardviewLayout.setOnClickListener( view -> {
             if (view.getId() != R.id.popup_menu) {
-                itemClicked(position, holder.mBodyTextView);
+                itemClicked(position);
             }
         });
     }
@@ -174,7 +174,7 @@ public class VacancyCardViewAdapter extends RecyclerView.Adapter<VacancyCardView
     }
 
     public interface OnAdapterInteractionListener {
-        void onAdapterInteractionItemClicked(VacancyModel vacancyClicked, View textView);
+        void onAdapterInteractionItemClicked(VacancyModel vacancyClicked);
         void onAdapterInteractionPopupMenuClicked(VacancyModel vacancyClicked, @VacancyPopupMenuType int type);
     }
 
@@ -189,11 +189,11 @@ public class VacancyCardViewAdapter extends RecyclerView.Adapter<VacancyCardView
         } else mListener.onAdapterInteractionPopupMenuClicked(mDataSet.get(position), action);
     }
 
-    private void itemClicked(int position, View body) {
+    private void itemClicked(int position) {
         if (mListener == null) {
             throw new ClassCastException(PARENT_CLASS
                     + " must implement " + OnAdapterInteractionListener.class);
-        } else mListener.onAdapterInteractionItemClicked(mDataSet.get(position), body);
+        } else mListener.onAdapterInteractionItemClicked(mDataSet.get(position));
     }
 
 }

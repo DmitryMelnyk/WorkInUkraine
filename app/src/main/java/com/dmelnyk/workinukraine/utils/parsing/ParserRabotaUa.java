@@ -1,4 +1,4 @@
-package com.dmelnyk.workinukraine.parsing;
+package com.dmelnyk.workinukraine.utils.parsing;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -18,6 +18,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 
 import javax.inject.Inject;
 
@@ -25,16 +26,17 @@ import javax.inject.Inject;
  * Created by dmitry on 07.03.17.
  */
 
-public class ParserWorkNewInfo {
+public class ParserRabotaUa {
+    private static final String TAG = "TAG.ParserRabotaUa";
+    final int year = Calendar.getInstance().get(Calendar.YEAR);
 
-    private static final String TAG = "TAG.ParserWorkNewInfo";
     @Inject
     NetUtils netUtils;
 
     @Inject
     CityUtils cities;
 
-    public ParserWorkNewInfo(Context context) {
+    public ParserRabotaUa(Context context) {
         DaggerUtilComponent.builder()
                 .applicationComponent(WorkInUaApplication.get(context).getAppComponent())
                 .build()
@@ -50,14 +52,16 @@ public class ParserWorkNewInfo {
     public ArrayList<VacancyContainer> getJobs(String request) {
         String jobRequest = request.split(" / ")[0];
         String city = request.split(" / ")[1];
+
         Log.d(TAG, "started getJobs(). City = " + city + " request = " + jobRequest);
 
         ArrayList<VacancyContainer> vacancies = new ArrayList<>();
 
-        String cityId = cities.getCityId(CityUtils.SITE.WORKNEWINFO, city);
+        String cityId = cities.getCityId(CityUtils.SITE.RABOTAUA, city);
         String correctedRequest = netUtils.replaceSpacesWithPlus(jobRequest);
-        String urlRequest = "http://worknew.info/job/search/?q=" + correctedRequest +
-                "&ct=" + cityId + "&s=0|0|1";
+        String urlRequest = "https://rabota.ua/jobsearch/vacancy_list?regionId=" +
+                cityId + "&keyWords=" + correctedRequest;
+
 
         String response = netUtils.getHtmlPage(urlRequest);
         if (response == null) {
@@ -66,22 +70,38 @@ public class ParserWorkNewInfo {
         }
 
         Document doc = Jsoup.parse(response);
-        Elements links = doc.getElementsByTag("div").select("li[class=even]");
+        Elements links = doc.getElementsByTag("div").select("tr");
         for (Element link : links) {
-            String urlRaw =  link.select("a").attr("href");
-            String url = "http://worknew.info" + urlRaw;
-            String date = link.select("span[class=svadded]").select("b").text();
-            String title = link.select("a[href=" + urlRaw + "]").text().replace(" ... →", "");
 
-            VacancyModel vacancyModel = VacancyModel.builder()
-                    .setDate(date)
-                    .setRequest(request)
-                    .setTitle(title)
-                    .setUrl(url)
-                    .build();
-            vacancies.add(VacancyContainer.create(vacancyModel, Tables.SearchSites.TYPE_SITES[3]));
+            String date = link.select("p[class=\"f-vacancylist-agotime f-text-light-gray fd-craftsmen\"]").text();
+            String title = link.select("a[href]").text();
+            String shortUrl = link.select("a[href]").attr("href");
+            if (shortUrl.contains("/vacancy") && shortUrl.contains("/company")) {
+                String url = "https://rabota.ua" + shortUrl;
+
+                VacancyModel vacancyModel = VacancyModel.builder()
+                        .setDate(date)
+                        .setRequest(request)
+                        .setTitle(title)
+                        .setUrl(url)
+                        .build();
+                vacancies.add(VacancyContainer.create(vacancyModel, Tables.SearchSites.TYPE_SITES[2]));
+            }
         }
 
+        // check if any vacancy contain needed request
+        if (vacancies.size() == 20) {
+            boolean isAnyVacancyContainsRequest = false;
+            for (VacancyContainer vacancy : vacancies) {
+                if (vacancy.getVacancy().title().toLowerCase()
+                        .contains(request.split(" / ")[0].toLowerCase())) {
+                    isAnyVacancyContainsRequest = true;
+                    break;
+                }
+            }
+
+            if (!isAnyVacancyContainsRequest) return new ArrayList<>();
+        }
         Log.d(TAG, "found " + vacancies.size() + " vacancies");
         return vacancies;
     }

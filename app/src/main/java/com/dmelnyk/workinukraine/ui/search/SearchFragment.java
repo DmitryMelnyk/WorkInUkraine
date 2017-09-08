@@ -7,7 +7,6 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -95,24 +94,14 @@ public class SearchFragment extends BaseFragment implements
     private ArrayList<RequestModel> mRequestsList;
     private SearchAdapter mAdapter;
 
-    private static int sTotalVacanciesCount = 0;
-    private static boolean sDownloadingIsFinished;
-
     private final BroadcastReceiver mDownloadingBroadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Timber.d(" ACTION_CODE = " + intent.getAction());
+            Timber.d("ACTION_CODE = " + intent.getAction());
 
             String request = intent.getStringExtra(SearchVacanciesService.KEY_REQUEST);
             switch (intent.getAction()) {
                 case SearchVacanciesService.ACTION_FINISHED:
-                    sTotalVacanciesCount = intent.getIntExtra(SearchVacanciesService.KEY_TOTAL_VACANCIES_COUNT, 0);
-                    sDownloadingIsFinished = true;
-
-                    Log.e("1010", "sDownloadingCount=" + sTotalVacanciesCount);
-                    mDialogDownloading.downloadingFinished(sTotalVacanciesCount);
-//                    resetDialogDownloading();
-
                     // updating data after searching vacancies
                     presenter.updateData();
                     break;
@@ -226,10 +215,7 @@ public class SearchFragment extends BaseFragment implements
         LocalBroadcastManager.getInstance(getContext())
                 .registerReceiver(mDownloadingBroadcastReceiver, filter);
 
-        if (mRunDownloading) {
-            showDialogDownloading();
-            mRunDownloading = false;
-        }
+        presenter.getFreshRequests();
     }
 
     @Override
@@ -247,26 +233,16 @@ public class SearchFragment extends BaseFragment implements
 
     private void restoreDialogs() {
         // restoring DeleteDialog if needed
-        mDialogDelete = (DialogDelete) getFragmentManager()
-                .findFragmentByTag(TAG_DIALOG_DELETE);
+        mDialogDelete = (DialogDelete) getFragmentManager().findFragmentByTag(TAG_DIALOG_DELETE);
         if (mDialogDelete != null) {
             mDialogDelete.setCallback(this);
         }
 
         // restoring DownloadingDialog if needed
-        mDialogDownloading = (DialogDownloading) getFragmentManager()
-                .findFragmentByTag(TAG_DIALOG_DOWNLOADING);
+        mDialogDownloading = (DialogDownloading) getFragmentManager().findFragmentByTag(TAG_DIALOG_DOWNLOADING);
         if (mDialogDownloading != null) {
-            if (sDownloadingIsFinished) {
-                // removing previous dialog
-                FragmentTransaction ft = getFragmentManager().beginTransaction();
-                ft.remove(mDialogDownloading);
-                mDialogDownloading = DialogDownloading.newInstance(false, sTotalVacanciesCount);
-                mDialogDownloading.show(ft, TAG_DIALOG_DOWNLOADING);
-                mDialogDownloading.setCallbackListener(this);
-            }
+            mDialogDownloading.setCallback(this);
         }
-
 
         // restoring RequestDialog if needed
         mDialogRequest = (DialogRequest) getFragmentManager().findFragmentByTag(TAG_DIALOG_REQUEST);
@@ -335,7 +311,7 @@ public class SearchFragment extends BaseFragment implements
             startSearchVacanciesService();
 
             mDialogDownloading = DialogDownloading.newInstance(true, 0);
-            mDialogDownloading.setCallbackListener(this);
+            mDialogDownloading.setCallback(this);
             mDialogDownloading.show(getFragmentManager(), TAG_DIALOG_DOWNLOADING);
         }
     }
@@ -348,7 +324,8 @@ public class SearchFragment extends BaseFragment implements
     private void startSearchVacanciesService() {
         Intent searchService = new Intent(
                 getContext().getApplicationContext(), SearchVacanciesService.class);
-        searchService.putExtra(SearchVacanciesService.KEY_MODE, SearchVacanciesService.MODE_SEARCH);
+
+        searchService.putExtra(SearchVacanciesService.EXTRA_MODE, SearchVacanciesService.MODE_SEARCH);
         getContext().startService(searchService);
     }
 
@@ -372,7 +349,14 @@ public class SearchFragment extends BaseFragment implements
     @Override
     public void updateVacanciesCount(int allVacanciesCount) {
         mVacanciesCountTextView.setText("" + allVacanciesCount);
+
+        // update vacancies count in main menu
         mListener.setVacanciesCount(allVacanciesCount);
+        // if DownloadingDialog is open - update vacancy count
+        if (mDialogDownloading != null && SearchVacanciesService.sIsDownloadingFinished) {
+            mDialogDownloading.downloadingFinished(allVacanciesCount);
+        }
+
     }
 
     @Override
@@ -444,7 +428,6 @@ public class SearchFragment extends BaseFragment implements
         // close NavigationActivity's menu in case
         // downloading was started from NavigationActivity
         closeMainMenuCallback();
-
     }
 
     // DialogRequestCallbackListener add item

@@ -1,4 +1,4 @@
-package com.dmelnyk.workinukraine.parsing;
+package com.dmelnyk.workinukraine.utils.parsing;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -25,16 +25,15 @@ import javax.inject.Inject;
  * Created by dmitry on 07.03.17.
  */
 
-public class ParserJobsUa {
+public class ParserWorkUa {
 
-    private static final String TAG = "TAG.ParserJobsUa";
+    private static final String TAG = "TAG.ParserWorkUa";
     @Inject
     NetUtils netUtils;
 
-    @Inject
-    CityUtils cities;
+    @Inject CityUtils cities;
 
-    public ParserJobsUa(Context context) {
+    public ParserWorkUa(Context context) {
         DaggerUtilComponent.builder()
                 .applicationComponent(WorkInUaApplication.get(context).getAppComponent())
                 .build()
@@ -54,10 +53,10 @@ public class ParserJobsUa {
 
         ArrayList<VacancyContainer> vacancies = new ArrayList<>();
 
-        String cityId = cities.getCityId(CityUtils.SITE.JOBSUA, city);
+        String cityId = cities.getCityId(CityUtils.SITE.WORKUA, city);
         String correctedRequest = netUtils.replaceSpacesWithPlus(jobRequest);
-        String urlRequest = "https://www.jobs.ua/vacancy/" +
-                cityId + "/rabota-" + correctedRequest;
+        String urlRequest = "https://www.work.ua/jobs-" +
+                cityId + "-" + correctedRequest;
 
         String response = netUtils.getHtmlPage(urlRequest);
         if (response == null) {
@@ -66,23 +65,24 @@ public class ParserJobsUa {
         }
 
         Document doc = Jsoup.parse(response);
-        Elements links = doc.getElementsByTag("div").select("div[class=\"b-vacancy__top\"]");
+        Elements links = doc.getElementsByTag("h2").select("a");
         for (Element link : links) {
-            String title = link.select("a").attr("title");
-            String url = link.select("a").attr("href");
-            String date = link.select("span").text();
+            String title = link.text();
+            String url = "https://www.work.ua" + link.attr("href");
+            String date = link.attr("title")
+                    .substring(title.length() + ", вакансия от ".length());
 
             VacancyModel vacancyModel = VacancyModel.builder()
+                    .setDate(date)
                     .setRequest(request)
                     .setTitle(title)
-                    .setDate(date)
                     .setUrl(url)
                     .build();
 
-            vacancies.add(VacancyContainer.create(vacancyModel, Tables.SearchSites.TYPE_SITES[1]));
+            vacancies.add(VacancyContainer.create(vacancyModel, Tables.SearchSites.TYPE_SITES[4]));
         }
-
         Log.d(TAG, "found " + vacancies.size() + " vacancies");
+
         return vacancies;
     }
 }

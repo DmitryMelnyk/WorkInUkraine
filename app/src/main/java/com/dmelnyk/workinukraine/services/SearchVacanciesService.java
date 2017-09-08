@@ -1,22 +1,20 @@
 package com.dmelnyk.workinukraine.services;
 
 import android.app.IntentService;
-import android.content.BroadcastReceiver;
 import android.content.Intent;
 import android.support.annotation.IntDef;
 import android.support.v4.content.LocalBroadcastManager;
-import android.util.Log;
 
 import com.dmelnyk.workinukraine.models.RequestModel;
 import com.dmelnyk.workinukraine.models.VacancyContainer;
 import com.dmelnyk.workinukraine.db.di.DaggerDbComponent;
 import com.dmelnyk.workinukraine.db.di.DbModule;
 import com.dmelnyk.workinukraine.data.search_service.ISearchServiceRepository;
-import com.dmelnyk.workinukraine.parsing.ParserHeadHunters;
-import com.dmelnyk.workinukraine.parsing.ParserJobsUa;
-import com.dmelnyk.workinukraine.parsing.ParserRabotaUa;
-import com.dmelnyk.workinukraine.parsing.ParserWorkNewInfo;
-import com.dmelnyk.workinukraine.parsing.ParserWorkUa;
+import com.dmelnyk.workinukraine.utils.parsing.ParserHeadHunters;
+import com.dmelnyk.workinukraine.utils.parsing.ParserJobsUa;
+import com.dmelnyk.workinukraine.utils.parsing.ParserRabotaUa;
+import com.dmelnyk.workinukraine.utils.parsing.ParserWorkNewInfo;
+import com.dmelnyk.workinukraine.utils.parsing.ParserWorkUa;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -46,13 +44,15 @@ public class SearchVacanciesService extends IntentService {
     public static final String ACTION_FINISHED_REPEATING_SEARCH = "downloading_finished_repeating_mode";
     public static final String ACTION_DOWNLOADING_IN_PROGRESS = "downloading in process";
 
+    public static boolean sIsDownloadingFinished = false;
+
     @IntDef({MODE_SEARCH, MODE_REPEATING_SEARCH})
     @Retention(RetentionPolicy.CLASS)
     public @interface Mode {}
 
     @Inject ISearchServiceRepository repository;
 
-    public static final String KEY_MODE = "mode";
+    public static final String EXTRA_MODE = "mode";
     public static final String KEY_REQUEST = "downloading request";
     public static final String KEY_TOTAL_VACANCIES_COUNT = "vacancies count";
 
@@ -62,7 +62,6 @@ public class SearchVacanciesService extends IntentService {
     private final static int WORKNEWINFO   = 3;
     private final static int WORKUA        = 4;
 
-    private Map<String, Integer> vacancyInfos;
     private int mMode;
 
     public SearchVacanciesService() {
@@ -72,17 +71,17 @@ public class SearchVacanciesService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         Timber.d("\nSearching vacancies started!");
-        Log.e("999", "SearchVacanciesService started!");
-
-        vacancyInfos = new HashMap<>();
 
         DaggerDbComponent.builder()
                 .dbModule(new DbModule(getApplicationContext()))
                 .build()
                 .inject(this);
 
-        mMode = intent.getIntExtra(KEY_MODE, -2);
+        sIsDownloadingFinished = false;
 
+        mMode = intent.getIntExtra(EXTRA_MODE, -2);
+
+        // Gets request list and starts searching
         repository.getRequests()
                 .subscribe(requests -> {
                     startSearching(requests);
@@ -105,9 +104,7 @@ public class SearchVacanciesService extends IntentService {
 
         for (Future future : futures) {
             try {
-                List<VacancyContainer> vacancies = (List<VacancyContainer>) future.get();
-                addVacancyInfo(vacancies);
-                Timber.d(" Found vacancies: " + vacancies.size());
+                future.get();
             } catch (Exception e) {
                 Timber.e(e);
             }
@@ -118,24 +115,13 @@ public class SearchVacanciesService extends IntentService {
         Timber.d("\nSearch completed at %d seconds", (endTime - startTime) / 1000);
     }
 
-    private void addVacancyInfo(List<VacancyContainer> vacancies) {
-        if (!vacancies.isEmpty()) {
-            String request = vacancies.get(0).getVacancy().request();
-            int count = vacancies.size();
-            if (vacancyInfos.get(request) != null) {
-                vacancyInfos.put(request, vacancyInfos.get(request) + count);
-            } else {
-                vacancyInfos.put(request, count);
-            }
-        }
-    }
-
     private void sendBroadcastMessage(String action, String request, int vacanciesCount) {
         Timber.d(" Sending broadcast: " + action);
 
         Intent broadcast = null;
         switch (action) {
             case ACTION_FINISHED:
+                sIsDownloadingFinished = true;
                 switch (mMode) {
 
                     // Searching when the app is running

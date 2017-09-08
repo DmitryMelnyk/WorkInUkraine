@@ -37,7 +37,7 @@ public class SearchInteractor implements ISearchInteractor {
 
     @Override
     public Completable saveRequest(String request) {
-        return repository.saveRequest(request);
+        return repository.addRequest(request);
     }
 
 

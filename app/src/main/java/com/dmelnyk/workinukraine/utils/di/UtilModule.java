@@ -6,6 +6,8 @@ import com.dmelnyk.workinukraine.utils.ImageUtils;
 import com.dmelnyk.workinukraine.utils.CityUtils;
 import com.dmelnyk.workinukraine.utils.NetUtils;
 
+import javax.inject.Singleton;
+
 import dagger.Module;
 import dagger.Provides;
 
@@ -23,7 +25,7 @@ public class UtilModule {
 
     @Provides
     NetUtils provideNetUtils() {
-        return new NetUtils();
+        return NetUtils.getInstance();
     }
 
     @Provides

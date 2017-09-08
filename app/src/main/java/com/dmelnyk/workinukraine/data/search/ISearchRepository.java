@@ -33,7 +33,7 @@ public interface ISearchRepository {
      * Request format in single string: "request / city"
      * @param request The new request.
      */
-    Completable saveRequest(@NonNull String request);
+    Completable addRequest(@NonNull String request);
 
     /**
      * Removes oldRequest from database and adds newRequest to database

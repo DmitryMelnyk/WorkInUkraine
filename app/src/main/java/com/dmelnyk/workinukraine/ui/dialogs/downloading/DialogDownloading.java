@@ -92,7 +92,7 @@ public class DialogDownloading extends BaseDialog {
         }
     }
 
-    public void setCallbackListener(CallbackLister callback) {
+    public void setCallback(CallbackLister callback) {
         this.mCallback = callback;
     }
     public interface CallbackLister {

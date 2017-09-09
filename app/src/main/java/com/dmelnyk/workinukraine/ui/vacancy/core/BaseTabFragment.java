@@ -63,20 +63,6 @@ public class BaseTabFragment extends Fragment implements
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        mItems = getArguments().getParcelableArrayList(ARG_ITEMS);
-        mCardAdapterType = getArguments().getInt(ARG_CARD_TYPE);
-        createProperAdapter();
-        // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_favorite, container, false);
-        mRecyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(container.getContext()));
-        mRecyclerView.setAdapter(mAdapter);
-        return view;
-    }
-
-    @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         if (context instanceof SitesTabFragment.OnFragmentInteractionListener) {
@@ -85,6 +71,26 @@ public class BaseTabFragment extends Fragment implements
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
         }
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        mItems = getArguments().getParcelableArrayList(ARG_ITEMS);
+        mCardAdapterType = getArguments().getInt(ARG_CARD_TYPE);
+        // Inflate the layout for this fragment
+        View view = inflater.inflate(R.layout.fragment_favorite, container, false);
+
+        return view;
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        createProperAdapter();
+        mRecyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
+        mRecyclerView.setAdapter(mAdapter);
     }
 
     @Override
@@ -114,7 +120,7 @@ public class BaseTabFragment extends Fragment implements
 
     @Override
     public void onAdapterInteractionItemClicked(VacancyModel vacancyClicked, List<VacancyModel> vacancies) {
-        mListener.onFragmentInteractionItemClicked(vacancyClicked, mItems);
+        mListener.onFragmentInteractionItemClicked(vacancyClicked, vacancies);
     }
 
     @Override
@@ -137,21 +143,4 @@ public class BaseTabFragment extends Fragment implements
         void onFragmentInteractionPopupMenuClicked(VacancyModel vacancy,
                                                    @VacancyCardViewAdapter.VacancyPopupMenuType int type);
     }
-
-    public void updateData(ArrayList<VacancyModel> newVacancies) {
-        Log.e("222", "BaseTabFragment Favorite. Update data with vacancies =" + newVacancies.size());
-        Log.e("222", "current items in BaseTabFragment=" + mItems);
-        if (mItems == null) {
-            mItems = new ArrayList<>();
-        }
-
-        mItems.clear();
-        mItems.addAll(newVacancies);
-        if (mRecyclerView == null) return;
-
-        createProperAdapter();
-        mRecyclerView.setAdapter(mAdapter);
-    }
-
-
 }

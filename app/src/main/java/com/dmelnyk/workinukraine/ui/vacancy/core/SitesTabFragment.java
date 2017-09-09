@@ -2,6 +2,7 @@ package com.dmelnyk.workinukraine.ui.vacancy.core;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.PagerAdapter;
@@ -33,6 +34,7 @@ public class SitesTabFragment extends Fragment {
     private static OnFragmentInteractionListener mListener;
     private static List<String> sSitesTitle;
     private ViewPager mViewPager;
+    private TabsPagerAdapter mAdapter;
 
     public static SitesTabFragment getNewInstance(Map<String, List<VacancyModel>> vacanciesMap) {
 
@@ -46,26 +48,35 @@ public class SitesTabFragment extends Fragment {
     }
 
     @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mAdapter = new TabsPagerAdapter(sSitesTitle, sVacancies);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.vacancy_fragment_tab, container, false);
+        return view;
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         // Sites titles
         mViewPager = (ViewPager) view.findViewById(R.id.pager);
-        TabsPagerAdapter adapter = new TabsPagerAdapter(sSitesTitle, sVacancies);
-        mViewPager.setAdapter(adapter);
+        mViewPager.setAdapter(mAdapter);
         mViewPager.setPageTransformer(true, new ZoomOutPageTransformer());
 
         TabLayout tabLayout = (TabLayout)(view.findViewById(R.id.tab_layout));
         TabLayoutHelper tabLayoutHelper = new TabLayoutHelper(tabLayout, mViewPager);
         tabLayoutHelper.setAutoAdjustTabModeEnabled(true);
-
-        return view;
     }
 
     /*
-     * Simple PagerAdapter to display page views with RecyclerView
-     */
+    * Simple PagerAdapter to display page views with RecyclerView
+    */
     private class TabsPagerAdapter extends PagerAdapter implements
             VacancyCardViewAdapter.OnAdapterInteractionListener {
         private List<String> mTitles;

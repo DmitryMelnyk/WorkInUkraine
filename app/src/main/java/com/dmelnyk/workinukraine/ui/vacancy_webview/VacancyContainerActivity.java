@@ -19,7 +19,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
-public class VacancyContainerActivity extends BaseAnimationActivity {
+public class VacancyContainerActivity extends BaseAnimationActivity
+    implements VacancyFragment.CallbackListener {
 
     private static final String EXTRA_VACANCIES = "extra_vacancies";
     private static final String EXTRA_VACANCY_TO_DISPLAY = "extra_display_vacancy";
@@ -44,12 +45,14 @@ public class VacancyContainerActivity extends BaseAnimationActivity {
 
         mVacancies = getIntent().getParcelableArrayListExtra(EXTRA_VACANCIES);
         VacancyModel vacancyToDisplay = getIntent().getParcelableExtra(EXTRA_VACANCY_TO_DISPLAY);
+
         int showVacancyPosition = findPosition(vacancyToDisplay);
 
         VacancyAdapter adapter = new VacancyAdapter(getSupportFragmentManager(), mVacancies);
         mVacancyContainer.setAdapter(adapter);
         mVacancyContainer.setCurrentItem(showVacancyPosition);
     }
+
 
     private int findPosition(VacancyModel vacancyToDisplay) {
         for (int i = 0; i < mVacancies.size(); i++) {
@@ -63,6 +66,11 @@ public class VacancyContainerActivity extends BaseAnimationActivity {
     @Override
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
+    }
+
+    @Override
+    public void onExit() {
+        onBackPressed();
     }
 
     @Override

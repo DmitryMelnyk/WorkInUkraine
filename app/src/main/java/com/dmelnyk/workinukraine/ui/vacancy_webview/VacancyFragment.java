@@ -11,7 +11,6 @@ import android.view.ViewGroup;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -22,13 +21,16 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
-import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 /**
  * Created by d264 on 9/8/17.
  */
 
 public class VacancyFragment extends Fragment {
+
+    interface CallbackListener {
+        void onExit();
+    }
 
     private static final String ARG_VACANCY = "arg_vacancy";
     @BindView(R.id.title_text_view) TextView mTitleTextView;
@@ -37,8 +39,9 @@ public class VacancyFragment extends Fragment {
 //    @BindView(R.id.favorite_image_view) ImageView mFavoriteImageView;
     Unbinder unbinder;
 
-    private VacancyModel vacancy;
     private String mUrl;
+    private String mTitle;
+    private CallbackListener mCallback;
 
     public static VacancyFragment getNewInstance(VacancyModel vacancy) {
         Bundle args = new Bundle();
@@ -50,9 +53,19 @@ public class VacancyFragment extends Fragment {
     }
 
     @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof CallbackListener) {
+            mCallback = (CallbackListener) context;
+        }
+    }
+
+    @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        vacancy = getArguments().getParcelable(ARG_VACANCY);
+        VacancyModel vacancy = getArguments().getParcelable(ARG_VACANCY);
+        mTitle = vacancy.title();
+        mUrl = vacancy.url();
     }
 
     @Nullable
@@ -61,21 +74,28 @@ public class VacancyFragment extends Fragment {
         View view = inflater.inflate(R.layout.activity_webview, container, false);
         unbinder = ButterKnife.bind(this, view);
 
-        String title = vacancy.title();
-        mUrl = vacancy.url();
+        return view;
+    }
 
-        mTitleTextView.setText(title);
-        configProgressBar();
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        // Setting title
 
         if (savedInstanceState == null) {
             configWebView();
         }
 
-        return view;
+        mTitleTextView.setText(mTitle);
+        configProgressBar();
     }
 
     private void configProgressBar() {
         mBar.setMax(100);
+        if (mWebView.getProgress()== 100) {
+            mBar.setVisibility(View.GONE);
+        }
+
     }
 
     private void configWebView() {
@@ -123,7 +143,7 @@ public class VacancyFragment extends Fragment {
     }
 
     @OnClick(R.id.back_image_view) public void onClick() {
-        // TODO: call mother callback
+        mCallback.onExit();
     }
 
     @Override
@@ -132,7 +152,6 @@ public class VacancyFragment extends Fragment {
         mWebView.saveState(outState);
     }
 
-    // TODO: check this method. Is it work?
     @Override
     public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
         super.onViewStateRestored(savedInstanceState);

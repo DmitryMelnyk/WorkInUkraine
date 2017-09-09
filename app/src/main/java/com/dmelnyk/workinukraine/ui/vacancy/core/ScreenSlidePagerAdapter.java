@@ -37,7 +37,6 @@ public class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {
             Map<String, Map<String, List<VacancyModel>>> mAllVacancies) {
         super(fm);
 
-        Log.e("222", "ScreenSlidePagerAdapter: running constructor");
         this.mTitles = mTitles;
         this.mSitesData = mAllVacancies.get(IVacancyInteractor.DATA_TAB_SITES);
         this.mBaseFragmentData = mAllVacancies.get(IVacancyInteractor.DATA_OTHER_TABS);
@@ -69,14 +68,11 @@ public class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {
             itemPosition = POSITION_UNCHANGED;
         }
 
-        Log.e("222", "getItemPosition=" + itemPosition + " for object=" + object);
         return itemPosition;
     }
 
     @Override
     public Fragment getItem(int position) {
-        Log.e("222", "getItem =" + position);
-
         switch (position) {
             case 0:
                 return mFragment0;
@@ -96,12 +92,10 @@ public class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public Object instantiateItem(ViewGroup container, int position) {
-        Log.e("222", "SSPAdapter. instantiateItem =" + position);
         return super.instantiateItem(container, position);
     }
 
     public void updateFavoriteData(List<VacancyModel> vacancies) {
-        Log.e("222", "SSPAdapter. updateFavoriteData =" + vacancies.size());
         mBaseFragmentData.put(TAB_FAVORITE, vacancies);
         mFragment2.updateData(vacancies);
     }

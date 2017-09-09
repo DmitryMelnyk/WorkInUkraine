@@ -29,7 +29,6 @@ import com.dmelnyk.workinukraine.ui.vacancy.di.VacancyModule;
 import com.dmelnyk.workinukraine.utils.BaseAnimationActivity;
 import com.dmelnyk.workinukraine.utils.buttontab.ButtonTabs;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -67,7 +66,7 @@ public class VacancyActivity extends BaseAnimationActivity implements
 
     @OnClick(R.id.back_image_view)
     public void onViewClicked() {
-        onBackPressed();
+        onExit();
     }
 
     private void initializeDependency(String request) {

@@ -1,6 +1,7 @@
 package com.dmelnyk.workinukraine.ui.vacancy.core;
 
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -30,10 +31,22 @@ public class FavoriteTabFragment extends BaseTabFragment {
         createProperAdapter();
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_favorite, container, false);
-        mRecyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(container.getContext()));
 
         return view;
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        mRecyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
+        mRecyclerView.setAdapter(mAdapter);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        updateAdapter();
     }
 
     private void updateAdapter() {
@@ -44,21 +57,14 @@ public class FavoriteTabFragment extends BaseTabFragment {
                     (ArrayList<VacancyModel>) sCache, VacancyCardViewAdapter.TYPE_FAVORITE);
             mAdapter.setOnAdapterInteractionListener(this);
         }
+
         if (mRecyclerView != null) {
             mRecyclerView.setAdapter(mAdapter);
         }
     }
 
     public void updateData(List<VacancyModel> vacancies) {
-        Log.e("222", "FavoriteTabFragment: Creating new adapter");
         sCache = new ArrayList<>(vacancies);
         updateAdapter();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        updateAdapter();
-        mRecyclerView.setAdapter(mAdapter);
     }
 }

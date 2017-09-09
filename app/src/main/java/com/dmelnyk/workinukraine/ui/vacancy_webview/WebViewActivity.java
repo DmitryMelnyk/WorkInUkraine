@@ -18,7 +18,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.dmelnyk.workinukraine.R;
-import com.dmelnyk.workinukraine.models.VacancyContainer;
 import com.dmelnyk.workinukraine.models.VacancyModel;
 import com.dmelnyk.workinukraine.utils.BaseAnimationActivity;
 
@@ -69,7 +68,7 @@ public class WebViewActivity extends BaseAnimationActivity {
         configProgressBar();
         mTitleTextView.setText(title);
 
-        findViewById(R.id.back_image_view).setOnClickListener(view -> onBackPressed());
+        findViewById(R.id.back_image_view).setOnClickListener(view -> onExit());
         changeFavoriteImage();
 
         mFavoriteImageView.setOnClickListener(view -> {

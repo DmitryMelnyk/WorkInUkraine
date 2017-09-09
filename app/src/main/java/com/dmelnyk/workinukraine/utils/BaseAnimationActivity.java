@@ -29,8 +29,7 @@ public class BaseAnimationActivity extends AppCompatActivity {
         overridePendingTransitionExit();
     }
 
-    @Override
-    public void onBackPressed() {
+    public void onExit() {
         super.onBackPressed();
         overridePendingTransitionExit();
     }

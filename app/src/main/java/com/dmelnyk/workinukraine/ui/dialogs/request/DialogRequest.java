@@ -62,9 +62,6 @@ public class DialogRequest extends BaseDialog {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        // args == null in case of adding new request
-        // and != null in case of editing old request
         mArgs = getArguments();
     }
 
@@ -82,8 +79,8 @@ public class DialogRequest extends BaseDialog {
             city = fullRequest.split(" / ")[1];
         }
 
-        configSpinner(request, city);
         createCorrectTextFieldRequest();
+        configSpinner(request, city);
         return view;
     }
 
@@ -188,9 +185,8 @@ public class DialogRequest extends BaseDialog {
         // in case of editing request
         if (city != null && request != null) {
             // restores request
-//            mRequestTextInputLayout.setSelected(true);
             mRequestTextInputLayout.setText(request);
-
+            mOkButton.setEnabled(true);
             // restores city
             int positionInSpinner = 0;
             for (int i = 0; i < items.size(); i++) {

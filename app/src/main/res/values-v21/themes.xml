@@ -15,25 +15,24 @@
         <item name="android:colorControlHighlight">@color/grey</item>
 
         <!-- Color of the drawer arrow -->
-        <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
-        <item name="colorControlNormal">@color/colorItem</item>
+        <!--<item name="drawerArrowStyle">@style/DrawerArrowStyle</item>-->
+        <!--<item name="colorControlNormal">@color/colorItem</item>-->
 
         <!-- FragmentSettings-->
-        <!--<item name="preferenceTheme">@style/PreferenceThemeOverlay</item>-->
         <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
 
         <!-- Popup menu -->
-        <item name="android:itemBackground">@color/colorBackground</item>
+        <!--<item name="android:itemBackground">@color/colorBackground</item>-->
         <item name="android:popupMenuStyle">@style/PopupMenu</item>
 
         <!-- Enable transitions -->
         <item name="android:windowContentTransitions">true</item>
 
-        <item name="android:windowEnterTransition">@transition/body_transform</item>
-        <!--<item name="android:windowExitTransition">@transition/body_transform</item>-->
-        <!--&lt;!&ndash; specify shared element transition &ndash;&gt;-->
-        <item name="android:windowSharedElementEnterTransition">
-        @transition/change_title_transform</item>
+        <!--<item name="android:windowEnterTransition">@transition/body_transform</item>-->
+        <!--&lt;!&ndash;<item name="android:windowExitTransition">@transition/body_transform</item>&ndash;&gt;-->
+        <!--&lt;!&ndash;&lt;!&ndash; specify shared element transition &ndash;&gt;&ndash;&gt;-->
+        <!--<item name="android:windowSharedElementEnterTransition">-->
+        <!--@transition/change_title_transform</item>-->
         <!--<item name="android:windowSharedElementExitTransition">-->
         <!--@transition/body_transform</item>-->
     </style>

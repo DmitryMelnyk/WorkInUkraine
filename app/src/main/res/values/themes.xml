@@ -15,7 +15,6 @@
         <item name="colorControlNormal">@color/colorItem</item>
 
         <!-- FragmentSettings-->
-        <!--<item name="preferenceTheme">@style/PreferenceThemeOverlay</item>-->
         <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
 
         <!-- Popup menu -->
@@ -34,6 +33,8 @@
         <item name="colorPrimary">@android:color/white</item>
     </style>
 
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
     <style name="DrawerArrowStyle" parent="Widget.AppCompat.DrawerArrowToggle">
         <item name="spinBars">true</item>
         <item name="color">@color/colorItem</item>
@@ -42,6 +43,8 @@
     <style name="PopupMenu" parent="Widget.AppCompat.PopupMenu.Overflow">
         <item name="android:popupBackground">@color/colorBackground</item>
         <item name="android:itemBackground">@color/colorItem</item>
+        <item name="fontPath">fonts/FranckerCYR-ExtraBold.otf</item>
+        <item name="android:textColor">@color/green</item>
     </style>
 
 

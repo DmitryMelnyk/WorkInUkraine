@@ -80,13 +80,13 @@ public class VacancyFragment extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        // Setting title
-
         if (savedInstanceState == null) {
             configWebView();
         }
 
+        // Setting title
         mTitleTextView.setText(mTitle);
+        // Configuring progress bar / restoring state
         configProgressBar();
     }
 

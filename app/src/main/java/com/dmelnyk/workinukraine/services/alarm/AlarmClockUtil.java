@@ -16,7 +16,7 @@ import timber.log.Timber;
 
 public class AlarmClockUtil {
 
-    private static final long INTERVAL = AlarmManager.INTERVAL_HALF_DAY;
+    private static final long INTERVAL = AlarmManager.INTERVAL_HOUR;
     private AlarmManager alarmManager;
     private PendingIntent alarmIntent;
 

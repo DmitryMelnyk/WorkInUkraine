@@ -20,9 +20,6 @@ public class ButtonTabBehavior extends CoordinatorLayout.Behavior<ButtonTabs> {
     @Override
     public boolean onDependentViewChanged(CoordinatorLayout parent, ButtonTabs child, View dependency) {
         if (dependency instanceof AppBarLayout) {
-//            Log.d(TAG, "onDependentViewChanged()");
-            // If we're depending on an AppBarLayout we will show/hide it automatically
-            // if the FAB is anchored to the AppBarLayout
             updateViewVisibilityForAppBarLayout(parent, (AppBarLayout) dependency, child);
         }
         return false;

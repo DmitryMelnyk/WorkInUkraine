@@ -91,13 +91,27 @@ public class SearchPresenter implements Contract.ISearchPresenter {
 
     private void updateLastUpdateTime(List<RequestModel> requestsList) {
         if (requestsList.isEmpty()) {
-
+            // show empty time
+            view.updateLastSearchTime("");
+            return;
         } else {
-            long time = requestsList.get(0).updated();
-            SimpleDateFormat timeFormat = new SimpleDateFormat("EE, HH:mm", Locale.getDefault());
-            String updated = timeFormat.format(new Date(time));
-            Log.e("1010", "updated time=" + updated);
-            view.updateLastSearchTime(updated);
+            for (RequestModel request: requestsList) {
+                long time = request.updated();
+                if (time == -1l) {
+                    continue;
+                }
+
+                // Update time with firs non default (-1l) value
+                // -1l means that there was no search processing yet.
+                SimpleDateFormat timeFormat = new SimpleDateFormat("EE, HH:mm", Locale.getDefault());
+                String updated = timeFormat.format(new Date(time));
+                Log.e("1010", "updated time=" + updated);
+                view.updateLastSearchTime(updated);
+                return;
+            }
+
+            // show empty time
+            view.updateLastSearchTime("");
         }
     }
 

@@ -99,38 +99,41 @@
                     android:layout_height="40dp"
                     android:src="@mipmap/ic_vacancy"
                     android:layout_marginRight="49dp"
-                    android:layout_marginTop="-16dp"
                     app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/refreshed_text_view"
-                    app:layout_constraintBottom_toBottomOf="@+id/refreshed_text_view"
-                    android:layout_marginBottom="0dp"
-                    app:layout_constraintVertical_bias="0.625" />
+                    app:layout_constraintBottom_toBottomOf="@+id/vacancies_found_text_view"
+                    app:layout_constraintTop_toTopOf="@+id/vacancies_found_text_view"
+                    android:layout_marginTop="0dp"
+                    app:layout_constraintVertical_bias="0.423" />
 
                 <TextView
                     android:id="@+id/new_text_view"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="18dp"
-                    android:layout_marginRight="26dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginRight="25dp"
                     android:text="@string/new_vacancies"
                     android:textSize="18sp"
                     app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/settings_image_view"
                     style="@style/SearchTextViewBold"
-                    />
+                    app:layout_constraintTop_toTopOf="@+id/refreshed_text_view"
+                    app:layout_constraintBottom_toBottomOf="@+id/refreshed_text_view"
+                    android:layout_marginBottom="0dp" />
 
                 <TextView
                     android:id="@+id/new_vacancies_text_view"
                     android:layout_width="20dp"
                     android:layout_height="20dp"
-                    android:layout_marginRight="7dp"
-                    android:layout_marginTop="19dp"
+                    android:layout_marginRight="2dp"
+                    android:layout_marginTop="8dp"
                     android:background="@drawable/new_vacancies_bg"
-                    android:text="3"
+                    android:text=""
                     android:textSize="8sp"
+                    android:visibility="gone"
                     app:layout_constraintRight_toLeftOf="@+id/new_text_view"
                     style="@style/SearchTextViewBold"
-                    app:layout_constraintTop_toBottomOf="@+id/text_view_balance" />
+                    app:layout_constraintTop_toTopOf="@+id/refreshed_text_view"
+                    app:layout_constraintBottom_toBottomOf="@+id/refreshed_text_view"
+                    android:layout_marginBottom="0dp" />
 
                 <TextView
                     android:id="@+id/refreshed_text_view"

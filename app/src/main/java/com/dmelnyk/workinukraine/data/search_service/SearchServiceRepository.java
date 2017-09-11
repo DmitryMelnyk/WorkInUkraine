@@ -57,10 +57,14 @@ public class SearchServiceRepository implements ISearchServiceRepository {
         // don't do any changes if no vacancies has found
         if (allVacancies.isEmpty()) return;
 
+        String request = allVacancies.get(0).getVacancy().request();
+        // Counting previous new vacancies
+        int previousNewVacancies = getPreviousNewVacanciesCount(request);
+
         // Getting previous vacancies
         String table = Tables.SearchSites.TABLE_ALL_SITES;
-        String request = allVacancies.get(0).getVacancy().request();
         List<VacancyContainer> oldVacancies = getPreviousVacancies(table, request);
+
 
         // Counting new vacancies
         int newVacanciesCount = 0;
@@ -87,10 +91,6 @@ public class SearchServiceRepository implements ISearchServiceRepository {
             // write all vacancies to corresponding table
             writeVacanciesToSitesTable(allVacancies);
         }
-
-        // updating Requests table
-        // Counting previous new vacancies
-        int previousNewVacancies = getPreviousNewVacanciesCount(request);
 
         long updatingTime = System.currentTimeMillis();
         updateRequestTable(

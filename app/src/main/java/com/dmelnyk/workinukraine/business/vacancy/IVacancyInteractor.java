@@ -33,6 +33,7 @@ public interface IVacancyInteractor {
 
     String TITLE_NEW = "new_tytles";
     String TITLE_RECENT = "recent_tytles";
+
     @StringDef({ TITLE_NEW, TITLE_RECENT })
     @Retention(RetentionPolicy.CLASS)
     public @interface TitleResource {}
@@ -42,6 +43,11 @@ public interface IVacancyInteractor {
             VACANCIES_SITE_WN, VACANCIES_SITE_WU})
     @Retention(RetentionPolicy.CLASS)
     public @interface VacancyResource {}
+
+    /**
+     * Clearing all resources
+     */
+    void clear();
 
     Observable<Map<String, Map<String, List<VacancyModel>>>> getAllVacancies(String request);
     /**

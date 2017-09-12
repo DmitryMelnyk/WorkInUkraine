@@ -257,4 +257,9 @@ public class VacancyRepository implements IVacancyRepository {
     public String[] getRecentTitles() {
         return context.getResources().getStringArray(R.array.tab_titles_with_recent);
     }
+
+    @Override
+    public void close() {
+        db.close();
+    }
 }

@@ -22,6 +22,10 @@ public class VacancyInteractor implements IVacancyInteractor {
         this.repository = repository;
     }
 
+    @Override
+    public void clear() {
+        repository.close();
+    }
 
     @Override
     public Observable<Map<String, Map<String, List<VacancyModel>>>> getAllVacancies(String request) {

@@ -42,13 +42,14 @@
             android:name=".ui.vacancy_webview.WebViewActivity"
             android:configChanges="orientation|screenSize" />
 
-        <receiver android:name=".services.alarm.AlarmReceiver" />
-        <receiver android:name=".services.alarm.BootReceiver" />
 
         <activity
-            android:name=".ui.vacancy_webview.VacancyContainerActivity"
-            android:configChanges="orientation|screenSize" />
+        android:name=".ui.vacancy_webview.VacancyContainerActivity"
+        android:configChanges="orientation|screenSize" />
         <activity android:name=".ui.filter.FilterActivity"></activity>
+
+        <receiver android:name=".services.alarm.AlarmReceiver" />
+        <receiver android:name=".services.alarm.BootReceiver" />
     </application>
 
 </manifest>

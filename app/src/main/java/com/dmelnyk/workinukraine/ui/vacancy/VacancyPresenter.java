@@ -186,5 +186,6 @@ public class VacancyPresenter implements Contract.IVacancyPresenter {
         sFavoriteVacanciesCache = null;
         sError = null;
         sIsDisplayed = false;
+        interactor.clear();
     }
 }

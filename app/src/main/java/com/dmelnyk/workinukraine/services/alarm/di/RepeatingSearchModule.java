@@ -1,5 +1,7 @@
 package com.dmelnyk.workinukraine.services.alarm.di;
 
+import android.content.Context;
+
 import com.dmelnyk.workinukraine.data.repeating_search_service.IRepeatingSearchRepository;
 import com.dmelnyk.workinukraine.data.repeating_search_service.RepeatingSearchRepository;
 import com.squareup.sqlbrite2.BriteDatabase;
@@ -16,8 +18,8 @@ public class RepeatingSearchModule {
 
     @Provides
     @RepeatingSearchScope
-    IRepeatingSearchRepository providesIRepeatingSearchRepository(BriteDatabase db) {
-        return new RepeatingSearchRepository(db);
+    IRepeatingSearchRepository providesIRepeatingSearchRepository(BriteDatabase db, Context context) {
+        return new RepeatingSearchRepository(db, context);
     }
 
 

@@ -37,4 +37,6 @@ public interface IVacancyRepository {
      * @return The array of Strings titles from resources with Recent tab
      */
     String[] getRecentTitles();
+
+    void close();
 }

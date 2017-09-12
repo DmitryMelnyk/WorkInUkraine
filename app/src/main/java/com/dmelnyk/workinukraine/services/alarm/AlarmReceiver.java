@@ -11,6 +11,7 @@ import android.graphics.BitmapFactory;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.Base64;
 import android.util.Log;
 
 import com.dmelnyk.workinukraine.R;
@@ -20,6 +21,8 @@ import com.dmelnyk.workinukraine.services.SearchVacanciesService;
 import com.dmelnyk.workinukraine.services.alarm.di.DaggerRepeatingSearchComponent;
 import com.dmelnyk.workinukraine.services.alarm.di.RepeatingSearchModule;
 import com.dmelnyk.workinukraine.ui.navigation.NavigationActivity;
+
+import java.io.ByteArrayOutputStream;
 
 import javax.inject.Inject;
 
@@ -84,7 +87,18 @@ public class AlarmReceiver extends BroadcastReceiver {
     private void checkNewVacancies() {
         repository.getNewVacancies()
                 .subscribe(newVacancies -> {
-                    sendNotification(newVacancies.size());
+                    // Shows notification if you've found new vacancies
+                    if (newVacancies.size() != 0
+                            && newVacancies.size() != repository.getPreviousNewVacanciesCount()) {
+                        sendNotification(newVacancies.size());
+                        repository.saveNewVacanciesCount(newVacancies.size());
+                        Timber.d("new vacancies " + newVacancies.size());
+                    } else {
+                        Timber.d("no new vacancies!");
+                    }
+
+                    // Closing database
+                    repository.close();
                 }, throwable -> Timber.e("Error happened", throwable));
     }
 
@@ -95,7 +109,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         Notification notification = new NotificationCompat.Builder(mContext)
                 .setContentTitle(mContext.getString(R.string.app_name))
                 .setContentText("Found vacancies=" + vacanciesFound)
-                .setSmallIcon(R.drawable.vacancy_standard_blue)
+                .setSmallIcon(R.drawable.ic_work_black_24dp)
                 .setLargeIcon(largeExpandedAvatar)
                 .setContentIntent(createPendingIntent(mContext))
                 .setDefaults(Notification.DEFAULT_ALL)

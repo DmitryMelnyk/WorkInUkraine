@@ -55,7 +55,7 @@ public class SearchServiceRepository implements ISearchServiceRepository {
     public void saveVacancies(List<VacancyContainer> allVacancies) {
         Timber.d("Found %d vacancies", allVacancies.size());
         // don't do any changes if no vacancies has found
-        if (allVacancies.isEmpty()) return;
+//        if (allVacancies.isEmpty()) return
 
         String request = allVacancies.get(0).getVacancy().request();
         // Counting previous new vacancies
@@ -95,15 +95,17 @@ public class SearchServiceRepository implements ISearchServiceRepository {
         long updatingTime = System.currentTimeMillis();
         updateRequestTable(
                 request, allVacancies.size(), newVacanciesCount + previousNewVacancies, updatingTime);
+
+        db.close();
     }
 
     private int getPreviousNewVacanciesCount(String request) {
-        int previousNewVacancies = 0;
         Cursor newVacanciesCursor = db.query(
                 SELECT_ALL_FROM + Tables.SearchSites.TABLE_FAV_NEW_REC
                 + WHERE_ + "'" + request + "' AND "
                 + Tables.SearchSites.Columns.TYPE + "='" + Tables.SearchSites.TYPE_NEW + "'");
-        previousNewVacancies = newVacanciesCursor.getCount();
+        int previousNewVacancies = newVacanciesCursor.getCount();
+        newVacanciesCursor.close();
         Timber.d("Previous new vacancies count=" + previousNewVacancies);
 
         return previousNewVacancies;

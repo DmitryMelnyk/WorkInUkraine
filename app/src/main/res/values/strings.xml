@@ -1,80 +1,22 @@
 <resources>
     <string name="app_name">Work In Ukraine</string>
-
-    <!-- Settings -->
-    <!--<string name="settings_messages">Оповещения</string>-->
-    <!--<string name="settings_sound_enable">Использовать звуковые оповещения</string>-->
-    <!--<string name="settings_sound_settings">Настройка звука</string>-->
-    <!--<string name="settings_summary_message">Звук и вибрация включены</string>-->
-    <!--<string name="settings_sound_dialog">Выберите настройки</string>-->
-    <!--<string name="settings_sound_period">Проверять наличие новых вакансий с периодом</string>-->
-    <!--<string name="settings_sound_period_summary">Каждые 3 часа</string>-->
-    <!--<string name="settings_sound_period_default">3 часа</string>-->
-    <!--<string name="settings_category_theme">Оформление</string>-->
-    <!--<string name="settings_theme">Тема оформления</string>-->
-    <!--<string name="settings_theme_default">Тёмная</string>-->
-    <!--<string name="settings_theme_dialog">Выберите тему оформления</string>-->
-
-    <!-- Settings keys -->
-    <!--<string name="key_sound_switcher">key_sound_switcher</string>-->
-    <!--<string name="key_list_preferences">key_list_preferences</string>-->
-    <!--<string name="key_sound_period">key_sound_period</string>-->
-    <!--<string name="key_settings_theme">key_settings_theme</string>-->
-    <!--<string name="top_star_text">Избранные вакансии</string>-->
-    <!--<string name="empty_list_text">К сожалению вакансии, соответствующие критериям поиска, не найдены.</string>-->
-    <!--<string name="downloading_started">Загрузка началась!</string>-->
-    <!--<string name="dialog_title">Найдено вакансий</string>-->
-
-    <!-- Sites -->
-    <!--<string name="headhuntersua">hh.ua</string>-->
-    <!--<string name="workua">work.ua</string>-->
-    <!--<string name="rabotaua">rabota.ua</string>-->
-    <!--<string name="jobsua">jobs.ua</string>-->
-    <!--<string name="worknewinfo">worknew.info</string>-->
-    <!--<string name="action_settings">Настройки</string>-->
     <string name="minimal_request_length">Минимальная длина запроса 3 символа</string>
-
-    <!-- Navigation drawer -->
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
-
-    <!-- NavigationDrawer menu items -->
-    <string name="navmenu_new_search">Искать вакансии</string>
-    <string name="navmenu_update">Обновить список вакансий</string>
-    <string name="navmenu_favorite">Избранные вакансии</string>
-    <string name="navmenu_recent">Последние вакансии</string>
-    <string name="navmenu_settings">Настройки</string>
-    <string name="navmenu_about">Информация о приложении</string>
-    <string name="navmenu_exit">Выйти</string>
 
     <!-- Notification -->
     <string name="notification_title">Поступили новые предложения работы</string>
     <string name="notification_summary">Всего найдено вакансий: </string>
 
-    <!-- BaseActivity -->
-    <!--<string name="base_activity_title_favorite">Список избранных вакансий</string>-->
-    <!--<string name="base_activity_title_recent">Список недавних вакансий</string>-->
-    <!--<string name="base_activity_title_new">Список новых вакансий</string>-->
-    <!--<string name="base_activity_favorite_empty">Список вакансий пуст</string>-->
-    <!--<string name="base_activity_recent_empty">Список недавних вакансий пуст</string>-->
-
     <string name="settings_activity_title">Настройки</string>
     <string name="webview_menu_add_to_favorite">Добавить в список избранных</string>
     <string name="card_view_popup_share">Поделиться</string>
     <string name="card_view_popup_remove">Удалить</string>
-    <string name="card_view_popup_add_to_favorite">Добавить в избранные</string>
-    <string name="no_internet_connection">Нет доступа к интернету. Проверьте подключение и повторите попытку позже!</string>
+    <string name="card_view_popup_add_to_favorite">В избранные</string>
+    <!--<string name="no_internet_connection">Нет доступа к интернету. Проверьте подключение и повторите попытку позже!</string>-->
     <string name="nav_founded_vacancies">Найдено вакансий</string>
-
-    <!--&lt;!&ndash; TODO: Remove or change this placeholder text &ndash;&gt;-->
-    <!--<string name="hello_blank_fragment">Hello blank fragment</string>-->
-    <!--<string name="search_item_edit">Редактировать</string>-->
-    <!--<string name="search_item_remove">Удалить</string>-->
-    <!--<string name="search_item_blacklist">Исключить</string>-->
 
     <!---->
     <string name="title_activity_vacancy">Поиск вакансий</string>
-    <string name="transition.webview_title">tr_webview_title</string>
 
-
+    <!-- Transitions -->
+    <string name="fab_transition">fab transition reveal</string>
 </resources>

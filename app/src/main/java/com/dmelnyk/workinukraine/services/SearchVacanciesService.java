@@ -79,7 +79,7 @@ public class SearchVacanciesService extends IntentService {
 
         sIsDownloadingFinished = false;
 
-        mMode = intent.getIntExtra(EXTRA_MODE, -2);
+        mMode = intent.getIntExtra(EXTRA_MODE, MODE_REPEATING_SEARCH);
 
         // Gets request list and starts searching
         repository.getRequests()
@@ -92,16 +92,19 @@ public class SearchVacanciesService extends IntentService {
         ExecutorService pool = Executors.newCachedThreadPool();
         // Creating parallel search tasks for each search request
         long startTime = System.currentTimeMillis();
-        List<Future> futures = new ArrayList<>();
-        for (RequestModel request : requests) {
-            CallableSearchTask[] callables = new CallableSearchTask[5];
 
+        List<Future> futures = new ArrayList<>();
+        for (RequestModel requestModel : requests) {
+            SearchVacanciesTask[] callables = new SearchVacanciesTask[5];
+
+            // Creates 5 task for each request search
             for (int i = 0; i < 5; ++i) {
-                callables[i] = new CallableSearchTask(i, request.request());
+                callables[i] = new SearchVacanciesTask(i, requestModel.request());
                 futures.add(pool.submit(callables[i]));
             }
         }
 
+        // Starts searching
         for (Future future : futures) {
             try {
                 future.get();
@@ -150,11 +153,11 @@ public class SearchVacanciesService extends IntentService {
         }
     }
 
-    private class CallableSearchTask implements Callable<List<VacancyContainer>> {
+    private class SearchVacanciesTask implements Callable<List<VacancyContainer>> {
         private final int code;
         private final String request;
 
-        public CallableSearchTask(int code, String request) {
+        public SearchVacanciesTask(int code, String request) {
             this.code = code;
             this.request = request;
         }
@@ -182,7 +185,9 @@ public class SearchVacanciesService extends IntentService {
                     break;
             }
 
-            saveData(request, list);
+            // after each of 5 request save cache to 'count'.
+            // Then save all cache in repository after getting all result from 5 sites
+            saveDataToMap(request, list);
             sendBroadcastMessage(ACTION_DOWNLOADING_IN_PROGRESS, request, list.size());
 
             return list;
@@ -190,10 +195,11 @@ public class SearchVacanciesService extends IntentService {
     }
 
     private volatile int totalVacanciesCount = 0;
-    private volatile Map<String, Integer> count = new HashMap<>();
-    private volatile Map<String, List<VacancyContainer>> data = new HashMap<>();
 
-    private void saveData(String request, List<VacancyContainer> list) {
+    private volatile Map<String, Integer> count = new HashMap<>();
+    private volatile Map<String, List<VacancyContainer>> cache = new HashMap<>();
+
+    private void saveDataToMap(String request, List<VacancyContainer> list) throws Exception {
         totalVacanciesCount += list.size();
 
         if (count.containsKey(request)) {
@@ -202,16 +208,17 @@ public class SearchVacanciesService extends IntentService {
             count.put(request, 1);
         }
 
-        if (!data.containsKey(request)) {
+        if (!cache.containsKey(request)) {
             List<VacancyContainer> vacancyList = new ArrayList<>();
-            data.put(request, vacancyList);
+            cache.put(request, vacancyList);
         }
 
-        data.get(request).addAll(list);
+        // saving cache to cache
+        cache.get(request).addAll(list);
 
-        // Saving vacancies after getting results from all 5 sites
+        // Saves vacancies after getting results from all 5 sites
         if (count.get(request) == 5) {
-            repository.saveVacancies(data.get(request));
+            repository.saveVacancies(cache.get(request));
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.dmelnyk.workinukraine.data.search;
 
+import android.content.ContentValues;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
@@ -66,14 +67,15 @@ public class SearchRepository implements ISearchRepository {
     public Completable addRequest(String request) {
         Timber.d("\naddRequest: " + request);
         return Completable.fromCallable(() ->
-            db.insert(REQUEST_TABLE, DbItems.createRequestItem(request, 0, 0, 0l)));
+            db.insert(REQUEST_TABLE, DbItems.createRequestItem(request, 0, 0, -1l)));
     }
 
     @Override
     public void updateRequest(@NonNull String oldRequest, String newRequest) {
         Timber.d("\nupdateRequest");
-        removeRequest(oldRequest);
-        addRequest(newRequest);
+        ContentValues newItem = DbItems.createRequestItem(newRequest, 0, 0, -1l);
+        db.update(Tables.SearchRequest.TABLE_REQUEST, newItem, Tables.SearchRequest.Columns.REQUEST
+                + " ='" + oldRequest + "'");
     }
 
     private String where(String request) {

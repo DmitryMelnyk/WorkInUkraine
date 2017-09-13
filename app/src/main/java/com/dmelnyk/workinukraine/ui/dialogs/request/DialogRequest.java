@@ -55,16 +55,13 @@ public class DialogRequest extends BaseDialog {
     @BindView(R.id.ok_button) Button mOkButton;
     @BindView(R.id.textInputLayout) TextInputLayout mTextInputLayout;
     Unbinder unbinder;
-    private DialogRequestCallbackListener mCallback;
+    private CallbackListener mCallback;
 
     private Bundle mArgs;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        // args == null in case of adding new request
-        // and != null in case of editing old request
         mArgs = getArguments();
     }
 
@@ -82,8 +79,8 @@ public class DialogRequest extends BaseDialog {
             city = fullRequest.split(" / ")[1];
         }
 
-        configSpinner(request, city);
         createCorrectTextFieldRequest();
+        configSpinner(request, city);
         return view;
     }
 
@@ -188,9 +185,8 @@ public class DialogRequest extends BaseDialog {
         // in case of editing request
         if (city != null && request != null) {
             // restores request
-//            mRequestTextInputLayout.setSelected(true);
             mRequestTextInputLayout.setText(request);
-
+            mOkButton.setEnabled(true);
             // restores city
             int positionInSpinner = 0;
             for (int i = 0; i < items.size(); i++) {
@@ -260,13 +256,13 @@ public class DialogRequest extends BaseDialog {
         return request + " / " + city;
     }
 
-    public interface DialogRequestCallbackListener {
+    public interface CallbackListener {
         void onTakeRequest(String request, @MODE int mode);
 
         void dialogDismissed();
     }
 
-    public void setCallback(DialogRequestCallbackListener callbackInterface) {
+    public void setCallback(CallbackListener callbackInterface) {
         mCallback = callbackInterface;
     }
 

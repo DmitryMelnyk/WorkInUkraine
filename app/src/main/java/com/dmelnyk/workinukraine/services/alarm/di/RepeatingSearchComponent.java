@@ -1,6 +1,7 @@
 package com.dmelnyk.workinukraine.services.alarm.di;
 
 import com.dmelnyk.workinukraine.db.di.DbModule;
+import com.dmelnyk.workinukraine.services.alarm.AlarmClockUtil;
 import com.dmelnyk.workinukraine.services.alarm.AlarmReceiver;
 
 import javax.inject.Singleton;
@@ -15,4 +16,5 @@ import dagger.Component;
 @Singleton
 public interface RepeatingSearchComponent {
     void inject(AlarmReceiver receiver);
+    void inject(AlarmClockUtil alarmClockUtil);
 }

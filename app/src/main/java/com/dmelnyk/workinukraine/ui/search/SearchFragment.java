@@ -60,7 +60,7 @@ public class SearchFragment extends BaseFragment implements
         Contract.ISearchView,
         SearchAdapter.AdapterCallback,
         DialogDownloading.CallbackLister,
-        DialogRequest.DialogRequestCallbackListener,
+        DialogRequest.CallbackListener,
         DialogDelete.DialogDeleteCallbackListener {
 
     private static final String TAG_DIALOG_DOWNLOADING = "downloading_dialog";
@@ -154,8 +154,6 @@ public class SearchFragment extends BaseFragment implements
         mRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
         mRecyclerView.setAdapter(mAdapter);
 
-        presenter.bindView(this);
-
         createToolbarMenu();
 
         // Restores state
@@ -208,6 +206,8 @@ public class SearchFragment extends BaseFragment implements
     public void onResume() {
         super.onResume();
         restoreDialogs();
+        presenter.bindView(this);
+
         // registering downloading receiver
         IntentFilter filter = new IntentFilter();
         filter.addAction(SearchVacanciesService.ACTION_FINISHED);
@@ -215,7 +215,7 @@ public class SearchFragment extends BaseFragment implements
         LocalBroadcastManager.getInstance(getContext())
                 .registerReceiver(mDownloadingBroadcastReceiver, filter);
 
-        presenter.getFreshRequests();
+//        presenter.getFreshRequests();
     }
 
     @Override
@@ -236,12 +236,6 @@ public class SearchFragment extends BaseFragment implements
         mDialogDelete = (DialogDelete) getFragmentManager().findFragmentByTag(TAG_DIALOG_DELETE);
         if (mDialogDelete != null) {
             mDialogDelete.setCallback(this);
-        }
-
-        // restoring DownloadingDialog if needed
-        mDialogDownloading = (DialogDownloading) getFragmentManager().findFragmentByTag(TAG_DIALOG_DOWNLOADING);
-        if (mDialogDownloading != null) {
-            mDialogDownloading.setCallback(this);
         }
 
         // restoring RequestDialog if needed
@@ -352,11 +346,15 @@ public class SearchFragment extends BaseFragment implements
 
         // update vacancies count in main menu
         mListener.setVacanciesCount(allVacanciesCount);
-        // if DownloadingDialog is open - update vacancy count
-        if (mDialogDownloading != null && SearchVacanciesService.sIsDownloadingFinished) {
-            mDialogDownloading.downloadingFinished(allVacanciesCount);
-        }
 
+        // restoring DownloadingDialog if needed
+        mDialogDownloading = (DialogDownloading) getFragmentManager().findFragmentByTag(TAG_DIALOG_DOWNLOADING);
+        if (mDialogDownloading != null) {
+            mDialogDownloading.setCallback(this);
+            if (SearchVacanciesService.sIsDownloadingFinished) {
+                mDialogDownloading.downloadingFinished(allVacanciesCount);
+            }
+        }
     }
 
     @Override
@@ -406,23 +404,6 @@ public class SearchFragment extends BaseFragment implements
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.e("888", "onActivityResult is calling");
-        if (requestCode == REQUEST_CODE_VACANCY_ACTIVITY) {
-            switch (resultCode) {
-                case RESULT_OK:
-                    // update request table
-                    presenter.getFreshRequests();
-                    break;
-                case RESULT_CANCELED:
-                    Toast.makeText(getContext(), R.string.no_vacancies_found, Toast.LENGTH_LONG)
-                            .show();
-                    break;
-            }
-        }
-    }
-
-    @Override
     public void onOkClickedInDownloadingDialog() {
         resetDialogDownloading();
         // close NavigationActivity's menu in case
@@ -430,7 +411,7 @@ public class SearchFragment extends BaseFragment implements
         closeMainMenuCallback();
     }
 
-    // DialogRequestCallbackListener add item
+    // CallbackListener add item
     @Override
     public void onTakeRequest(String request, @DialogRequest.MODE int mode) {
         Log.e("1010", "DialogRequest. Mode=" + mode);
@@ -458,7 +439,7 @@ public class SearchFragment extends BaseFragment implements
         mDialogStackLevel = 0;
     }
 
-    // DialogRequestCallbackListener remove item
+    // CallbackListener remove item
     @Override
     public void onRemoveClicked(@DialogDelete.RemoveCode String removeCode) {
         Timber.d("onRemoveClicked clicked. RequestCode=" + removeCode);
@@ -470,6 +451,23 @@ public class SearchFragment extends BaseFragment implements
             case DialogDelete.REMOVE_ONE_REQUEST:
                 presenter.removeRequest(sItemClickedRequest);
                 break;
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.e("999", "onActivityResult in SearchFragment");
+        if (requestCode == REQUEST_CODE_VACANCY_ACTIVITY) {
+            switch (resultCode) {
+                case RESULT_OK:
+                    // update request table (now all 'new' vacancies become 'recent')
+                    presenter.getFreshRequests();
+                    break;
+                case RESULT_CANCELED:
+                    Toast.makeText(getContext(), R.string.no_vacancies_found, Toast.LENGTH_LONG)
+                            .show();
+                    break;
+            }
         }
     }
 

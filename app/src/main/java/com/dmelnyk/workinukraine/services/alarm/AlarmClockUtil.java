@@ -7,6 +7,13 @@ import android.content.Intent;
 import android.os.SystemClock;
 import android.util.Log;
 
+import com.dmelnyk.workinukraine.data.repeating_search_service.IRepeatingSearchRepository;
+import com.dmelnyk.workinukraine.db.di.DbModule;
+import com.dmelnyk.workinukraine.services.alarm.di.DaggerRepeatingSearchComponent;
+import com.dmelnyk.workinukraine.services.alarm.di.RepeatingSearchModule;
+
+import javax.inject.Inject;
+
 import timber.log.Timber;
 
 
@@ -16,25 +23,40 @@ import timber.log.Timber;
 
 public class AlarmClockUtil {
 
-    private static final long INTERVAL = AlarmManager.INTERVAL_HALF_DAY;
+    @Inject IRepeatingSearchRepository repository;
+
+    private static final long INTERVAL = AlarmManager.INTERVAL_HOUR;
     private AlarmManager alarmManager;
     private PendingIntent alarmIntent;
 
-    public AlarmClockUtil(Context mContext) {
-        alarmManager = (AlarmManager) mContext.getApplicationContext()
+    public AlarmClockUtil(Context context) {
+
+        DaggerRepeatingSearchComponent.builder()
+                .dbModule(new DbModule(context.getApplicationContext()))
+                .build()
+                .inject(this);
+
+        alarmManager = (AlarmManager) context.getApplicationContext()
                 .getSystemService(Context.ALARM_SERVICE);
-        Intent intent = new Intent(mContext, AlarmReceiver.class);
-        alarmIntent = PendingIntent.getBroadcast(mContext.getApplicationContext(), 0, intent, 0);
+
+        Intent intent = new Intent(context, AlarmReceiver.class);
+        alarmIntent = PendingIntent.getBroadcast(context.getApplicationContext(), 0, intent, 0);
     }
 
     /**
      * Creates repeating alarm with inexact recurrence interval.
      */
     public void startAlarmClock() {
+        if (repository.getRequestCount() == 0) {
+            // don't start repeating alarm if there is no request
+            Log.e("999", "repeating alarm doesn't start because of empty request list");
+            return;
+        }
+
         Timber.d("AlarmClock starts!");
         Log.e("999", "alarm started!");
         stopAlarmClock();
-        alarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME,
+        alarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
                 SystemClock.elapsedRealtime() + INTERVAL, INTERVAL, alarmIntent);
     }
 

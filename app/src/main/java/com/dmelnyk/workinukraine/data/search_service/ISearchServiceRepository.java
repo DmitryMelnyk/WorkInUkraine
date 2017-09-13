@@ -22,7 +22,7 @@ public interface ISearchServiceRepository {
      * Saves vacancies from all websites
      * @param stringListMap
      */
-    void saveVacancies(List<VacancyContainer> stringListMap);
+    void saveVacancies(List<VacancyContainer> stringListMap) throws Exception;
 
     /**
      * Returns list of RequestModel items

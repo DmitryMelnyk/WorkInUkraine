@@ -86,6 +86,7 @@ public class ParserHeadHunters {
                     .setTitle(title)
                     .setDate(date)
                     .setUrl(url)
+                    .setIsFavorite(false)
                     .build();
             vacancies.add(VacancyContainer.create(vacancyModel, Tables.SearchSites.TYPE_SITES[0]));
         }

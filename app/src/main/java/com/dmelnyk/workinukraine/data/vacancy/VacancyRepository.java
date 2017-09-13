@@ -86,12 +86,14 @@ public class VacancyRepository implements IVacancyRepository {
                 String title = Db.getString(cursor, Tables.SearchSites.Columns.TITLE);
                 String date = Db.getString(cursor, Tables.SearchSites.Columns.DATE);
                 String url = Db.getString(cursor, Tables.SearchSites.Columns.URL);
+                boolean isFavorite = Db.getBoolean(cursor, Tables.SearchSites.Columns.IS_FAVORITE);
 
                 VacancyModel vacancy = VacancyModel.builder()
                         .setRequest(request)
                         .setTitle(title)
                         .setDate(date)
                         .setUrl(url)
+                        .setIsFavorite(isFavorite)
                         .build();
                 vacancies.add(vacancy);
             } while (cursor.moveToNext());
@@ -210,6 +212,13 @@ public class VacancyRepository implements IVacancyRepository {
     @Override
     public Completable removeFromFavorites(VacancyModel vacancy) {
         Timber.d("\nremoveFromFavorites: %s", vacancy);
+
+        // updating vacancy in Tables.SearchSites.TABLE_ALL_SITES
+        db.execute("UPDATE " + Tables.SearchSites.TABLE_ALL_SITES
+                + " SET " + Tables.SearchSites.Columns.IS_FAVORITE
+                + " =-1 WHERE " + Tables.SearchSites.Columns.URL
+                + " ='" + vacancy.url() + "'");
+
         return Completable.fromCallable(() ->
                 db.delete(Tables.SearchSites.TABLE_FAV_NEW_REC,
                         Tables.SearchSites.Columns.URL + " ='" + vacancy.url()
@@ -220,7 +229,13 @@ public class VacancyRepository implements IVacancyRepository {
     }
 
     @Override
-    public Completable saveToFavorite(VacancyModel vacancy) {
+    public Completable addToFavorite(VacancyModel vacancy) {
+        // updating vacancy in Tables.SearchSites.TABLE_ALL_SITES
+        db.execute("UPDATE " + Tables.SearchSites.TABLE_ALL_SITES
+                + " SET " + Tables.SearchSites.Columns.IS_FAVORITE
+                + " =1 WHERE " + Tables.SearchSites.Columns.URL
+                + " ='" + vacancy.url() + "'");
+
         Timber.d("\nSaving to TYPE_FAVORITE table %s", vacancy);
         Cursor cursor = db.query("SELECT * FROM "
                 + Tables.SearchSites.TABLE_FAV_NEW_REC
@@ -256,5 +271,10 @@ public class VacancyRepository implements IVacancyRepository {
     @Override
     public String[] getRecentTitles() {
         return context.getResources().getStringArray(R.array.tab_titles_with_recent);
+    }
+
+    @Override
+    public void close() {
+        db.close();
     }
 }

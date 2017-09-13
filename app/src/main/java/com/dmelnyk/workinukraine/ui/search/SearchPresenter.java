@@ -25,15 +25,20 @@ public class SearchPresenter implements Contract.ISearchPresenter {
     private final ISearchInteractor interactor;
     private ISearchView view;
     private Disposable disposableRequests;
+    private static List<RequestModel> sCache;
 
     public SearchPresenter(ISearchInteractor interactor) {
         this.interactor = interactor;
+        getRequests();
     }
 
     @Override
     public void bindView(ISearchView view) {
         this.view = view;
-        getRequests();
+        // If you already receive data from interactor
+        if (sCache != null) {
+            displayData(sCache);
+        }
     }
 
 
@@ -69,14 +74,20 @@ public class SearchPresenter implements Contract.ISearchPresenter {
         disposableRequests = interactor.getRequests()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(requestsList -> {
-                    Log.e("999", "all vacancies count=" + countAllVacancies(requestsList));
-                    view.updateData((ArrayList<RequestModel>) requestsList);
-                    view.updateVacanciesCount(countAllVacancies(requestsList));
-                    view.updateNewVacanciesCount(countAllNewVacancies(requestsList));
+                    Log.e("999", "all requests count=" + requestsList.size());
+                    sCache = requestsList;
 
-                    // TODO: fix adding request in a first time if (requestsList.get(0).updated())
-                    updateLastUpdateTime(requestsList);
+                    if (view != null) {
+                        displayData(requestsList);
+                    }
                 });
+    }
+
+    private void displayData(List<RequestModel> requestsList) {
+        view.updateData((ArrayList<RequestModel>) requestsList);
+        view.updateVacanciesCount(countAllVacancies(requestsList));
+        view.updateNewVacanciesCount(countAllNewVacancies(requestsList));
+        updateLastUpdateTime(requestsList);
     }
 
     @Override
@@ -91,13 +102,27 @@ public class SearchPresenter implements Contract.ISearchPresenter {
 
     private void updateLastUpdateTime(List<RequestModel> requestsList) {
         if (requestsList.isEmpty()) {
-
+            // show empty time
+            view.updateLastSearchTime("");
+            return;
         } else {
-            long time = requestsList.get(0).updated();
-            SimpleDateFormat timeFormat = new SimpleDateFormat("EE, HH:mm", Locale.getDefault());
-            String updated = timeFormat.format(new Date(time));
-            Log.e("1010", "updated time=" + updated);
-            view.updateLastSearchTime(updated);
+            for (RequestModel request: requestsList) {
+                long time = request.updated();
+                if (time == -1l) {
+                    continue;
+                }
+
+                // Update time with firs non default (-1l) value
+                // -1l means that there was no search processing yet.
+                SimpleDateFormat timeFormat = new SimpleDateFormat("EE, HH:mm", Locale.getDefault());
+                String updated = timeFormat.format(new Date(time));
+                Log.e("1010", "updated time=" + updated);
+                view.updateLastSearchTime(updated);
+                return;
+            }
+
+            // show empty time
+            view.updateLastSearchTime("");
         }
     }
 

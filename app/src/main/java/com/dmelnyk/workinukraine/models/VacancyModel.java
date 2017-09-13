@@ -19,6 +19,7 @@ public abstract class VacancyModel implements Parcelable {
     public abstract String title();
     public abstract String date();
     public abstract String url();
+    public abstract boolean isFavorite();
 
     public static Builder builder() {
         return new AutoValue_VacancyModel.Builder();
@@ -30,6 +31,7 @@ public abstract class VacancyModel implements Parcelable {
         public abstract Builder setTitle(String title);
         public abstract Builder setDate(String date);
         public abstract Builder setUrl(String url);
+        public abstract Builder setIsFavorite(boolean isFavorite);
         public abstract VacancyModel build();
     }
 
@@ -39,11 +41,13 @@ public abstract class VacancyModel implements Parcelable {
             String title = Db.getString(cursor, Tables.SearchSites.Columns.TITLE);
             String date = Db.getString(cursor, Tables.SearchSites.Columns.DATE);
             String url = Db.getString(cursor, Tables.SearchSites.Columns.URL);
+            boolean isFavorite = Db.getBoolean(cursor, Tables.SearchSites.Columns.IS_FAVORITE);
             return VacancyModel.builder()
                     .setRequest(request)
                     .setTitle(title)
                     .setDate(date)
                     .setUrl(url)
+                    .setIsFavorite(isFavorite)
                     .build();
         }
     };

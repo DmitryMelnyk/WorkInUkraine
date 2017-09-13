@@ -5,19 +5,24 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.dmelnyk.workinukraine.R;
 import com.dmelnyk.workinukraine.models.VacancyModel;
 import com.dmelnyk.workinukraine.db.di.DbModule;
+import com.dmelnyk.workinukraine.ui.filter.FilterActivity;
 import com.dmelnyk.workinukraine.ui.vacancy_webview.VacancyContainerActivity;
 import com.dmelnyk.workinukraine.ui.vacancy_webview.WebViewActivity;
 import com.dmelnyk.workinukraine.ui.vacancy.core.BaseTabFragment;
@@ -27,7 +32,9 @@ import com.dmelnyk.workinukraine.ui.vacancy.core.ScreenSlidePagerAdapter;
 import com.dmelnyk.workinukraine.ui.vacancy.di.DaggerVacancyComponent;
 import com.dmelnyk.workinukraine.ui.vacancy.di.VacancyModule;
 import com.dmelnyk.workinukraine.utils.BaseAnimationActivity;
+import com.dmelnyk.workinukraine.utils.buttontab.ButtonTabBehavior;
 import com.dmelnyk.workinukraine.utils.buttontab.ButtonTabs;
+import com.dmelnyk.workinukraine.utils.buttontab.ImageButtonBehavior;
 
 import java.util.List;
 import java.util.Map;
@@ -57,6 +64,8 @@ public class VacancyActivity extends BaseAnimationActivity implements
     @BindView(R.id.vacancies_count_text_view) TextView mTitleVacanciesCountTextView;
     @BindView(R.id.pager) ViewPager mViewPager;
     @BindView(R.id.button_tabs) ButtonTabs mButtonTabs;
+    @BindView(R.id.settings_image_button) ImageButton mSettingsImageButton;
+
     private ScreenSlidePagerAdapter mSlideAdapter;
     private String mRequest;
 
@@ -82,6 +91,7 @@ public class VacancyActivity extends BaseAnimationActivity implements
         setContentView(R.layout.activity_vacancy);
         ButterKnife.bind(this);
 
+        // sets result to update
         setResult(RESULT_OK);
         // Makes status bar transparent
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -110,16 +120,29 @@ public class VacancyActivity extends BaseAnimationActivity implements
     private void initializeViews() {
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(view ->
-                Snackbar.make(fab.getRootView(), "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show());
+        mSettingsImageButton = (ImageButton) findViewById(R.id.settings_image_button);
+        mSettingsImageButton.setOnClickListener(view -> startFilterActivity());
+        CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) mSettingsImageButton.getLayoutParams();
+        params.setBehavior(new ImageButtonBehavior());
+//        mSettingsImageButton.setLayoutParams(params);
+        mSettingsImageButton.requestLayout();
 
         mButtonTabs.setOnTabClickListener(tabClicked -> {
             mViewPager.setCurrentItem(tabClicked);
             updateTitleView(tabClicked);
         });
         mButtonTabs.setSaveEnabled(true);
+    }
+
+    private void startFilterActivity() {
+        Intent intent = new Intent(this, FilterActivity.class);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            ActivityOptionsCompat option = ActivityOptionsCompat.makeSceneTransitionAnimation(
+                    this, (View) mSettingsImageButton, getString(R.string.fab_transition));
+            ActivityCompat.startActivity(this, intent, option.toBundle());
+        } else {
+            startActivity(intent);
+        }
     }
 
     @Override
@@ -166,7 +189,7 @@ public class VacancyActivity extends BaseAnimationActivity implements
     public void onFragmentInteractionItemClicked(VacancyModel vacancyModel, List<VacancyModel> vacancies) {
         // Activity with multiple vacancy
         Intent vacancyContainerIntent = VacancyContainerActivity.getIntent(this, vacancies, vacancyModel);
-        startActivity(vacancyContainerIntent);
+        startActivityForResult(vacancyContainerIntent, WEBVIEW_REQUEST_CODE);
     }
 
     @Override
@@ -274,7 +297,7 @@ public class VacancyActivity extends BaseAnimationActivity implements
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 //        super.onActivityResult(requestCode, resultCode, data);
-        Log.e("888", "onActivityResult in VacancyActivity");
+        Log.e("999", "onActivityResult in VacancyActivity");
         if (requestCode == WEBVIEW_REQUEST_CODE) {
             switch (resultCode) {
                 case WebViewActivity.RESULT_ADD_TO_FAVORITES:

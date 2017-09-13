@@ -55,7 +55,7 @@ public class DialogRequest extends BaseDialog {
     @BindView(R.id.ok_button) Button mOkButton;
     @BindView(R.id.textInputLayout) TextInputLayout mTextInputLayout;
     Unbinder unbinder;
-    private DialogRequestCallbackListener mCallback;
+    private CallbackListener mCallback;
 
     private Bundle mArgs;
 
@@ -256,13 +256,13 @@ public class DialogRequest extends BaseDialog {
         return request + " / " + city;
     }
 
-    public interface DialogRequestCallbackListener {
+    public interface CallbackListener {
         void onTakeRequest(String request, @MODE int mode);
 
         void dialogDismissed();
     }
 
-    public void setCallback(DialogRequestCallbackListener callbackInterface) {
+    public void setCallback(CallbackListener callbackInterface) {
         mCallback = callbackInterface;
     }
 

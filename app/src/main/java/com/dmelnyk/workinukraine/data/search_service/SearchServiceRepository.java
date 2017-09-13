@@ -6,17 +6,14 @@ import android.util.Log;
 
 import com.dmelnyk.workinukraine.models.RequestModel;
 import com.dmelnyk.workinukraine.models.VacancyContainer;
-import com.dmelnyk.workinukraine.models.VacancyModel;
-import com.dmelnyk.workinukraine.db.Db;
 import com.dmelnyk.workinukraine.db.DbItems;
 import com.dmelnyk.workinukraine.db.Tables;
 import com.squareup.sqlbrite2.BriteDatabase;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
+import java.util.Set;
 
 import io.reactivex.Observable;
 import timber.log.Timber;
@@ -52,7 +49,7 @@ public class SearchServiceRepository implements ISearchServiceRepository {
     }
 
     @Override
-    public void saveVacancies(List<VacancyContainer> allVacancies) {
+    public void saveVacancies(List<VacancyContainer> allVacancies) throws Exception {
         Timber.d("Found %d vacancies", allVacancies.size());
         // don't do any changes if no vacancies has found
 //        if (allVacancies.isEmpty()) return
@@ -79,17 +76,16 @@ public class SearchServiceRepository implements ISearchServiceRepository {
                 // write new vacancies with TYPE_NEW;
                 writeVacanciesToFavNewRecTable(Tables.SearchSites.TYPE_NEW, newVacancies);
             }
+
+            // updating previous vacancies
+            updateVacancies(request, allVacancies);
         } else {
             // all vacancies are new
             writeVacanciesToFavNewRecTable(Tables.SearchSites.TYPE_NEW, allVacancies);
             newVacanciesCount = allVacancies.size();
-        }
-
-        if (newVacanciesCount != 0) {
-            // clear previous vacancies
-            clearVacanciesFromSitesTable(request);
-            // write all vacancies to corresponding table
+            // writing all vacancies to corresponding table
             writeVacanciesToSitesTable(allVacancies);
+
         }
 
         long updatingTime = System.currentTimeMillis();
@@ -112,35 +108,97 @@ public class SearchServiceRepository implements ISearchServiceRepository {
     }
 
     @NonNull
-    private List<VacancyContainer> getPreviousVacancies(String table, String request) {
+    private List<VacancyContainer> getPreviousVacancies(String table, String request) throws Exception {
         List<VacancyContainer> oldVacancies = new ArrayList<>();
 
         Cursor cursor = db.query(SELECT_ALL_FROM + table + WHERE_ + "'" + request + "'");
         if (cursor.moveToFirst()) {
             do {
-                String type = Db.getString(cursor, Tables.SearchSites.Columns.TYPE);
-                String title = Db.getString(cursor, Tables.SearchSites.Columns.TITLE);
-                String date = Db.getString(cursor, Tables.SearchSites.Columns.DATE);
-                String url = Db.getString(cursor, Tables.SearchSites.Columns.URL);
-
-                VacancyModel vacancy = VacancyModel.builder()
-                        .setRequest(request)
-                        .setTitle(title)
-                        .setDate(date)
-                        .setUrl(url)
-                        .build();
-
-                oldVacancies.add(VacancyContainer.create(vacancy, type));
+                VacancyContainer vacancy = VacancyContainer.MAPPER.apply(cursor);
+                oldVacancies.add(vacancy);
             } while (cursor.moveToNext());
         }
         cursor.close();
         return oldVacancies;
     }
 
-    private void clearVacanciesFromSitesTable(String request) {
-        Timber.d("\nclearing all vacancies with request=%s", request);
-        db.delete(Tables.SearchSites.TABLE_ALL_SITES, Tables.SearchSites.Columns.REQUEST
-                + " = '" + request + "'");
+    // Clears only vacancies from those resources that we've had result.
+//    private void updateVacancies(String request, List<VacancyContainer> allVacancies) {
+//        // 5 - number of searching sites
+//        for (String type : Tables.SearchSites.TYPE_SITES) {
+//            boolean isTypeInVacancies = false;
+//
+//            for (VacancyContainer vc : allVacancies) {
+//                if (vc.getType().equals(type)) {
+//                    isTypeInVacancies = true;
+//                    break;
+//                }
+//            }
+//
+//            if (isTypeInVacancies) {
+//                // clears vacancies with proper type
+//                Timber.d("\nclearing all vacancies with request=%s and type=%s", request, type);
+//                db.delete(Tables.SearchSites.TABLE_ALL_SITES, Tables.SearchSites.Columns.REQUEST
+//                        + " = '" + request + "' AND "
+//                        + Tables.SearchSites.Columns.TYPE + " ='" + type + "'");
+//            }
+//        }
+//    }
+    private void updateVacancies(String request, List<VacancyContainer> allVacancies) throws Exception {
+        // finding the types we have in allVacancies.
+        // In case we didn't receive response from proper server
+        // we don't need to remove that vacancies (because next time
+        // those vacancy will be new. We don't want to notify user
+        // about this "old" new vacancies)
+        Set<String> siteTypes = new HashSet<>();
+        for (VacancyContainer vc : allVacancies) {
+            siteTypes.add(vc.getType());
+        }
+
+        for (String type : siteTypes) {
+            List<VacancyContainer> oldVacancies = getVacancies(request, type);
+            for (VacancyContainer vc : oldVacancies) {
+                if (allVacancies.contains(vc)) {
+                    // update only date in vacancy
+                    VacancyContainer newVacancies = allVacancies.get(allVacancies.indexOf(vc));
+                    updateVacancyWithDate(vc, newVacancies.getVacancy().date());
+                } else {
+                    // remove old vacancies
+                    deleteVacancy(vc);
+                }
+            }
+        }
+    }
+
+    private void updateVacancyWithDate(VacancyContainer vc, String date) {
+        db.execute("UPDATE " + Tables.SearchSites.TABLE_ALL_SITES
+                + " SET " + Tables.SearchSites.Columns.DATE
+                + " ='" + date + "' WHERE " + Tables.SearchSites.Columns.URL
+                + " ='" + vc.getVacancy().url() + "'");
+    }
+
+    private void deleteVacancy(VacancyContainer vc) {
+        Timber.d("Removing old vacancy=", vc);
+        db.delete(Tables.SearchSites.TABLE_ALL_SITES, " WHERE "
+                + Tables.SearchSites.Columns.URL + " ='" + vc.getVacancy().url() + "'");
+    }
+
+    private List<VacancyContainer> getVacancies(String request, String type) throws Exception {
+        Cursor cursor = db.query("SELECT * FROM " + Tables.SearchSites.TABLE_ALL_SITES
+                + " WHERE " + Tables.SearchSites.Columns.REQUEST + " ='"
+                + request + "' AND " + Tables.SearchSites.Columns.TYPE + " ='"
+                + type + "'");
+
+        List<VacancyContainer> oldVacancies = new ArrayList<>();
+        if (cursor.moveToFirst()) {
+            do {
+                VacancyContainer vacancy = VacancyContainer.MAPPER.apply(cursor);
+                oldVacancies.add(vacancy);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+
+        return oldVacancies;
     }
 
     private void clearVacanciesFromFavNewRecTable(String type, String request) {

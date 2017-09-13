@@ -25,7 +25,7 @@ public class AlarmClockUtil {
 
     @Inject IRepeatingSearchRepository repository;
 
-    private static final long INTERVAL = 1000 * 60 * 5; // 5 minutes AlarmManager.INTERVAL_HOUR;
+    private static final long INTERVAL = AlarmManager.INTERVAL_HOUR;
     private AlarmManager alarmManager;
     private PendingIntent alarmIntent;
 
@@ -35,8 +35,6 @@ public class AlarmClockUtil {
                 .dbModule(new DbModule(context.getApplicationContext()))
                 .build()
                 .inject(this);
-
-        Log.e("999", "requestCount=" + repository.getRequestCount());
 
         alarmManager = (AlarmManager) context.getApplicationContext()
                 .getSystemService(Context.ALARM_SERVICE);

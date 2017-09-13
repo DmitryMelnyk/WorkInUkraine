@@ -77,6 +77,7 @@ public class ParserWorkUa {
                     .setRequest(request)
                     .setTitle(title)
                     .setUrl(url)
+                    .setIsFavorite(false)
                     .build();
 
             vacancies.add(VacancyContainer.create(vacancyModel, Tables.SearchSites.TYPE_SITES[4]));

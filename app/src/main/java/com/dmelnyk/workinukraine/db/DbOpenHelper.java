@@ -41,7 +41,8 @@ public class DbOpenHelper extends SQLiteOpenHelper {
                 + Tables.SearchSites.Columns.TYPE + " TEXT NOT NULL, "
                 + Tables.SearchSites.Columns.TITLE + " TEXT NOT NULL, "
                 + Tables.SearchSites.Columns.DATE + " TEXT, "
-                + Tables.SearchSites.Columns.URL + " TEXT NOT NULL);";
+                + Tables.SearchSites.Columns.URL + " TEXT NOT NULL, "
+                + Tables.SearchSites.Columns.IS_FAVORITE + " INTEGER NOT NULL);";
     }
 
     @Override

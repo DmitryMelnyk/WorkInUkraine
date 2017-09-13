@@ -54,7 +54,7 @@ public class VacancyInteractor implements IVacancyInteractor {
             case VacancyCardViewAdapter.MENU_REMOVE:
                 return repository.removeFromFavorites(vacancy);
             case VacancyCardViewAdapter.MENU_SAVE:
-                return repository.saveToFavorite(vacancy);
+                return repository.addToFavorite(vacancy);
         }
 
         return Completable.error(new Throwable("Error happened!"));

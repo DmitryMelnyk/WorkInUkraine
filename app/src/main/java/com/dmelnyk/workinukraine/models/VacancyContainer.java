@@ -1,6 +1,7 @@
 package com.dmelnyk.workinukraine.models;
 
 import android.database.Cursor;
+import android.os.Parcelable;
 
 import com.dmelnyk.workinukraine.db.Db;
 import com.dmelnyk.workinukraine.db.Tables;
@@ -14,7 +15,7 @@ import io.reactivex.functions.Function;
  */
 
 @AutoValue
-public abstract class VacancyContainer  {
+public abstract class VacancyContainer implements Parcelable {
     public abstract VacancyModel getVacancy();
     public abstract String getType();
 
@@ -29,12 +30,14 @@ public abstract class VacancyContainer  {
             String title = Db.getString(cursor, Tables.SearchSites.Columns.TITLE);
             String date = Db.getString(cursor, Tables.SearchSites.Columns.DATE);
             String url = Db.getString(cursor, Tables.SearchSites.Columns.URL);
+            boolean isFavorite = Db.getBoolean(cursor, Tables.SearchSites.Columns.IS_FAVORITE);
 
             VacancyModel vacancy = VacancyModel.builder()
                     .setRequest(request)
                     .setTitle(title)
                     .setDate(date)
                     .setUrl(url)
+                    .setIsFavorite(isFavorite)
                     .build();
 
             return create(vacancy, type);

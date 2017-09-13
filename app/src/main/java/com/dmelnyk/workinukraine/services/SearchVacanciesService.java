@@ -196,11 +196,10 @@ public class SearchVacanciesService extends IntentService {
 
     private volatile int totalVacanciesCount = 0;
 
-
     private volatile Map<String, Integer> count = new HashMap<>();
     private volatile Map<String, List<VacancyContainer>> cache = new HashMap<>();
 
-    private void saveDataToMap(String request, List<VacancyContainer> list) {
+    private void saveDataToMap(String request, List<VacancyContainer> list) throws Exception {
         totalVacanciesCount += list.size();
 
         if (count.containsKey(request)) {

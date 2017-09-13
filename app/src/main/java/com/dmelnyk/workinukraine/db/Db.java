@@ -20,6 +20,11 @@ public final class Db {
         return cursor.getString(cursor.getColumnIndexOrThrow(columnName));
     }
 
+    public static boolean getBoolean(Cursor cursor, String columnName) {
+        return cursor.getInt(cursor.getColumnIndexOrThrow(columnName)) == 1
+                ? true : false;
+    }
+
     private Db() {
         throw new AssertionError("This class has no instance!");
     }

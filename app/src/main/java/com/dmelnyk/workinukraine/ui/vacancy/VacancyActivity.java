@@ -91,6 +91,7 @@ public class VacancyActivity extends BaseAnimationActivity implements
         setContentView(R.layout.activity_vacancy);
         ButterKnife.bind(this);
 
+        // sets result to update
         setResult(RESULT_OK);
         // Makes status bar transparent
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -188,7 +189,7 @@ public class VacancyActivity extends BaseAnimationActivity implements
     public void onFragmentInteractionItemClicked(VacancyModel vacancyModel, List<VacancyModel> vacancies) {
         // Activity with multiple vacancy
         Intent vacancyContainerIntent = VacancyContainerActivity.getIntent(this, vacancies, vacancyModel);
-        startActivity(vacancyContainerIntent);
+        startActivityForResult(vacancyContainerIntent, WEBVIEW_REQUEST_CODE);
     }
 
     @Override
@@ -296,7 +297,7 @@ public class VacancyActivity extends BaseAnimationActivity implements
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 //        super.onActivityResult(requestCode, resultCode, data);
-        Log.e("888", "onActivityResult in VacancyActivity");
+        Log.e("999", "onActivityResult in VacancyActivity");
         if (requestCode == WEBVIEW_REQUEST_CODE) {
             switch (resultCode) {
                 case WebViewActivity.RESULT_ADD_TO_FAVORITES:

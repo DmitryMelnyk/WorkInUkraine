@@ -15,51 +15,25 @@ public class DbItems {
         VacancyModel vacancy = vacancyContainer.getVacancy();
         String siteType = vacancyContainer.getType();
 
-        final ContentValues values = new ContentValues();
+        final ContentValues values = getVacancyContainerContentValue(vacancy);
         values.put(Tables.SearchSites.Columns.TYPE, siteType);
-        values.put(Tables.SearchSites.Columns.REQUEST, vacancy.request());
-        values.put(Tables.SearchSites.Columns.TITLE, vacancy.title());
-        values.put(Tables.SearchSites.Columns.DATE, vacancy.date());
-        values.put(Tables.SearchSites.Columns.URL, vacancy.url());
-
         return values;
     }
 
-    public static ContentValues createVacancyContainerFavNewRecItem(
-            String type, VacancyContainer vacancyContainer) {
+    public static ContentValues createVacancyContainerFavNewRecItem(String newType,
+            VacancyContainer vacancyContainer) {
         VacancyModel vacancy = vacancyContainer.getVacancy();
 
-        final ContentValues values = new ContentValues();
-        values.put(Tables.SearchSites.Columns.TYPE, type);
-        values.put(Tables.SearchSites.Columns.REQUEST, vacancy.request());
-        values.put(Tables.SearchSites.Columns.TITLE, vacancy.title());
-        values.put(Tables.SearchSites.Columns.DATE, vacancy.date());
-        values.put(Tables.SearchSites.Columns.URL, vacancy.url());
-
-        return values;
+        return createVacancyContainerFavNewRecItem(newType, vacancyContainer.getVacancy());
     }
 
     public static ContentValues createVacancyContainerFavNewRecItem(
             String type, VacancyModel vacancy) {
 
-        final ContentValues values = new ContentValues();
-        values.put(Tables.SearchSites.Columns.TYPE, type);
-        values.put(Tables.SearchSites.Columns.REQUEST, vacancy.request());
-        values.put(Tables.SearchSites.Columns.TITLE, vacancy.title());
-        values.put(Tables.SearchSites.Columns.DATE, vacancy.date());
-        values.put(Tables.SearchSites.Columns.URL, vacancy.url());
+        final ContentValues value = getVacancyContainerContentValue(vacancy);
+        value.put(Tables.SearchSites.Columns.TYPE, type);
 
-        return values;
-    }
-
-    public static ContentValues createVacancyItem(VacancyModel vacancy) {
-        final ContentValues values = new ContentValues();
-        values.put(Tables.SearchSites.Columns.REQUEST, vacancy.request());
-        values.put(Tables.SearchSites.Columns.TITLE, vacancy.title());
-        values.put(Tables.SearchSites.Columns.DATE, vacancy.date());
-        values.put(Tables.SearchSites.Columns.URL, vacancy.url());
-
-        return values;
+        return value;
     }
 
     public static ContentValues createRequestItem(
@@ -69,6 +43,17 @@ public class DbItems {
         values.put(Tables.SearchRequest.Columns.VACANCIES, vacanciesCount);
         values.put(Tables.SearchRequest.Columns.NEW_VACANCIES, newVacanciesCount);
         values.put(Tables.SearchRequest.Columns.UPDATED, updated);
+
+        return values;
+    }
+
+    private static ContentValues getVacancyContainerContentValue(VacancyModel vacancy) {
+        final ContentValues values = new ContentValues();
+        values.put(Tables.SearchSites.Columns.REQUEST, vacancy.request());
+        values.put(Tables.SearchSites.Columns.TITLE, vacancy.title());
+        values.put(Tables.SearchSites.Columns.DATE, vacancy.date());
+        values.put(Tables.SearchSites.Columns.URL, vacancy.url());
+        values.put(Tables.SearchSites.Columns.IS_FAVORITE, vacancy.isFavorite());
 
         return values;
     }

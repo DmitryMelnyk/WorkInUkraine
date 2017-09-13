@@ -108,7 +108,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 
         Notification notification = new NotificationCompat.Builder(mContext)
                 .setContentTitle(mContext.getString(R.string.app_name))
-                .setContentText("Found vacancies=" + vacanciesFound)
+                .setContentText("Найдено новых вакансий: " + vacanciesFound)
                 .setSmallIcon(R.drawable.ic_work_black_24dp)
                 .setLargeIcon(largeExpandedAvatar)
                 .setContentIntent(createPendingIntent(mContext))

@@ -24,7 +24,7 @@ public interface IVacancyRepository {
      */
     Completable removeFromFavorites(VacancyModel vacancy);
 
-    Completable saveToFavorite(VacancyModel vacancy);
+    Completable addToFavorite(VacancyModel vacancy);
 
     Observable<Map<String, Map<String, List<VacancyModel>>>> getAllVacancies(String request);
 

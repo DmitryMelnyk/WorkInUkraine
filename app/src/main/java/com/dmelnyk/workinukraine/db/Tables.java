@@ -39,6 +39,7 @@ public class Tables {
             public static final String DATE = "date";
             public static final String URL = "urlCode";
             public static final String TYPE = "type";
+            public static final String IS_FAVORITE = "favorite";
         }
     }
 }

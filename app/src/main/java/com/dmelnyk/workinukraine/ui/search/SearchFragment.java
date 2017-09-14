@@ -29,7 +29,7 @@ import com.dmelnyk.workinukraine.ui.dialogs.request.DialogRequest;
 import com.dmelnyk.workinukraine.ui.search.Contract.ISearchPresenter;
 import com.dmelnyk.workinukraine.ui.search.di.DaggerSearchComponent;
 import com.dmelnyk.workinukraine.ui.search.di.SearchModule;
-import com.dmelnyk.workinukraine.ui.vacancy.VacancyActivity;
+import com.dmelnyk.workinukraine.ui.vacancy_list.VacancyActivity;
 import com.dmelnyk.workinukraine.utils.BaseFragment;
 
 import java.lang.reflect.Field;

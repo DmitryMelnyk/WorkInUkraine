@@ -42,6 +42,7 @@ public abstract class VacancyModel implements Parcelable {
             String date = Db.getString(cursor, Tables.SearchSites.Columns.DATE);
             String url = Db.getString(cursor, Tables.SearchSites.Columns.URL);
             boolean isFavorite = Db.getBoolean(cursor, Tables.SearchSites.Columns.IS_FAVORITE);
+
             return VacancyModel.builder()
                     .setRequest(request)
                     .setTitle(title)

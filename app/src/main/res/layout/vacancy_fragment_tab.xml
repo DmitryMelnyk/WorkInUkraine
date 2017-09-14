@@ -7,7 +7,7 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     >
 
-    <com.dmelnyk.workinukraine.ui.vacancy.core.CenteredTabLayout
+    <com.dmelnyk.workinukraine.ui.vacancy_list.core.CenteredTabLayout
         android:id="@+id/tab_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

@@ -51,8 +51,6 @@ public class SearchServiceRepository implements ISearchServiceRepository {
     @Override
     public void saveVacancies(List<VacancyContainer> allVacancies) throws Exception {
         Timber.d("Found %d vacancies", allVacancies.size());
-        // don't do any changes if no vacancies has found
-//        if (allVacancies.isEmpty()) return
 
         String request = allVacancies.get(0).getVacancy().request();
         // Counting previous new vacancies
@@ -122,28 +120,6 @@ public class SearchServiceRepository implements ISearchServiceRepository {
         return oldVacancies;
     }
 
-    // Clears only vacancies from those resources that we've had result.
-//    private void updateVacancies(String request, List<VacancyContainer> allVacancies) {
-//        // 5 - number of searching sites
-//        for (String type : Tables.SearchSites.TYPE_SITES) {
-//            boolean isTypeInVacancies = false;
-//
-//            for (VacancyContainer vc : allVacancies) {
-//                if (vc.getType().equals(type)) {
-//                    isTypeInVacancies = true;
-//                    break;
-//                }
-//            }
-//
-//            if (isTypeInVacancies) {
-//                // clears vacancies with proper type
-//                Timber.d("\nclearing all vacancies with request=%s and type=%s", request, type);
-//                db.delete(Tables.SearchSites.TABLE_ALL_SITES, Tables.SearchSites.Columns.REQUEST
-//                        + " = '" + request + "' AND "
-//                        + Tables.SearchSites.Columns.TYPE + " ='" + type + "'");
-//            }
-//        }
-//    }
     private void updateVacancies(String request, List<VacancyContainer> allVacancies) throws Exception {
         // finding the types we have in allVacancies.
         // In case we didn't receive response from proper server
@@ -179,8 +155,8 @@ public class SearchServiceRepository implements ISearchServiceRepository {
 
     private void deleteVacancy(VacancyContainer vc) {
         Timber.d("Removing old vacancy=", vc);
-        db.delete(Tables.SearchSites.TABLE_ALL_SITES, " WHERE "
-                + Tables.SearchSites.Columns.URL + " ='" + vc.getVacancy().url() + "'");
+        db.delete(Tables.SearchSites.TABLE_ALL_SITES, Tables.SearchSites.Columns.URL
+                + " ='" + vc.getVacancy().url() + "'");
     }
 
     private List<VacancyContainer> getVacancies(String request, String type) throws Exception {

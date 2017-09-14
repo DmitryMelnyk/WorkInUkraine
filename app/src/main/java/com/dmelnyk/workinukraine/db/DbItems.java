@@ -20,6 +20,17 @@ public class DbItems {
         return values;
     }
 
+    public static ContentValues createVacancyItem(boolean isFavorite, VacancyModel vacancy) {
+        final ContentValues values = new ContentValues();
+        values.put(Tables.SearchSites.Columns.REQUEST, vacancy.request());
+        values.put(Tables.SearchSites.Columns.TITLE, vacancy.title());
+        values.put(Tables.SearchSites.Columns.DATE, vacancy.date());
+        values.put(Tables.SearchSites.Columns.URL, vacancy.url());
+        values.put(Tables.SearchSites.Columns.IS_FAVORITE, isFavorite);
+
+        return values;
+    }
+
     public static ContentValues createVacancyContainerFavNewRecItem(String newType,
             VacancyContainer vacancyContainer) {
         VacancyModel vacancy = vacancyContainer.getVacancy();

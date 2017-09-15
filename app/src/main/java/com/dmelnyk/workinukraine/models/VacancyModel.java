@@ -19,7 +19,9 @@ public abstract class VacancyModel implements Parcelable {
     public abstract String title();
     public abstract String date();
     public abstract String url();
+    public abstract String site();
     public abstract boolean isFavorite();
+    public abstract int timeStatus(); // 1 - new, 0 - recent, -1 - old
 
     public static Builder builder() {
         return new AutoValue_VacancyModel.Builder();
@@ -31,7 +33,9 @@ public abstract class VacancyModel implements Parcelable {
         public abstract Builder setTitle(String title);
         public abstract Builder setDate(String date);
         public abstract Builder setUrl(String url);
+        public abstract Builder setSite(String site);
         public abstract Builder setIsFavorite(boolean isFavorite);
+        public abstract Builder setTimeStatus(int timeStatus);
         public abstract VacancyModel build();
     }
 
@@ -41,13 +45,18 @@ public abstract class VacancyModel implements Parcelable {
             String title = Db.getString(cursor, Tables.SearchSites.Columns.TITLE);
             String date = Db.getString(cursor, Tables.SearchSites.Columns.DATE);
             String url = Db.getString(cursor, Tables.SearchSites.Columns.URL);
+            String site = Db.getString(cursor, Tables.SearchSites.Columns.TYPE);
             boolean isFavorite = Db.getBoolean(cursor, Tables.SearchSites.Columns.IS_FAVORITE);
+            int timeStatus = Db.getInt(cursor, Tables.SearchSites.Columns.IS_NEW);
+
             return VacancyModel.builder()
-                    .setRequest(request)
-                    .setTitle(title)
                     .setDate(date)
-                    .setUrl(url)
                     .setIsFavorite(isFavorite)
+                    .setRequest(request)
+                    .setSite(site)
+                    .setTimeStatus(timeStatus)
+                    .setTitle(title)
+                    .setUrl(url)
                     .build();
         }
     };

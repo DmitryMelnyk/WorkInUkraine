@@ -90,6 +90,13 @@
         <item>Избранные</item>
     </string-array>
 
+    <string-array name="tab_titles_with_new_and_recent">
+        <item>Все</item>
+        <item>Новые</item>
+        <item>Недавние</item>
+        <item>Избранные</item>
+    </string-array>
+
     <string-array name="tab_titles_with_recent">
         <item>Все</item>
         <item>Недавние</item>

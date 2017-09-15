@@ -34,7 +34,6 @@ public class SearchRepository implements ISearchRepository {
         try {
             db.delete(Tables.SearchRequest.TABLE_REQUEST, "");
             db.delete(Tables.SearchSites.TABLE_ALL_SITES, "");
-            db.delete(Tables.SearchSites.TABLE_FAV_NEW_REC, "");
         } catch (Exception e) {
             Log.e("555", e.getMessage());
             return Completable.error(e);
@@ -54,7 +53,6 @@ public class SearchRepository implements ISearchRepository {
     public void removeDataFromTables(String request) {
         Timber.d("\nRemoving data with request=%s from all tables", request);
         db.delete(Tables.SearchSites.TABLE_ALL_SITES, Tables.SearchSites.Columns.REQUEST + " = '" + request +"'");
-        db.delete(Tables.SearchSites.TABLE_FAV_NEW_REC, Tables.SearchSites.Columns.REQUEST + " = '" + request +"'");
     }
 
     @Override

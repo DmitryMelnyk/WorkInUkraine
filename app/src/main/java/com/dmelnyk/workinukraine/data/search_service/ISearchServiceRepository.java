@@ -1,7 +1,7 @@
 package com.dmelnyk.workinukraine.data.search_service;
 
 import com.dmelnyk.workinukraine.models.RequestModel;
-import com.dmelnyk.workinukraine.models.VacancyContainer;
+import com.dmelnyk.workinukraine.models.VacancyModel;
 
 import java.util.List;
 
@@ -22,7 +22,7 @@ public interface ISearchServiceRepository {
      * Saves vacancies from all websites
      * @param stringListMap
      */
-    void saveVacancies(List<VacancyContainer> stringListMap) throws Exception;
+    void saveVacancies(List<VacancyModel> stringListMap) throws Exception;
 
     /**
      * Returns list of RequestModel items

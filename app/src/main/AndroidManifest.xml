@@ -35,16 +35,16 @@
         <service android:name=".services.SearchVacanciesService" />
 
         <activity
-            android:name=".ui.vacancy.VacancyActivity"
+            android:name=".ui.vacancy_list.VacancyActivity"
             android:label="@string/title_activity_vacancy"
             android:theme="@style/VacancyTheme" />
         <activity
-            android:name=".ui.vacancy_webview.WebViewActivity"
+            android:name=".ui.vacancy_viewer.WebViewActivity"
             android:configChanges="orientation|screenSize" />
 
 
         <activity
-        android:name=".ui.vacancy_webview.VacancyContainerActivity"
+        android:name=".ui.vacancy_viewer.VacancyViewerActivity"
         android:configChanges="orientation|screenSize" />
         <activity android:name=".ui.filter.FilterActivity"></activity>
 

@@ -2,7 +2,6 @@ package com.dmelnyk.workinukraine.db;
 
 import android.content.ContentValues;
 
-import com.dmelnyk.workinukraine.models.VacancyContainer;
 import com.dmelnyk.workinukraine.models.VacancyModel;
 
 /**
@@ -11,16 +10,7 @@ import com.dmelnyk.workinukraine.models.VacancyModel;
 
 public class DbItems {
 
-    public static ContentValues createVacancyContainerAllItem(VacancyContainer vacancyContainer) {
-        VacancyModel vacancy = vacancyContainer.getVacancy();
-        String siteType = vacancyContainer.getType();
-
-        final ContentValues values = getVacancyContainerContentValue(vacancy);
-        values.put(Tables.SearchSites.Columns.TYPE, siteType);
-        return values;
-    }
-
-    public static ContentValues createVacancyItem(boolean isFavorite, VacancyModel vacancy) {
+    public static ContentValues createVacancyFavoriteItem(boolean isFavorite, VacancyModel vacancy) {
         final ContentValues values = new ContentValues();
         values.put(Tables.SearchSites.Columns.REQUEST, vacancy.request());
         values.put(Tables.SearchSites.Columns.TITLE, vacancy.title());
@@ -31,20 +21,17 @@ public class DbItems {
         return values;
     }
 
-    public static ContentValues createVacancyContainerFavNewRecItem(String newType,
-            VacancyContainer vacancyContainer) {
-        VacancyModel vacancy = vacancyContainer.getVacancy();
+    public static ContentValues createVacancyNewItem(boolean isNew, VacancyModel vacancy) {
+        final ContentValues values = new ContentValues();
+        values.put(Tables.SearchSites.Columns.DATE, vacancy.date());
+        values.put(Tables.SearchSites.Columns.IS_FAVORITE, vacancy.isFavorite());
+        values.put(Tables.SearchSites.Columns.IS_NEW, isNew);
+        values.put(Tables.SearchSites.Columns.REQUEST, vacancy.request());
+        values.put(Tables.SearchSites.Columns.TITLE, vacancy.title());
+        values.put(Tables.SearchSites.Columns.TYPE, vacancy.site());
+        values.put(Tables.SearchSites.Columns.URL, vacancy.url());
 
-        return createVacancyContainerFavNewRecItem(newType, vacancyContainer.getVacancy());
-    }
-
-    public static ContentValues createVacancyContainerFavNewRecItem(
-            String type, VacancyModel vacancy) {
-
-        final ContentValues value = getVacancyContainerContentValue(vacancy);
-        value.put(Tables.SearchSites.Columns.TYPE, type);
-
-        return value;
+        return values;
     }
 
     public static ContentValues createRequestItem(
@@ -54,17 +41,6 @@ public class DbItems {
         values.put(Tables.SearchRequest.Columns.VACANCIES, vacanciesCount);
         values.put(Tables.SearchRequest.Columns.NEW_VACANCIES, newVacanciesCount);
         values.put(Tables.SearchRequest.Columns.UPDATED, updated);
-
-        return values;
-    }
-
-    private static ContentValues getVacancyContainerContentValue(VacancyModel vacancy) {
-        final ContentValues values = new ContentValues();
-        values.put(Tables.SearchSites.Columns.REQUEST, vacancy.request());
-        values.put(Tables.SearchSites.Columns.TITLE, vacancy.title());
-        values.put(Tables.SearchSites.Columns.DATE, vacancy.date());
-        values.put(Tables.SearchSites.Columns.URL, vacancy.url());
-        values.put(Tables.SearchSites.Columns.IS_FAVORITE, vacancy.isFavorite());
 
         return values;
     }

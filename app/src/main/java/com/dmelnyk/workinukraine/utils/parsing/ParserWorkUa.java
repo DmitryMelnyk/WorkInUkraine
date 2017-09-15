@@ -5,7 +5,6 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.dmelnyk.workinukraine.application.WorkInUaApplication;
-import com.dmelnyk.workinukraine.models.VacancyContainer;
 import com.dmelnyk.workinukraine.models.VacancyModel;
 import com.dmelnyk.workinukraine.db.Tables;
 import com.dmelnyk.workinukraine.utils.CityUtils;
@@ -18,6 +17,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -46,12 +46,12 @@ public class ParserWorkUa {
      * @return list of VacancyModule's or empty ArrayList
      */
     @NonNull
-    public ArrayList<VacancyContainer> getJobs(String request) {
+    public List<VacancyModel> getJobs(String request) {
         String jobRequest = request.split(" / ")[0];
         String city = request.split(" / ")[1];
         Log.d(TAG, "started getJobs(). City = " + city + " request = " + jobRequest);
 
-        ArrayList<VacancyContainer> vacancies = new ArrayList<>();
+        List<VacancyModel> vacancies = new ArrayList<>();
 
         String cityId = cities.getCityId(CityUtils.SITE.WORKUA, city);
         String correctedRequest = netUtils.replaceSpacesWithPlus(jobRequest);
@@ -74,13 +74,15 @@ public class ParserWorkUa {
 
             VacancyModel vacancyModel = VacancyModel.builder()
                     .setDate(date)
+                    .setIsFavorite(false)
+                    .setTimeStatus(1) // new
                     .setRequest(request)
                     .setTitle(title)
+                    .setSite(Tables.SearchSites.TYPE_SITES[4])
                     .setUrl(url)
-                    .setIsFavorite(false)
                     .build();
 
-            vacancies.add(VacancyContainer.create(vacancyModel, Tables.SearchSites.TYPE_SITES[4]));
+            vacancies.add(vacancyModel);
         }
         Log.d(TAG, "found " + vacancies.size() + " vacancies");
 

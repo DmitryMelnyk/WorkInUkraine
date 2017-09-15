@@ -29,7 +29,7 @@ public class VacancyPresenter implements Contract.IVacancyPresenter {
     private Disposable vacanciesDisposable;
     private Disposable disposableFavorites;
 
-    private static Map<String, Map<String, List<VacancyModel>>> sDataCache;
+    private static Map<String, List<VacancyModel>> sDataCache;
     private static String sError;
     private static boolean sIsDisplayed;
     private static String mRequest;
@@ -69,20 +69,14 @@ public class VacancyPresenter implements Contract.IVacancyPresenter {
         this.view = view;
     }
 
-    private void displayData(Map<String, Map<String, List<VacancyModel>>> vacanciesMap) {
-        int[] tabVacancyCount = new int[3];
-        String[] tabTitles;
-        boolean buttonTubWithNewIcon;
+    private void displayData(Map<String, List<VacancyModel>> vacanciesMap) {
+        Map<String, Integer> tabVacancyCount = new HashMap<>();
+        String[] tabTitles = null;
+        int buttonTabType = 0; // 1 - only new vacancies, 2 - new and recent, 3 - only recent
 
         // Counting vacancies count in all tab sites
-        int siteTabsCount = 0;
-        // Counts all vacancies
-        for (Map.Entry<String, List<VacancyModel>> vacancyList :
-                vacanciesMap.get(IVacancyListInteractor.DATA_TAB_SITES).entrySet()) {
-            siteTabsCount += vacancyList.getValue().size();
-        }
-
-        tabVacancyCount[0] = siteTabsCount;
+        int siteTabsCount = vacanciesMap.get(IVacancyListInteractor.DATA_ALL).size();
+        // Exit from activity if no vacancies found
         if (siteTabsCount == 0) {
             view.exitActivity();
             clear();
@@ -90,25 +84,32 @@ public class VacancyPresenter implements Contract.IVacancyPresenter {
         }
 
         // Counts vacancies
-        int newVacanciesCount = vacanciesMap.get(IVacancyListInteractor.DATA_OTHER_TABS)
-                .get(IVacancyListInteractor.VACANCIES_NEW).size();
-        int recentVacanciesCount = vacanciesMap.get(IVacancyListInteractor.DATA_OTHER_TABS)
-                .get(IVacancyListInteractor.VACANCIES_RECENT).size();
-        int favoriteVacanciesCount = vacanciesMap.get(IVacancyListInteractor.DATA_OTHER_TABS)
-                .get(IVacancyListInteractor.VACANCIES_FAVORITE).size();
+        int newVacanciesCount = vacanciesMap.get(IVacancyListInteractor.DATA_NEW).size();
+        int recentVacanciesCount = vacanciesMap.get(IVacancyListInteractor.DATA_RECENT).size();
+        int favoriteVacanciesCount = vacanciesMap.get(IVacancyListInteractor.DATA_FAVORITE).size();
 
-        if (newVacanciesCount != 0) {
+        tabVacancyCount.put(IVacancyListInteractor.DATA_ALL, siteTabsCount);
+        tabVacancyCount.put(IVacancyListInteractor.DATA_NEW, newVacanciesCount);
+        tabVacancyCount.put(IVacancyListInteractor.DATA_RECENT, recentVacanciesCount);
+        tabVacancyCount.put(IVacancyListInteractor.DATA_FAVORITE, favoriteVacanciesCount);
+
+
+        if (newVacanciesCount != 0 && recentVacanciesCount == 0) {
             tabTitles = interactor.getTitles(IVacancyListInteractor.TITLE_NEW);
-            tabVacancyCount[1] = newVacanciesCount;
-            buttonTubWithNewIcon = true;
-        } else {
-            tabTitles = interactor.getTitles(IVacancyListInteractor.TITLE_RECENT);
-            tabVacancyCount[1] = recentVacanciesCount;
-            buttonTubWithNewIcon = false;
+            buttonTabType = 1;
         }
 
-        tabVacancyCount[2] = favoriteVacanciesCount;
-        view.displayTabFragment(tabTitles, tabVacancyCount, buttonTubWithNewIcon, vacanciesMap);
+        if (newVacanciesCount != 0 && recentVacanciesCount != 0) {
+            tabTitles = interactor.getTitles(IVacancyListInteractor.TITLE_NEW_AND_RECENT);
+            buttonTabType = 2;
+        }
+
+        if (newVacanciesCount == 0) {
+            tabTitles = interactor.getTitles(IVacancyListInteractor.TITLE_RECENT);
+            buttonTabType = 3;
+        }
+
+        view.displayTabFragment(tabTitles, tabVacancyCount, buttonTabType, vacanciesMap);
     }
 
     private void getAllVacancies(String request) {
@@ -133,23 +134,16 @@ public class VacancyPresenter implements Contract.IVacancyPresenter {
     }
 
     @Override
-    public boolean isVacancyFavorite(VacancyModel vacancy) {
-        return sDataCache.get(IVacancyListInteractor.DATA_OTHER_TABS)
-                .get(IVacancyListInteractor.VACANCIES_FAVORITE)
-                .contains(vacancy);
-    }
-
-    @Override
     public void unbindView() {
         view = null;
         sIsDisplayed = false;
         // TODO: in bindView restore listeners
-//        if (saveOrRemoveDisposable != null) {
-//            saveOrRemoveDisposable.dispose();
-//        }
-//        if (vacanciesDisposable != null) {
-//            vacanciesDisposable.dispose();
-//        }
+        if (saveOrRemoveDisposable != null) {
+            saveOrRemoveDisposable.dispose();
+        }
+        if (vacanciesDisposable != null) {
+            vacanciesDisposable.dispose();
+        }
     }
 
     @Override
@@ -171,7 +165,7 @@ public class VacancyPresenter implements Contract.IVacancyPresenter {
 
     // This method will update favorites after adding/removing vacancies in proper db automatically
     private void updateFavorite() {
-        disposableFavorites = interactor.getFavoriteVacancies(mRequest, IVacancyListInteractor.VACANCIES_FAVORITE)
+        disposableFavorites = interactor.getFavoriteVacancies(mRequest)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(vacancies -> {

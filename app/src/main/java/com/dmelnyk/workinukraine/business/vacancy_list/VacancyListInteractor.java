@@ -28,23 +28,27 @@ public class VacancyListInteractor implements IVacancyListInteractor {
     }
 
     @Override
-    public Observable<Map<String, Map<String, List<VacancyModel>>>> getAllVacancies(String request) {
+    public Observable<Map<String, List<VacancyModel>>> getAllVacancies(String request) {
         return repository.getAllVacancies(request);
     }
 
     @Override
-    public Observable<List<VacancyModel>> getFavoriteVacancies(String request, @VacancyResource String table) {
-        return repository.getFavoriteVacancies(request, table);
+    public Observable<List<VacancyModel>> getFavoriteVacancies(String request) {
+        return repository.getFavoriteVacancies(request);
     }
 
     @Override
     public String[] getTitles(String type) {
-        if (type.equals(TITLE_NEW)) {
-            return repository.getNewTitles();
-        } else {
-            return repository.getRecentTitles();
+        switch (type) {
+            case TITLE_NEW:
+                return repository.getNewTitles();
+            case TITLE_NEW_AND_RECENT:
+                return repository.getNewAndRecent();
+            case TITLE_RECENT:
+                return repository.getRecentTitles();
         }
 
+        return null;
     }
 
     @Override

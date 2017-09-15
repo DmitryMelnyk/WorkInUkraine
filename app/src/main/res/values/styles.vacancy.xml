@@ -5,4 +5,15 @@
         <item name="android:textAllCaps">false</item>
         <item name="android:textColor">@color/grey</item>
     </style>
+
+    <style name="IconStyle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">@dimen/fragment_toolbar_height</item>
+        <item name="android:padding">10dp</item>
+        <item name="android:layout_centerVertical">true</item>
+    </style>
+
+    <style name="TitleStyle">
+        <item name="android:textSize">10sp</item>
+    </style>
 </resources>

@@ -24,7 +24,7 @@ public class VacancyViewerRepository implements IVacancyViewerRepository {
     @Override
     public Single<Boolean> updateFavorite(VacancyModel vacancy) {
         return Single.fromCallable(() -> {
-            ContentValues updatedVacancy = DbItems.createVacancyItem(!vacancy.isFavorite(), vacancy);
+            ContentValues updatedVacancy = DbItems.createVacancyFavoriteItem(!vacancy.isFavorite(), vacancy);
             db.update(Tables.SearchSites.TABLE_ALL_SITES, updatedVacancy,
                     Tables.SearchSites.Columns.URL + " ='" + vacancy.url() + "'");
             return !vacancy.isFavorite();

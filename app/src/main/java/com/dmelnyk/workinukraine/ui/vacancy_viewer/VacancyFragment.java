@@ -2,9 +2,11 @@ package com.dmelnyk.workinukraine.ui.vacancy_viewer;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +17,11 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.dmelnyk.workinukraine.R;
 import com.dmelnyk.workinukraine.models.VacancyModel;
 
@@ -27,33 +34,30 @@ import butterknife.Unbinder;
  * Created by d264 on 9/8/17.
  */
 
+// TODO: error downloading page: see screenshot in mobile
 public class VacancyFragment extends Fragment {
 
-    @BindView(R.id.favorite_image_view)
-    ImageView mFavoriteImageView;
-
     interface CallbackListener {
-        void onExit();
 
+        void onExit();
         void updateFavoriteVacancy(VacancyModel vacancy);
     }
-
     private VacancyModel mVacancy;
 
     private static final String ARG_VACANCY = "arg_vacancy";
-    @BindView(R.id.title_text_view)
-    TextView mTitleTextView;
-    @BindView(R.id.progress_bar)
-    ProgressBar mBar;
-    @BindView(R.id.web_view)
-    WebView mWebView;
-    @BindView(R.id.menu_image_view)
-    ImageView mMenuImageView;
+
+    @BindView(R.id.site_icon_image_view) ImageView mSiteIconImageView;
+    @BindView(R.id.favorite_image_view) ImageView mFavoriteImageView;
+    @BindView(R.id.title_text_view) TextView mTitleTextView;
+    @BindView(R.id.date_text_view) TextView mDateTextView;
+    @BindView(R.id.progress_bar) ProgressBar mBar;
+    @BindView(R.id.web_view) WebView mWebView;
 
     Unbinder unbinder;
 
-    private String mUrl;
+    private String mDate;
     private String mTitle;
+    private String mUrl;
     private boolean mIsFavorite;
     private CallbackListener mCallback;
 
@@ -84,6 +88,7 @@ public class VacancyFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mVacancy = getArguments().getParcelable(ARG_VACANCY);
+        mDate = mVacancy.date();
         mTitle = mVacancy.title();
         mUrl = mVacancy.url();
         mIsFavorite = mVacancy.isFavorite();
@@ -105,8 +110,9 @@ public class VacancyFragment extends Fragment {
             configWebView();
         }
 
-        // Setting title
+        // Setting title and date
         mTitleTextView.setText(mTitle);
+        mDateTextView.setText(mDate);
         // Configuring progress bar / restoring state
         configProgressBar();
         configFavoriteIcon();
@@ -120,6 +126,9 @@ public class VacancyFragment extends Fragment {
     }
 
     private void configProgressBar() {
+        mBar.getProgressDrawable().setColorFilter(
+                ContextCompat.getColor(getContext(), R.color.colorPrimary),
+                android.graphics.PorterDuff.Mode.SRC_IN);
         mBar.setMax(100);
         if (mWebView.getProgress() == 100) {
             mBar.setVisibility(View.GONE);
@@ -130,7 +139,7 @@ public class VacancyFragment extends Fragment {
     private void configFavoriteIcon() {
         int imageResource = mIsFavorite
                 ? R.drawable.ic_favorite_green
-                : R.drawable.ic_favorite_white;
+                : R.drawable.vacancy_favorite_blue;
 
         mFavoriteImageView.setImageResource(imageResource);
     }
@@ -165,6 +174,8 @@ public class VacancyFragment extends Fragment {
         return new WebChromeClient() {
             @Override
             public void onProgressChanged(WebView view, int newProgress) {
+                if (mBar == null) return;
+
                 mBar.setProgress(newProgress);
                 if (newProgress == 100) {
                     mBar.setVisibility(View.GONE);
@@ -176,21 +187,52 @@ public class VacancyFragment extends Fragment {
                 super.onReceivedTitle(view, title);
                 mTitleTextView.setText(title);
             }
+
+            @Override
+            public void onReceivedTouchIconUrl(WebView view, String url, boolean precomposed) {
+                super.onReceivedTouchIconUrl(view, url, precomposed);
+                Glide.with(getContext()).load(url).listener(new RequestListener<Drawable>() {
+                    @Override
+                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                        mSiteIconImageView.setVisibility(View.VISIBLE);
+                        return false;
+                    }
+                }).into(mSiteIconImageView);
+
+            }
         };
     }
 
-    @OnClick({R.id.favorite_image_view, R.id.menu_image_view})
+    @OnClick({R.id.back_image_view, R.id.favorite_image_view, R.id.share_image_view})
     public void onClick(View view) {
         switch (view.getId()) {
+            case R.id.back_image_view:
+                mCallback.onExit();
+                break;
+
             case R.id.favorite_image_view:
                 mCallback.updateFavoriteVacancy(mVacancy);
                 mIsFavorite = !mIsFavorite;
                 configFavoriteIcon();
                 break;
 
-            case R.id.menu_image_view:
-                // TODO
+            case R.id.share_image_view:
+                createShareIntent(mVacancy);
+                break;
         }
+    }
+
+    public void createShareIntent(VacancyModel vacancy) {
+        Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_SEND);
+        intent.putExtra(Intent.EXTRA_TEXT, vacancy.title() + ": " + vacancy.url());
+        intent.setType("text/plain");
+        startActivity(intent);
     }
 
     @Override

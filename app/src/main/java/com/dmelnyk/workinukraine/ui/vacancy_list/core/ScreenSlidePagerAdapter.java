@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 
 import com.dmelnyk.workinukraine.business.vacancy_list.IVacancyListInteractor;
 import com.dmelnyk.workinukraine.models.VacancyModel;
+import com.dmelnyk.workinukraine.utils.SiteUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,44 +19,57 @@ import java.util.Map;
 
 public class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {
 
-    private static final String TAB_FAVORITE = IVacancyListInteractor.VACANCIES_FAVORITE;
-    private static final String TAB_NEW = IVacancyListInteractor.VACANCIES_NEW;
-    private static final String TAB_RECENT = IVacancyListInteractor.VACANCIES_RECENT;
-
     private final SitesTabFragment mFragment0;
-    private final BaseTabFragment mFragment1;
-    private FavoriteTabFragment mFragment2;
+    private Fragment mFragment1;
+    private Fragment mFragment2;
+    private Fragment mFragment3;
 
     private String[] mTitles;
-    private final Map<String, List<VacancyModel>> mBaseFragmentData;
     private final Map<String, List<VacancyModel>> mSitesData;
+    private final List<VacancyModel> mNewFragmentData;
+    private final List<VacancyModel> mResentFragmentData;
+    private List<VacancyModel> mFavoriteFragmentData;
 
     public ScreenSlidePagerAdapter(
             FragmentManager fm,
             String[] mTitles,
-            Map<String, Map<String, List<VacancyModel>>> mAllVacancies) {
+            Map<String, List<VacancyModel>> mAllVacancies) {
         super(fm);
 
         this.mTitles = mTitles;
-        this.mSitesData = mAllVacancies.get(IVacancyListInteractor.DATA_TAB_SITES);
-        this.mBaseFragmentData = mAllVacancies.get(IVacancyListInteractor.DATA_OTHER_TABS);
+        this.mSitesData = SiteUtil.convertToSiteMap(mAllVacancies.get(IVacancyListInteractor.DATA_ALL));
+        this.mNewFragmentData = mAllVacancies.get(IVacancyListInteractor.DATA_NEW);
+        this.mResentFragmentData = mAllVacancies.get(IVacancyListInteractor.DATA_RECENT);
+        this.mFavoriteFragmentData = mAllVacancies.get(IVacancyListInteractor.DATA_FAVORITE);
 
         mFragment0 = SitesTabFragment.getNewInstance(mSitesData);
 
-        List<VacancyModel> newVacancies = mBaseFragmentData.get(TAB_NEW);
-        List<VacancyModel> recentVacancies = mBaseFragmentData.get(TAB_RECENT);
-        if (newVacancies != null && !newVacancies.isEmpty()) {
+        if (!mNewFragmentData.isEmpty() && mResentFragmentData.isEmpty()) {
             mFragment1 = BaseTabFragment.getNewInstance(
-                    (ArrayList<VacancyModel>) newVacancies,
+                    (ArrayList<VacancyModel>) mNewFragmentData,
                     BaseTabFragment.FRAGMENT_NEW);
-        } else {
-            mFragment1 = BaseTabFragment.getNewInstance(
-                    (ArrayList<VacancyModel>) recentVacancies,
-                    BaseTabFragment.FRAGMENT_RECENT);
+            mFragment2 = new FavoriteTabFragment();
+            ((FavoriteTabFragment) mFragment2).updateData(mFavoriteFragmentData);
         }
 
-        mFragment2 = new FavoriteTabFragment();
-        mFragment2.updateData(mBaseFragmentData.get(TAB_FAVORITE));
+        if (!mNewFragmentData.isEmpty() && !mResentFragmentData.isEmpty()) {
+            mFragment1 = BaseTabFragment.getNewInstance(
+                    (ArrayList<VacancyModel>) mNewFragmentData,
+                    BaseTabFragment.FRAGMENT_NEW);
+            mFragment2 = BaseTabFragment.getNewInstance(
+                    (ArrayList<VacancyModel>) mResentFragmentData,
+                    BaseTabFragment.FRAGMENT_RECENT);
+            mFragment3 = new FavoriteTabFragment();
+            ((FavoriteTabFragment) mFragment3).updateData(mFavoriteFragmentData);
+        }
+
+        if (mNewFragmentData.isEmpty()) {
+            mFragment1 = BaseTabFragment.getNewInstance(
+                    (ArrayList<VacancyModel>) mResentFragmentData,
+                    BaseTabFragment.FRAGMENT_RECENT);
+            mFragment2 = new FavoriteTabFragment();
+            ((FavoriteTabFragment) mFragment2).updateData(mFavoriteFragmentData);
+        }
     }
 
     @Override
@@ -79,6 +93,12 @@ public class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {
                 return mFragment1;
             case 2:
                 return mFragment2;
+            case 3:
+                if (mFragment3 != null) {
+                    return mFragment3;
+                } else {
+                    return null;
+                }
         }
 
         return null;
@@ -95,7 +115,11 @@ public class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {
     }
 
     public void updateFavoriteData(List<VacancyModel> vacancies) {
-        mBaseFragmentData.put(TAB_FAVORITE, vacancies);
-        mFragment2.updateData(vacancies);
+        mFavoriteFragmentData = vacancies;
+        if (mFragment2 instanceof FavoriteTabFragment) {
+            ((FavoriteTabFragment) mFragment2).updateData(vacancies);
+        } else {
+            ((FavoriteTabFragment) mFragment3).updateData(vacancies);
+        }
     }
 }

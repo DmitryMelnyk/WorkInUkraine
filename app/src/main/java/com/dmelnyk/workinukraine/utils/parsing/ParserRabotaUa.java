@@ -5,7 +5,6 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.dmelnyk.workinukraine.application.WorkInUaApplication;
-import com.dmelnyk.workinukraine.models.VacancyContainer;
 import com.dmelnyk.workinukraine.models.VacancyModel;
 import com.dmelnyk.workinukraine.db.Tables;
 import com.dmelnyk.workinukraine.utils.CityUtils;
@@ -19,6 +18,7 @@ import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -49,13 +49,13 @@ public class ParserRabotaUa {
      * @return list of VacancyModule's or empty ArrayList
      */
     @NonNull
-    public ArrayList<VacancyContainer> getJobs(String request) {
+    public List<VacancyModel> getJobs(String request) {
         String jobRequest = request.split(" / ")[0];
         String city = request.split(" / ")[1];
 
         Log.d(TAG, "started getJobs(). City = " + city + " request = " + jobRequest);
 
-        ArrayList<VacancyContainer> vacancies = new ArrayList<>();
+        List<VacancyModel> vacancies = new ArrayList<>();
 
         String cityId = cities.getCityId(CityUtils.SITE.RABOTAUA, city);
         String correctedRequest = netUtils.replaceSpacesWithPlus(jobRequest);
@@ -81,20 +81,22 @@ public class ParserRabotaUa {
 
                 VacancyModel vacancyModel = VacancyModel.builder()
                         .setDate(date)
+                        .setIsFavorite(false)
+                        .setTimeStatus(1) // new
                         .setRequest(request)
+                        .setSite(Tables.SearchSites.TYPE_SITES[2])
                         .setTitle(title)
                         .setUrl(url)
-                        .setIsFavorite(false)
                         .build();
-                vacancies.add(VacancyContainer.create(vacancyModel, Tables.SearchSites.TYPE_SITES[2]));
+                vacancies.add(vacancyModel);
             }
         }
 
         // check if any vacancy contain needed request
         if (vacancies.size() == 20) {
             boolean isAnyVacancyContainsRequest = false;
-            for (VacancyContainer vacancy : vacancies) {
-                if (vacancy.getVacancy().title().toLowerCase()
+            for (VacancyModel vacancy : vacancies) {
+                if (vacancy.title().toLowerCase()
                         .contains(request.split(" / ")[0].toLowerCase())) {
                     isAnyVacancyContainsRequest = true;
                     break;

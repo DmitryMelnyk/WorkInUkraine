@@ -6,10 +6,10 @@ import android.support.annotation.IntDef;
 import android.support.v4.content.LocalBroadcastManager;
 
 import com.dmelnyk.workinukraine.models.RequestModel;
-import com.dmelnyk.workinukraine.models.VacancyContainer;
 import com.dmelnyk.workinukraine.db.di.DaggerDbComponent;
 import com.dmelnyk.workinukraine.db.di.DbModule;
 import com.dmelnyk.workinukraine.data.search_service.ISearchServiceRepository;
+import com.dmelnyk.workinukraine.models.VacancyModel;
 import com.dmelnyk.workinukraine.utils.parsing.ParserHeadHunters;
 import com.dmelnyk.workinukraine.utils.parsing.ParserJobsUa;
 import com.dmelnyk.workinukraine.utils.parsing.ParserRabotaUa;
@@ -153,7 +153,7 @@ public class SearchVacanciesService extends IntentService {
         }
     }
 
-    private class SearchVacanciesTask implements Callable<List<VacancyContainer>> {
+    private class SearchVacanciesTask implements Callable<List<VacancyModel>> {
         private final int code;
         private final String request;
 
@@ -163,9 +163,9 @@ public class SearchVacanciesService extends IntentService {
         }
 
         @Override
-        public List<VacancyContainer> call() throws Exception {
+        public List<VacancyModel> call() throws Exception {
             Timber.d(" Starting task " + code);
-            List<VacancyContainer> list = new ArrayList<>();
+            List<VacancyModel> list = new ArrayList<>();
 
             switch (code) {
                 case HEADHUNTERSUA:
@@ -197,9 +197,9 @@ public class SearchVacanciesService extends IntentService {
     private volatile int totalVacanciesCount = 0;
 
     private volatile Map<String, Integer> count = new HashMap<>();
-    private volatile Map<String, List<VacancyContainer>> cache = new HashMap<>();
+    private volatile Map<String, List<VacancyModel>> cache = new HashMap<>();
 
-    private void saveDataToMap(String request, List<VacancyContainer> list) throws Exception {
+    private void saveDataToMap(String request, List<VacancyModel> list) throws Exception {
         totalVacanciesCount += list.size();
 
         if (count.containsKey(request)) {
@@ -209,7 +209,7 @@ public class SearchVacanciesService extends IntentService {
         }
 
         if (!cache.containsKey(request)) {
-            List<VacancyContainer> vacancyList = new ArrayList<>();
+            List<VacancyModel> vacancyList = new ArrayList<>();
             cache.put(request, vacancyList);
         }
 

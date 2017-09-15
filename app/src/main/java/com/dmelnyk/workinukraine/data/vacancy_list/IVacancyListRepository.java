@@ -14,8 +14,7 @@ import io.reactivex.Observable;
 
 public interface IVacancyListRepository {
 
-
-    Observable<List<VacancyModel>> getFavoriteVacancies(String request, String type);
+    Observable<List<VacancyModel>> getFavoriteVacancies(String request);
 
     /**
      * Removes vacancy from TYPE_FAVORITE table
@@ -26,7 +25,7 @@ public interface IVacancyListRepository {
 
     Completable addToFavorite(VacancyModel vacancy);
 
-    Observable<Map<String, Map<String, List<VacancyModel>>>> getAllVacancies(String request);
+    Observable<Map<String, List<VacancyModel>>> getAllVacancies(String request);
 
     /**
      * @return The array of Strings titles from resources with New tab
@@ -37,6 +36,11 @@ public interface IVacancyListRepository {
      * @return The array of Strings titles from resources with Recent tab
      */
     String[] getRecentTitles();
+
+    /**
+     * @return The array of Strings titles from resources with New and Recent tab
+     */
+    String[] getNewAndRecent();
 
     void close();
 }

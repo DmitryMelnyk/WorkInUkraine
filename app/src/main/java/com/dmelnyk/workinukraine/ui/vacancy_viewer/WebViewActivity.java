@@ -40,7 +40,7 @@ public class WebViewActivity extends BaseAnimationActivity {
     @BindView(R.id.title_text_view) TextView mTitleTextView;
     @BindView(R.id.progress_bar) ProgressBar mBar;
     @BindView(R.id.web_view) WebView mWebView;
-    @BindView(R.id.menu_image_view)
+    @BindView(R.id.favorite_image_view)
     ImageView mFavoriteImageView;
 
     private String mUrl;

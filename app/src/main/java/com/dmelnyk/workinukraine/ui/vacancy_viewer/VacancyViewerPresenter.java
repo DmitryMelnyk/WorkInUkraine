@@ -28,7 +28,9 @@ public class VacancyViewerPresenter implements Contract.IVacancyViewerPresenter 
     @Override
     public void unbindView() {
         view = null;
-        updatingFavoriteDispos.dispose();
+        if (updatingFavoriteDispos != null) {
+            updatingFavoriteDispos.dispose();
+        }
     }
 
     @Override

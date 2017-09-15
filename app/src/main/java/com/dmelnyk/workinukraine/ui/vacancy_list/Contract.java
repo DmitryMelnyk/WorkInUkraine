@@ -22,9 +22,9 @@ public class Contract {
 
         void displayTabFragment(
                 String[] tabTitles,
-                int[] tabVacancyCount,
-                boolean isButtonTubWithNewIcon,
-                Map<String, Map<String, List<VacancyModel>>> allVacancies);
+                Map<String, Integer> tabVacancyCount,
+                int isButtonTubWithNewIcon,
+                Map<String, List<VacancyModel>> allVacancies);
 
         void exitActivity();
     }
@@ -40,7 +40,5 @@ public class Contract {
                 VacancyModel vacancy, @VacancyCardViewAdapter.VacancyPopupMenuType int type);
 
         void clear();
-
-        boolean isVacancyFavorite(VacancyModel vacancy);
     }
 }

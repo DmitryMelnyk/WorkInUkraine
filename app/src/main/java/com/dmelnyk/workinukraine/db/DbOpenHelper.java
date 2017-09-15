@@ -11,12 +11,23 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class DbOpenHelper extends SQLiteOpenHelper {
     private static final int VERSION = 1;
 
-    private static final String CREATE_SEARCH_REQUEST = ""
+    private static final String CREATE_SEARCH_REQUEST_TABLE = ""
             + "CREATE TABLE " + Tables.SearchRequest.TABLE_REQUEST + "("
             + Tables.SearchRequest.Columns.REQUEST + " TEXT NOT NULL PRIMARY KEY, "
             + Tables.SearchRequest.Columns.VACANCIES + " INTEGER NOT NULL, "
             + Tables.SearchRequest.Columns.NEW_VACANCIES + " INTEGER NOT NULL, "
             + Tables.SearchRequest.Columns.UPDATED + " INTEGER NOT NULL)";
+
+    private static final String CREATE_VACANCIES_TABLE = "CREATE TABLE "
+            + Tables.SearchSites.TABLE_ALL_SITES + "("
+            + "_id INTEGER PRIMARY KEY AUTOINCREMENT, "
+            + Tables.SearchSites.Columns.REQUEST + " TEXT NOT NULL, "
+            + Tables.SearchSites.Columns.TYPE + " TEXT NOT NULL, "
+            + Tables.SearchSites.Columns.TITLE + " TEXT NOT NULL, "
+            + Tables.SearchSites.Columns.DATE + " TEXT, "
+            + Tables.SearchSites.Columns.URL + " TEXT NOT NULL, "
+            + Tables.SearchSites.Columns.IS_FAVORITE + " INTEGER NOT NULL, "
+            + Tables.SearchSites.Columns.IS_NEW + " INTEGER NOT NULL);";
 
     public DbOpenHelper(Context context) {
         super(context, "main.db", null /* factory */, VERSION);
@@ -25,24 +36,10 @@ public class DbOpenHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         // creates table that contains request
-        db.execSQL(CREATE_SEARCH_REQUEST);
+        db.execSQL(CREATE_SEARCH_REQUEST_TABLE);
 
         // creates table that contains all vacancies
-        db.execSQL(createTableSql(Tables.SearchSites.TABLE_ALL_SITES));
-
-        // creates table that contains TYPE_NEW, TYPE_RECENT, TYPE_FAVORITE vacancies
-        db.execSQL(createTableSql(Tables.SearchSites.TABLE_FAV_NEW_REC));
-    }
-
-    private String createTableSql(String table) {
-        return "CREATE TABLE " + table + "("
-                + "_id INTEGER PRIMARY KEY AUTOINCREMENT, "
-                + Tables.SearchSites.Columns.REQUEST + " TEXT NOT NULL, "
-                + Tables.SearchSites.Columns.TYPE + " TEXT NOT NULL, "
-                + Tables.SearchSites.Columns.TITLE + " TEXT NOT NULL, "
-                + Tables.SearchSites.Columns.DATE + " TEXT, "
-                + Tables.SearchSites.Columns.URL + " TEXT NOT NULL, "
-                + Tables.SearchSites.Columns.IS_FAVORITE + " INTEGER NOT NULL);";
+        db.execSQL(CREATE_VACANCIES_TABLE);
     }
 
     @Override

@@ -18,6 +18,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.dmelnyk.workinukraine.R;
+import com.dmelnyk.workinukraine.business.vacancy_list.IVacancyListInteractor;
 import com.dmelnyk.workinukraine.models.VacancyModel;
 import com.dmelnyk.workinukraine.db.di.DbModule;
 import com.dmelnyk.workinukraine.ui.filter.FilterActivity;
@@ -66,7 +67,7 @@ public class VacancyActivity extends BaseAnimationActivity implements
     private ScreenSlidePagerAdapter mSlideAdapter;
     private String mRequest;
 
-    private int[] mTabVacancyCount;
+    private static Map<String, Integer> sTabVacancyCount;
     private String[] mTabTitles;
     private boolean orientationHasChanged;
 
@@ -106,6 +107,10 @@ public class VacancyActivity extends BaseAnimationActivity implements
         initializeDependency(mRequest);
         initializeViews();
         presenter.bindView(this, mRequest);
+
+        if (savedInstanceState == null) {
+            sTabVacancyCount = null;
+        }
     }
 
     @Override
@@ -126,6 +131,7 @@ public class VacancyActivity extends BaseAnimationActivity implements
 
         mButtonTabs.setOnTabClickListener(tabClicked -> {
             mViewPager.setCurrentItem(tabClicked);
+
             updateTitleView(tabClicked);
         });
         mButtonTabs.setSaveEnabled(true);
@@ -165,7 +171,7 @@ public class VacancyActivity extends BaseAnimationActivity implements
         super.onSaveInstanceState(outState);
         outState.putInt(KEY_CURRENT_POSITION, mViewPager.getCurrentItem());
         outState.putStringArray(KEY_TAB_TITLES, mTabTitles);
-        outState.putIntArray(KEY_TAB_VACANCY_COUNT, mTabVacancyCount);
+//        outState.putIntArray(KEY_TAB_VACANCY_COUNT, sTabVacancyCount);
         outState.putBoolean(KEY_ORIENTATION_CHANGED, true);
     }
 
@@ -176,7 +182,7 @@ public class VacancyActivity extends BaseAnimationActivity implements
         if (savedInstanceState != null) {
             int currentPosition = savedInstanceState.getInt(KEY_CURRENT_POSITION);
             mTabTitles = savedInstanceState.getStringArray(KEY_TAB_TITLES);
-            mTabVacancyCount = savedInstanceState.getIntArray(KEY_TAB_VACANCY_COUNT);
+//            sTabVacancyCount = savedInstanceState.getIntArray(KEY_TAB_VACANCY_COUNT);
             orientationHasChanged = savedInstanceState.getBoolean(KEY_ORIENTATION_CHANGED);
             updateTitleView(currentPosition);
         }
@@ -229,17 +235,16 @@ public class VacancyActivity extends BaseAnimationActivity implements
     @Override
     public void displayTabFragment(
             String[] tabTitles,
-            int[] tabVacancyCount,
-            boolean isButtonTubWithNewIcon,
-            Map<String, Map<String, List<VacancyModel>>> allVacancies) {
+            Map<String, Integer> tabVacancyCount,
+            int buttonTabType,
+            Map<String, List<VacancyModel>> allVacancies) {
 
         // initialize ButtonTubs
-        initializeButtonTabs(isButtonTubWithNewIcon);
+        initializeButtonTabs(buttonTabType);
         // Initialize tab titles
         mTabTitles = tabTitles;
-        mTabVacancyCount = tabVacancyCount;
-        mSlideAdapter = new ScreenSlidePagerAdapter(
-                getSupportFragmentManager(), mTabTitles, allVacancies);
+        sTabVacancyCount = tabVacancyCount;
+        mSlideAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager(), mTabTitles, allVacancies);
         mViewPager.setAdapter(mSlideAdapter);
 
         if (!orientationHasChanged) {
@@ -253,21 +258,39 @@ public class VacancyActivity extends BaseAnimationActivity implements
         finish();
     }
 
-    public void initializeButtonTabs(boolean withNewVacanciesTab) {
-        int[][] resource = new int[3][2];
+    public void initializeButtonTabs(int buttonTabType) {
+        int[][] resource;
+        if (buttonTabType == 2) {
+            resource = new int[4][2]; // 4 buttons (all, new, recent, favorite)
+        } else {
+            resource = new int[3][2]; // 3 buttons (all, new / recent, favorite)
+        }
+
         resource[0][0] = R.mipmap.ic_tab_vacancy_light;
         resource[0][1] = R.mipmap.ic_tab_vacancy_dark;
 
-        if (withNewVacanciesTab) {
-            resource[1][0] = R.mipmap.ic_tab_new_light;
-            resource[1][1] = R.mipmap.ic_tab_new_dark;
-        } else {
-            resource[1][0] = R.mipmap.ic_tab_recent_light;
-            resource[1][1] = R.mipmap.ic_tab_recent_dark;
+        switch (buttonTabType) {
+            case 1: // all, new, favorite
+                resource[1][0] = R.mipmap.ic_tab_new_light;
+                resource[1][1] = R.mipmap.ic_tab_new_dark;
+                resource[2][0] = R.mipmap.ic_tab_favorite_light;
+                resource[2][1] = R.mipmap.ic_tab_favorite_dark;
+                break;
+            case 2: // all, new, recent, favorite
+                resource[1][0] = R.mipmap.ic_tab_new_light;
+                resource[1][1] = R.mipmap.ic_tab_new_dark;
+                resource[2][0] = R.mipmap.ic_tab_recent_light;
+                resource[2][1] = R.mipmap.ic_tab_recent_dark;
+                resource[3][0] = R.mipmap.ic_tab_favorite_light;
+                resource[3][1] = R.mipmap.ic_tab_favorite_dark;
+                break;
+            case 3: // all, recent, favorite
+                resource[1][0] = R.mipmap.ic_tab_recent_light;
+                resource[1][1] = R.mipmap.ic_tab_recent_dark;
+                resource[2][0] = R.mipmap.ic_tab_favorite_light;
+                resource[2][1] = R.mipmap.ic_tab_favorite_dark;
+                break;
         }
-
-        resource[2][0] = R.mipmap.ic_tab_favorite_light;
-        resource[2][1] = R.mipmap.ic_tab_favorite_dark;
 
         mButtonTabs.setData(resource);
         mButtonTabs.setVisibility(View.VISIBLE);
@@ -275,7 +298,8 @@ public class VacancyActivity extends BaseAnimationActivity implements
 
     private void updateTitleView(int tabPosition) {
         mTitleTextView.setText(mTabTitles[tabPosition]);
-        mTitleVacanciesCountTextView.setText("" + mTabVacancyCount[tabPosition]);
+        // TODO: edit this!!!
+//        mTitleVacanciesCountTextView.setText("" + sTabVacancyCount[tabPosition]);
         mButtonTabs.selectTab(tabPosition);
         Log.e("333", "mButtonTabs.selectTab=" + tabPosition);
     }
@@ -285,7 +309,8 @@ public class VacancyActivity extends BaseAnimationActivity implements
         // updating data in adapters
         mSlideAdapter.updateFavoriteData(vacancies);
         // updating title manually if current tab is FAVORITE;
-        mTabVacancyCount[2] = vacancies.size();
+        // TODO: edit this!!!
+//        sTabVacancyCount[2] = vacancies.size();
         if (mViewPager.getCurrentItem() == 2) {
             updateTitleView(2);
         }

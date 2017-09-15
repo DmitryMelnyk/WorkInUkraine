@@ -28,35 +28,44 @@ public interface IVacancyListInteractor {
     String VACANCIES_SITE_RU = "RABOTAUA";
     String VACANCIES_SITE_WN = "WORKNEWINFO";
     String VACANCIES_SITE_WU = "WORKUA";
-    String DATA_OTHER_TABS = "data for favorite, new and recent tabs";
-    String DATA_TAB_SITES = "data to tab sites";
+    String DATA_ALL = "all_vacancies";
+    String DATA_NEW = "new_vacancies";
+    String DATA_RECENT = "recent_vacancies";
+    String DATA_FAVORITE = "favorite_vacancies";
 
-    String TITLE_NEW = "new_tytles";
-    String TITLE_RECENT = "recent_tytles";
+    String TITLE_NEW = "new_titles";
+    String TITLE_RECENT = "recent_titles";
+    String TITLE_NEW_AND_RECENT = "new_and_recent";
 
-    @StringDef({ TITLE_NEW, TITLE_RECENT })
+    @StringDef({ TITLE_NEW, TITLE_NEW_AND_RECENT, TITLE_RECENT })
     @Retention(RetentionPolicy.CLASS)
     public @interface TitleResource {}
 
-    @StringDef({ VACANCIES_ALL, VACANCIES_FAVORITE, VACANCIES_NEW, VACANCIES_RECENT,
-            VACANCIES_SITE_HH, VACANCIES_SITE_JU, VACANCIES_SITE_RU,
-            VACANCIES_SITE_WN, VACANCIES_SITE_WU})
-    @Retention(RetentionPolicy.CLASS)
-    public @interface VacancyResource {}
+//    @StringDef({ VACANCIES_ALL, VACANCIES_FAVORITE, VACANCIES_NEW, VACANCIES_RECENT,
+//            VACANCIES_SITE_HH, VACANCIES_SITE_JU, VACANCIES_SITE_RU,
+//            VACANCIES_SITE_WN, VACANCIES_SITE_WU})
+//    @Retention(RetentionPolicy.CLASS)
+//    public @interface VacancyResource {}
 
     /**
      * Clearing all resources
      */
     void clear();
 
-    Observable<Map<String, Map<String, List<VacancyModel>>>> getAllVacancies(String request);
+
+    /** Returns HasMap of key-values with 4 types of vacancies:
+     * all, new, recent, favorite
+     * @param request Vacancy request in format "request / city"
+     * @return
+     */
+    Observable<Map<String, List<VacancyModel>>> getAllVacancies(String request);
+
     /**
      * Returns a list of vacancies
      * @param request Vacancy request in format "request / city"
-     * @param table Table where to get data
      * @return Observable List of vacancies
      */
-    Observable<List<VacancyModel>> getFavoriteVacancies(String request, String table);
+    Observable<List<VacancyModel>> getFavoriteVacancies(String request);
 
     /**
      * @param type The type of vacancies: new or recent

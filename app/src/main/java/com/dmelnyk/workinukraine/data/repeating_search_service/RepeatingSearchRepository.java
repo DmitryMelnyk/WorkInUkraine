@@ -18,10 +18,10 @@ import io.reactivex.Single;
 
 public class RepeatingSearchRepository implements IRepeatingSearchRepository {
 
-    private static final String TABLE_NEW = Tables.SearchSites.TABLE_FAV_NEW_REC;
     private static final String TABLE_REQUEST = Tables.SearchRequest.TABLE_REQUEST;
     private static final String PREF_FILE = "saved_vacancies_count";
-    private static final String KEY_PREVOIUS_NEW_VACANCIES_COUNT = "previous_new_vacancies";
+    private static final String KEY_PREVIOUS_NEW_VACANCIES_COUNT = "previous_new_vacancies";
+    private static final String TABLE_VACANCIES = Tables.SearchSites.TABLE_ALL_SITES;
 
     private final BriteDatabase db;
     private final Context appContext;
@@ -34,10 +34,10 @@ public class RepeatingSearchRepository implements IRepeatingSearchRepository {
     @Override
     public Single<List<VacancyModel>> getNewVacancies() {
 
-        Observable<List<VacancyModel>> result = db.createQuery(TABLE_NEW, "SELECT * FROM " + TABLE_NEW
-                + " WHERE " + Tables.SearchSites.Columns.TYPE
-                + " ='" + Tables.SearchSites.TYPE_NEW + "'"
-        ).mapToList(VacancyModel.MAPPER);
+        Observable<List<VacancyModel>> result =
+                db.createQuery(TABLE_VACANCIES, "SELECT * FROM " + TABLE_VACANCIES
+                + " WHERE " + Tables.SearchSites.Columns.IS_NEW
+                + " =1").mapToList(VacancyModel.MAPPER);
 
         return result.firstOrError();
     }
@@ -54,13 +54,13 @@ public class RepeatingSearchRepository implements IRepeatingSearchRepository {
     @Override
     public int getPreviousNewVacanciesCount() {
         return appContext.getSharedPreferences(PREF_FILE, Context.MODE_PRIVATE)
-                .getInt(KEY_PREVOIUS_NEW_VACANCIES_COUNT, 0);
+                .getInt(KEY_PREVIOUS_NEW_VACANCIES_COUNT, 0);
     }
 
     @Override
     public void saveNewVacanciesCount(int newVacancies) {
         appContext.getSharedPreferences(PREF_FILE, Context.MODE_PRIVATE)
-                .edit().putInt(KEY_PREVOIUS_NEW_VACANCIES_COUNT, newVacancies)
+                .edit().putInt(KEY_PREVIOUS_NEW_VACANCIES_COUNT, newVacancies)
                 .commit();
     }
 

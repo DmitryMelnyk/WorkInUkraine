@@ -43,17 +43,22 @@ public class SearchPresenter implements Contract.ISearchPresenter {
 
 
     @Override
-    public void unbindView() {
-        view = null;
-        disposableRequests.dispose();
-    }
-
-    @Override
     public void addRequest(String request) {
         interactor.saveRequest(request)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(() -> { },
                         throwable -> view.showErrorMessage(throwable.getMessage()));
+    }
+
+    @Override
+    public void editRequest(String previousRequest, String newRequest) {
+        interactor.editRequest(previousRequest, newRequest);
+    }
+
+    @Override
+    public void unbindView() {
+        view = null;
+        disposableRequests.dispose();
     }
 
     @Override
@@ -74,7 +79,6 @@ public class SearchPresenter implements Contract.ISearchPresenter {
         disposableRequests = interactor.getRequests()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(requestsList -> {
-                    Log.e("999", "all requests count=" + requestsList.size());
                     sCache = requestsList;
 
                     if (view != null) {

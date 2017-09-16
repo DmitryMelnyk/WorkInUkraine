@@ -212,10 +212,10 @@ public class DialogRequest extends BaseDialog {
     @Override
     public void onCancel(DialogInterface dialog) {
         super.onCancel(dialog);
-        sendFeedback();
+        sendCancelFeedback();
     }
 
-    private void sendFeedback() {
+    private void sendCancelFeedback() {
         mCallback.dialogDismissed();
         mCallback = null;
     }

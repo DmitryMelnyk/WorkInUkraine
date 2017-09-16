@@ -43,10 +43,8 @@ public interface ISearchRepository {
     void updateRequest(@NonNull String oldRequest, String newRequest);
 
     /**
-     * Removes all vacancies with request
-     * @param request
+     * Removes all requests and vacancies from request's and vacancies's tables
+     * @return
      */
-    void removeDataFromTables(String request);
-
     Completable clearAllRequests();
 }

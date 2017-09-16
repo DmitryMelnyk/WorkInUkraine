@@ -33,4 +33,6 @@ public interface ISearchInteractor {
     void removeRequest(String request);
 
     Completable clearAllRequests();
+
+    void editRequest(String previousRequest, String newRequest);
 }

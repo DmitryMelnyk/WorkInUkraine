@@ -32,7 +32,6 @@ public class SearchInteractor implements ISearchInteractor {
     @Override
     public void removeRequest(String request) {
         repository.removeRequest(request);
-        repository.removeDataFromTables(request);
     }
 
     @Override
@@ -40,5 +39,9 @@ public class SearchInteractor implements ISearchInteractor {
         return repository.addRequest(request);
     }
 
+    @Override
+    public void editRequest(String previousRequest, String newRequest) {
+        repository.updateRequest(previousRequest, newRequest);
+    }
 
 }

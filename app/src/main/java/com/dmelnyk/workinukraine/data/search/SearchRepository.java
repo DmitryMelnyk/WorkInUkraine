@@ -22,6 +22,7 @@ import timber.log.Timber;
 public class SearchRepository implements ISearchRepository {
 
     private static final String REQUEST_TABLE = Tables.SearchRequest.TABLE_REQUEST;
+    private static final String VACANCY_TABLE = Tables.SearchSites.TABLE_ALL_SITES;
     private final BriteDatabase db;
 
     public SearchRepository(BriteDatabase db) {
@@ -50,15 +51,10 @@ public class SearchRepository implements ISearchRepository {
     }
 
     @Override
-    public void removeDataFromTables(String request) {
-        Timber.d("\nRemoving data with request=%s from all tables", request);
-        db.delete(Tables.SearchSites.TABLE_ALL_SITES, Tables.SearchSites.Columns.REQUEST + " = '" + request +"'");
-    }
-
-    @Override
     public void removeRequest(@NonNull String request) {
         Timber.d("\nremoveRequest: " + request);
         db.delete(REQUEST_TABLE, where(request));
+        db.delete(VACANCY_TABLE, where(request));
     }
 
     @Override
@@ -71,9 +67,17 @@ public class SearchRepository implements ISearchRepository {
     @Override
     public void updateRequest(@NonNull String oldRequest, String newRequest) {
         Timber.d("\nupdateRequest");
+
+        Log.e("@@", "old==new =" + oldRequest.equals(newRequest));
+        if (oldRequest.equals(newRequest)) return;
+
+        // edits  request
         ContentValues newItem = DbItems.createRequestItem(newRequest, 0, 0, -1l);
         db.update(Tables.SearchRequest.TABLE_REQUEST, newItem, Tables.SearchRequest.Columns.REQUEST
                 + " ='" + oldRequest + "'");
+
+        // removes previous request's vacancy
+        db.delete(VACANCY_TABLE, oldRequest);
     }
 
     private String where(String request) {

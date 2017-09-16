@@ -41,7 +41,7 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.MyViewHold
 
     // Callback interface
     public interface AdapterCallback {
-        void onItemClicked(String item);
+        void onItemClicked(RequestModel item);
         void onMenuItemClicked(String item, @MenuType int menu);
     }
 
@@ -98,6 +98,10 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.MyViewHold
             holder.mItemLayout.setBackground(ContextCompat.getDrawable(holder.itemView.getContext(),
                     R.drawable.request_bg_light));
         }
+
+        holder.mItemLayout.setOnClickListener(view -> {
+            mCallback.onItemClicked(requestModel);
+        });
     }
 
     @Override
@@ -148,16 +152,6 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.MyViewHold
                 }
                 return false;
             });
-        }
-
-        @OnClick({R.id.item_layout})
-        public void onViewClicked(View view) {
-            switch (view.getId()) {
-                case R.id.item_layout:
-                    getFullRequest();
-                    mCallback.onItemClicked(getFullRequest());
-                    break;
-            }
         }
 
         @NonNull

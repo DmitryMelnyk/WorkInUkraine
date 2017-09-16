@@ -104,6 +104,7 @@ public class SearchServiceRepository implements ISearchServiceRepository {
     }
 
     private void updateVacanciesDate(String request, List<VacancyModel> downloadedVacancies) throws Exception {
+        Timber.d("updateVacanciesDate");
         // finding the types we have in downloadedVacancies.
         // In case we didn't receive response from proper server
         // we don't need to remove that vacancies (because next time
@@ -113,6 +114,7 @@ public class SearchServiceRepository implements ISearchServiceRepository {
         for (VacancyModel vacancy : downloadedVacancies) {
             siteTypes.add(vacancy.site());
         }
+        Timber.d("siteTypes=" + siteTypes);
 
         for (String site : siteTypes) {
             List<VacancyModel> oldVacancies = getVacancies(request, site);
@@ -183,6 +185,8 @@ public class SearchServiceRepository implements ISearchServiceRepository {
 
     private void writeVacanciesToSitesTable(boolean isNew, List<VacancyModel> list) {
         Timber.d("\nWriting into All table %d vacancies", list.size());
+
+        if (list.isEmpty()) return;
         BriteDatabase.Transaction transaction = db.newTransaction();
         try {
             for (VacancyModel vacancy : list) {

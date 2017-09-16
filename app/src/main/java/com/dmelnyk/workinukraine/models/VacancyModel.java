@@ -60,4 +60,10 @@ public abstract class VacancyModel implements Parcelable {
                     .build();
         }
     };
+
+    @Override
+    public boolean equals(Object obj) {
+        VacancyModel model = (VacancyModel) obj;
+        return this.url().equals(model.url());
+    }
 }

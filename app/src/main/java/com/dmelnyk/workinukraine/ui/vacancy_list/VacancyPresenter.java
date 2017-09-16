@@ -76,6 +76,10 @@ public class VacancyPresenter implements Contract.IVacancyPresenter {
 
         // Counting vacancies count in all tab sites
         int siteTabsCount = vacanciesMap.get(IVacancyListInteractor.DATA_ALL).size();
+        int newVacanciesCount = vacanciesMap.get(IVacancyListInteractor.DATA_NEW).size();
+        int recentVacanciesCount = vacanciesMap.get(IVacancyListInteractor.DATA_RECENT).size();
+        int favoriteVacanciesCount = vacanciesMap.get(IVacancyListInteractor.DATA_FAVORITE).size();
+
         // Exit from activity if no vacancies found
         if (siteTabsCount == 0) {
             view.exitActivity();
@@ -83,16 +87,10 @@ public class VacancyPresenter implements Contract.IVacancyPresenter {
             return;
         }
 
-        // Counts vacancies
-        int newVacanciesCount = vacanciesMap.get(IVacancyListInteractor.DATA_NEW).size();
-        int recentVacanciesCount = vacanciesMap.get(IVacancyListInteractor.DATA_RECENT).size();
-        int favoriteVacanciesCount = vacanciesMap.get(IVacancyListInteractor.DATA_FAVORITE).size();
-
         tabVacancyCount.put(IVacancyListInteractor.DATA_ALL, siteTabsCount);
         tabVacancyCount.put(IVacancyListInteractor.DATA_NEW, newVacanciesCount);
         tabVacancyCount.put(IVacancyListInteractor.DATA_RECENT, recentVacanciesCount);
         tabVacancyCount.put(IVacancyListInteractor.DATA_FAVORITE, favoriteVacanciesCount);
-
 
         if (newVacanciesCount != 0 && recentVacanciesCount == 0) {
             tabTitles = interactor.getTitles(IVacancyListInteractor.TITLE_NEW);

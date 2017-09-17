@@ -35,7 +35,7 @@
         <service android:name=".services.SearchVacanciesService" />
 
         <activity
-            android:name=".ui.vacancy_list.VacancyActivity"
+            android:name=".ui.vacancy_list.VacancyListActivity"
             android:label="@string/title_activity_vacancy"
             android:theme="@style/VacancyTheme" />
         <activity

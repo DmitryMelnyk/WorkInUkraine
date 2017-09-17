@@ -119,8 +119,8 @@ public class BaseTabFragment extends Fragment implements
     }
 
     @Override
-    public void onAdapterInteractionItemClicked(VacancyModel vacancyClicked, List<VacancyModel> vacancies) {
-        mListener.onFragmentInteractionItemClicked(vacancyClicked, vacancies);
+    public void onAdapterInteractionItemClicked(VacancyModel vacancyClicked) {
+        mListener.onFragmentInteractionItemClicked(vacancyClicked);
     }
 
     @Override
@@ -138,7 +138,7 @@ public class BaseTabFragment extends Fragment implements
      * activity.
      */
     public interface OnFragmentInteractionListener {
-        void onFragmentInteractionItemClicked(VacancyModel vacancyModel, List<VacancyModel> vacancies);
+        void onFragmentInteractionItemClicked(VacancyModel vacancyModel);
 
         void onFragmentInteractionPopupMenuClicked(VacancyModel vacancy,
                                                    @VacancyCardViewAdapter.VacancyPopupMenuType int type);

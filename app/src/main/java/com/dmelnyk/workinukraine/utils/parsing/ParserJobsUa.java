@@ -77,7 +77,7 @@ public class ParserJobsUa {
                     .setIsFavorite(false)
                     .setTimeStatus(1) // new
                     .setRequest(request)
-                    .setSite(Tables.SearchSites.TYPE_SITES[1])
+                    .setSite(Tables.SearchSites.SITES[1])
                     .setTitle(title)
                     .setUrl(url)
                     .build();

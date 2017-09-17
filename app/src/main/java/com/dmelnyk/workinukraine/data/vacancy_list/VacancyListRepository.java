@@ -6,16 +6,11 @@ import android.util.Log;
 
 import com.dmelnyk.workinukraine.R;
 import com.dmelnyk.workinukraine.business.vacancy_list.IVacancyListInteractor;
-import com.dmelnyk.workinukraine.db.Db;
 import com.dmelnyk.workinukraine.db.Tables;
 import com.dmelnyk.workinukraine.models.VacancyModel;
 import com.squareup.sqlbrite2.BriteDatabase;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -53,7 +48,7 @@ public class VacancyListRepository implements IVacancyListRepository {
                 db.createQuery(Tables.SearchSites.TABLE_ALL_SITES, "SELECT * FROM "
                         + Tables.SearchSites.TABLE_ALL_SITES + " WHERE "
                         + Tables.SearchSites.Columns.REQUEST + " ='" + request
-                        + "' AND " + Tables.SearchSites.Columns.IS_NEW + " =1") // 1 - new vacancy
+                        + "' AND " + Tables.SearchSites.Columns.TIME_STATUS + " =1") // 1 - new vacancy
                         .mapToList(VacancyModel.MAPPER);
 
         // Recent vacancies
@@ -61,7 +56,7 @@ public class VacancyListRepository implements IVacancyListRepository {
                 db.createQuery(Tables.SearchSites.TABLE_ALL_SITES, "SELECT * FROM "
                         + Tables.SearchSites.TABLE_ALL_SITES + " WHERE "
                         + Tables.SearchSites.Columns.REQUEST + " ='" + request
-                        + "' AND " + Tables.SearchSites.Columns.IS_NEW + " =0") // -1 - recent vacancy
+                        + "' AND " + Tables.SearchSites.Columns.TIME_STATUS + " =0") // -1 - recent vacancy
                         .mapToList(VacancyModel.MAPPER);
 
         // Favorite vacancies
@@ -101,18 +96,18 @@ public class VacancyListRepository implements IVacancyListRepository {
 
     private void convertRecentToOldVacancies(String request) {
         db.execute("UPDATE " + Tables.SearchSites.TABLE_ALL_SITES
-                + " SET " + Tables.SearchSites.Columns.IS_NEW + "=-1"
+                + " SET " + Tables.SearchSites.Columns.TIME_STATUS + "=-1"
                 + " WHERE " + Tables.SearchSites.Columns.REQUEST + " ='" + request
-                + "' AND " + Tables.SearchSites.Columns.IS_NEW + "=0");
+                + "' AND " + Tables.SearchSites.Columns.TIME_STATUS + "=0");
     }
 
     private void convertNewToRecentVacancies(String request) {
         Timber.d("\nclearing New vacancies with request=%s", request);
 
         db.execute("UPDATE " + Tables.SearchSites.TABLE_ALL_SITES
-                + " SET " + Tables.SearchSites.Columns.IS_NEW + "=0" // convert to recent
+                + " SET " + Tables.SearchSites.Columns.TIME_STATUS + "=0" // convert to recent
                 + " WHERE " + Tables.SearchSites.Columns.REQUEST + " ='" + request
-                + "' AND " + Tables.SearchSites.Columns.IS_NEW + "=1"); // from new
+                + "' AND " + Tables.SearchSites.Columns.TIME_STATUS + "=1"); // from new
 
         // updating Request's table
         db.execute("UPDATE " + Tables.SearchRequest.TABLE_REQUEST

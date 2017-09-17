@@ -22,12 +22,12 @@ public class DbOpenHelper extends SQLiteOpenHelper {
             + Tables.SearchSites.TABLE_ALL_SITES + "("
             + "_id INTEGER PRIMARY KEY AUTOINCREMENT, "
             + Tables.SearchSites.Columns.REQUEST + " TEXT NOT NULL, "
-            + Tables.SearchSites.Columns.TYPE + " TEXT NOT NULL, "
+            + Tables.SearchSites.Columns.SITE + " TEXT NOT NULL, "
             + Tables.SearchSites.Columns.TITLE + " TEXT NOT NULL, "
             + Tables.SearchSites.Columns.DATE + " TEXT, "
             + Tables.SearchSites.Columns.URL + " TEXT NOT NULL, "
             + Tables.SearchSites.Columns.IS_FAVORITE + " INTEGER NOT NULL, "
-            + Tables.SearchSites.Columns.IS_NEW + " INTEGER NOT NULL);";
+            + Tables.SearchSites.Columns.TIME_STATUS + " INTEGER NOT NULL);";
 
     public DbOpenHelper(Context context) {
         super(context, "main.db", null /* factory */, VERSION);

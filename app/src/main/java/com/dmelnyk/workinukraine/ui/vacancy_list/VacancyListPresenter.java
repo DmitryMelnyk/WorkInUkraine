@@ -20,7 +20,7 @@ import timber.log.Timber;
  * Created by d264 on 7/28/17.
  */
 
-public class VacancyPresenter implements Contract.IVacancyPresenter {
+public class VacancyListPresenter implements Contract.IVacancyPresenter {
 
     private final IVacancyListInteractor interactor;
     private Contract.IVacancyView view;
@@ -35,7 +35,7 @@ public class VacancyPresenter implements Contract.IVacancyPresenter {
     private static String mRequest;
     private static List<VacancyModel> sFavoriteVacanciesCache;
 
-    public VacancyPresenter(IVacancyListInteractor interactor, String request) {
+    public VacancyListPresenter(IVacancyListInteractor interactor, String request) {
         this.interactor = interactor;
         this.mRequest = request;
         // Don't get data from db if we have saved data
@@ -55,7 +55,7 @@ public class VacancyPresenter implements Contract.IVacancyPresenter {
         // If request to database has been already received get the result in cache
         if (sDataCache != null) {
             // successful result
-            Log.e("!!!", "VacancyPresenter. sDataCache=" + sDataCache);
+            Log.e("!!!", "VacancyListPresenter. sDataCache=" + sDataCache);
             displayData(sDataCache);
         } else if (sError != null) {
             // error result
@@ -67,14 +67,13 @@ public class VacancyPresenter implements Contract.IVacancyPresenter {
     @Override
     public void bindJustView(Contract.IVacancyView view) {
         this.view = view;
+        if (sDataCache != null) {
+            updateFavorite();
+        }
     }
 
     private void displayData(Map<String, List<VacancyModel>> vacanciesMap) {
-        Map<String, Integer> tabVacancyCount = new HashMap<>();
-        String[] tabTitles = null;
-        int buttonTabType = 0; // 1 - only new vacancies, 2 - new and recent, 3 - only recent
-
-        // Counting vacancies count in all tab sites
+        // Counting vacancies count in all tabs
         int siteTabsCount = vacanciesMap.get(IVacancyListInteractor.DATA_ALL).size();
         int newVacanciesCount = vacanciesMap.get(IVacancyListInteractor.DATA_NEW).size();
         int recentVacanciesCount = vacanciesMap.get(IVacancyListInteractor.DATA_RECENT).size();
@@ -87,23 +86,32 @@ public class VacancyPresenter implements Contract.IVacancyPresenter {
             return;
         }
 
-        tabVacancyCount.put(IVacancyListInteractor.DATA_ALL, siteTabsCount);
-        tabVacancyCount.put(IVacancyListInteractor.DATA_NEW, newVacanciesCount);
-        tabVacancyCount.put(IVacancyListInteractor.DATA_RECENT, recentVacanciesCount);
-        tabVacancyCount.put(IVacancyListInteractor.DATA_FAVORITE, favoriteVacanciesCount);
+        int[] tabVacancyCount = newVacanciesCount > 0 && recentVacanciesCount > 0
+                ? new int[4] : new int[3];
 
-        if (newVacanciesCount != 0 && recentVacanciesCount == 0) {
+        String[] tabTitles = null;
+        int buttonTabType = 0; // 1 - only new vacancies, 2 - new and recent, 3 - only recent
+
+        tabVacancyCount[0] = siteTabsCount; // first item is always the same
+        if (newVacanciesCount > 0 && recentVacanciesCount == 0) {
             tabTitles = interactor.getTitles(IVacancyListInteractor.TITLE_NEW);
+            tabVacancyCount[1] = newVacanciesCount;
+            tabVacancyCount[2] = favoriteVacanciesCount;
             buttonTabType = 1;
         }
 
-        if (newVacanciesCount != 0 && recentVacanciesCount != 0) {
+        if (newVacanciesCount > 0 && recentVacanciesCount > 0) {
             tabTitles = interactor.getTitles(IVacancyListInteractor.TITLE_NEW_AND_RECENT);
+            tabVacancyCount[1] = newVacanciesCount;
+            tabVacancyCount[2] = recentVacanciesCount;
+            tabVacancyCount[3] = favoriteVacanciesCount;
             buttonTabType = 2;
         }
 
         if (newVacanciesCount == 0) {
             tabTitles = interactor.getTitles(IVacancyListInteractor.TITLE_RECENT);
+            tabVacancyCount[1] = recentVacanciesCount;
+            tabVacancyCount[2] = favoriteVacanciesCount;
             buttonTabType = 3;
         }
 

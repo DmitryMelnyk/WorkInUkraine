@@ -78,7 +78,7 @@ public class ParserWorkUa {
                     .setTimeStatus(1) // new
                     .setRequest(request)
                     .setTitle(title)
-                    .setSite(Tables.SearchSites.TYPE_SITES[4])
+                    .setSite(Tables.SearchSites.SITES[4])
                     .setUrl(url)
                     .build();
 

@@ -18,12 +18,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.dmelnyk.workinukraine.R;
-import com.dmelnyk.workinukraine.business.vacancy_list.IVacancyListInteractor;
 import com.dmelnyk.workinukraine.models.VacancyModel;
 import com.dmelnyk.workinukraine.db.di.DbModule;
 import com.dmelnyk.workinukraine.ui.filter.FilterActivity;
 import com.dmelnyk.workinukraine.ui.vacancy_viewer.VacancyViewerActivity;
-import com.dmelnyk.workinukraine.ui.vacancy_viewer.WebViewActivity;
 import com.dmelnyk.workinukraine.ui.vacancy_list.core.BaseTabFragment;
 import com.dmelnyk.workinukraine.ui.vacancy_list.core.SitesTabFragment;
 import com.dmelnyk.workinukraine.ui.vacancy_list.core.VacancyCardViewAdapter;
@@ -45,7 +43,7 @@ import butterknife.OnClick;
 import timber.log.Timber;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
-public class VacancyActivity extends BaseAnimationActivity implements
+public class VacancyListActivity extends BaseAnimationActivity implements
         BaseTabFragment.OnFragmentInteractionListener,
         SitesTabFragment.OnFragmentInteractionListener,
         Contract.IVacancyView {
@@ -67,9 +65,10 @@ public class VacancyActivity extends BaseAnimationActivity implements
     private ScreenSlidePagerAdapter mSlideAdapter;
     private String mRequest;
 
-    private static Map<String, Integer> sTabVacancyCount;
+    private int[] mTabVacancyCount;
     private String[] mTabTitles;
     private boolean orientationHasChanged;
+    private int mButtonTabType; // @look initializeButtonTabs() function
 
     @OnClick(R.id.favorite_image_view)
     public void onViewClicked() {
@@ -109,7 +108,7 @@ public class VacancyActivity extends BaseAnimationActivity implements
         presenter.bindView(this, mRequest);
 
         if (savedInstanceState == null) {
-            sTabVacancyCount = null;
+            mTabVacancyCount = null;
         }
     }
 
@@ -171,7 +170,7 @@ public class VacancyActivity extends BaseAnimationActivity implements
         super.onSaveInstanceState(outState);
         outState.putInt(KEY_CURRENT_POSITION, mViewPager.getCurrentItem());
         outState.putStringArray(KEY_TAB_TITLES, mTabTitles);
-//        outState.putIntArray(KEY_TAB_VACANCY_COUNT, sTabVacancyCount);
+        outState.putIntArray(KEY_TAB_VACANCY_COUNT, mTabVacancyCount);
         outState.putBoolean(KEY_ORIENTATION_CHANGED, true);
     }
 
@@ -182,17 +181,52 @@ public class VacancyActivity extends BaseAnimationActivity implements
         if (savedInstanceState != null) {
             int currentPosition = savedInstanceState.getInt(KEY_CURRENT_POSITION);
             mTabTitles = savedInstanceState.getStringArray(KEY_TAB_TITLES);
-//            sTabVacancyCount = savedInstanceState.getIntArray(KEY_TAB_VACANCY_COUNT);
+            mTabVacancyCount = savedInstanceState.getIntArray(KEY_TAB_VACANCY_COUNT);
             orientationHasChanged = savedInstanceState.getBoolean(KEY_ORIENTATION_CHANGED);
             updateTitleView(currentPosition);
         }
     }
 
     @Override
-    public void onFragmentInteractionItemClicked(VacancyModel vacancyModel, List<VacancyModel> vacancies) {
+    public void onFragmentInteractionItemClicked(VacancyModel vacancyModel) {
         // Activity with multiple vacancy
-        Intent vacancyContainerIntent = VacancyViewerActivity.getIntent(this, vacancies, vacancyModel);
+        String type = getCurrentTabType();
+
+
+        Intent vacancyContainerIntent = VacancyViewerActivity.getIntent(this, vacancyModel, type);
         startActivityForResult(vacancyContainerIntent, WEBVIEW_REQUEST_CODE);
+    }
+
+    /**
+     * Types: DATA_SITE, DATA_NEW, DATA_RECENT, DATA_FAVORITE
+     * @return The type of active tab in viewPager
+     */
+    private String getCurrentTabType() {
+        String type = null;
+        switch (mViewPager.getCurrentItem()) {
+            case 0:
+                type = VacancyViewerActivity.DATA_SITE;
+                break;
+            case 1:
+                if (mButtonTabType == 1 || mButtonTabType == 2) {
+                    type = VacancyViewerActivity.DATA_NEW;
+                } else {
+                    type = VacancyViewerActivity.DATA_RECENT;
+                }
+                break;
+            case 2:
+                if (mButtonTabType == 2) {
+                    type = VacancyViewerActivity.DATA_RECENT;
+                } else {
+                    type = VacancyViewerActivity.DATA_FAVORITE;
+                }
+                break;
+            case 3:
+                type = VacancyViewerActivity.DATA_FAVORITE;
+                break;
+        }
+
+        return type;
     }
 
     @Override
@@ -235,15 +269,16 @@ public class VacancyActivity extends BaseAnimationActivity implements
     @Override
     public void displayTabFragment(
             String[] tabTitles,
-            Map<String, Integer> tabVacancyCount,
+            int[] tabVacancyCount,
             int buttonTabType,
             Map<String, List<VacancyModel>> allVacancies) {
 
+        mButtonTabType = buttonTabType;
         // initialize ButtonTubs
         initializeButtonTabs(buttonTabType);
         // Initialize tab titles
         mTabTitles = tabTitles;
-        sTabVacancyCount = tabVacancyCount;
+        mTabVacancyCount = tabVacancyCount;
         mSlideAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager(), mTabTitles, allVacancies);
         mViewPager.setAdapter(mSlideAdapter);
 
@@ -299,9 +334,8 @@ public class VacancyActivity extends BaseAnimationActivity implements
     private void updateTitleView(int tabPosition) {
         mTitleTextView.setText(mTabTitles[tabPosition]);
         // TODO: edit this!!!
-//        mTitleVacanciesCountTextView.setText("" + sTabVacancyCount[tabPosition]);
+        mTitleVacanciesCountTextView.setText("" + mTabVacancyCount[tabPosition]);
         mButtonTabs.selectTab(tabPosition);
-        Log.e("333", "mButtonTabs.selectTab=" + tabPosition);
     }
 
     @Override
@@ -310,33 +344,9 @@ public class VacancyActivity extends BaseAnimationActivity implements
         mSlideAdapter.updateFavoriteData(vacancies);
         // updating title manually if current tab is FAVORITE;
         // TODO: edit this!!!
-//        sTabVacancyCount[2] = vacancies.size();
+        mTabVacancyCount[2] = vacancies.size();
         if (mViewPager.getCurrentItem() == 2) {
             updateTitleView(2);
-        }
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-//        super.onActivityResult(requestCode, resultCode, data);
-        Log.e("999", "onActivityResult in VacancyActivity");
-        if (requestCode == WEBVIEW_REQUEST_CODE) {
-            switch (resultCode) {
-                case WebViewActivity.RESULT_ADD_TO_FAVORITES:
-                    presenter.onItemPopupMenuClicked(
-                            (VacancyModel) data.getParcelableExtra(WebViewActivity.EXTRA_VACANCY),
-                            VacancyCardViewAdapter.MENU_SAVE
-                    );
-                    break;
-                case WebViewActivity.RESULT_REMOVE_FROM_FAVORITES:
-                    presenter.onItemPopupMenuClicked(
-                            (VacancyModel) data.getParcelableExtra(WebViewActivity.EXTRA_VACANCY),
-                            VacancyCardViewAdapter.MENU_REMOVE
-                    );
-                    break;
-                default:
-                    /* NOP */
-            }
         }
     }
 }

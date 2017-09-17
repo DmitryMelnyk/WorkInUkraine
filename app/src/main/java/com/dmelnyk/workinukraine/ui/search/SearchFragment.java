@@ -29,7 +29,7 @@ import com.dmelnyk.workinukraine.ui.dialogs.request.DialogRequest;
 import com.dmelnyk.workinukraine.ui.search.Contract.ISearchPresenter;
 import com.dmelnyk.workinukraine.ui.search.di.DaggerSearchComponent;
 import com.dmelnyk.workinukraine.ui.search.di.SearchModule;
-import com.dmelnyk.workinukraine.ui.vacancy_list.VacancyActivity;
+import com.dmelnyk.workinukraine.ui.vacancy_list.VacancyListActivity;
 import com.dmelnyk.workinukraine.utils.BaseFragment;
 
 import java.lang.reflect.Field;
@@ -401,7 +401,7 @@ public class SearchFragment extends BaseFragment implements
             Toast.makeText(getContext(), R.string.no_vacancies_found, Toast.LENGTH_LONG)
                     .show();
         } else {
-            Intent vacancyActivityIntent = new Intent(getContext(), VacancyActivity.class);
+            Intent vacancyActivityIntent = new Intent(getContext(), VacancyListActivity.class);
             vacancyActivityIntent.setAction(itemRequest.request());
             startActivityForResult(vacancyActivityIntent, REQUEST_CODE_VACANCY_ACTIVITY);
             getActivity().overridePendingTransition(R.anim.slide_from_right, R.anim.slide_to_left);

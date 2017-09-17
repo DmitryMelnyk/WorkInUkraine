@@ -77,7 +77,7 @@ public class SearchServiceRepository implements ISearchServiceRepository {
         Cursor newVacanciesCursor = db.query(
                 SELECT_ALL_FROM + Tables.SearchSites.TABLE_ALL_SITES
                 + WHERE_ + "'" + request + "' AND "
-                + Tables.SearchSites.Columns.IS_NEW + "=1");
+                + Tables.SearchSites.Columns.TIME_STATUS + "=1");
 
         int newVacancies = newVacanciesCursor.getCount();
         newVacanciesCursor.close();
@@ -147,7 +147,7 @@ public class SearchServiceRepository implements ISearchServiceRepository {
     private List<VacancyModel> getVacancies(String request, String site) throws Exception {
         Cursor cursor = db.query("SELECT * FROM " + Tables.SearchSites.TABLE_ALL_SITES
                 + " WHERE " + Tables.SearchSites.Columns.REQUEST + " ='"
-                + request + "' AND " + Tables.SearchSites.Columns.TYPE + " ='"
+                + request + "' AND " + Tables.SearchSites.Columns.SITE + " ='"
                 + site + "'");
 
         List<VacancyModel> oldVacancies = new ArrayList<>();

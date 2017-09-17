@@ -175,7 +175,7 @@ public class VacancyCardViewAdapter extends RecyclerView.Adapter<VacancyCardView
     }
 
     public interface OnAdapterInteractionListener {
-        void onAdapterInteractionItemClicked(VacancyModel vacancyClicked, List<VacancyModel> vacancies);
+        void onAdapterInteractionItemClicked(VacancyModel vacancyClicked);
         void onAdapterInteractionPopupMenuClicked(VacancyModel vacancyClicked, @VacancyPopupMenuType int type);
     }
 
@@ -194,7 +194,7 @@ public class VacancyCardViewAdapter extends RecyclerView.Adapter<VacancyCardView
         if (mListener == null) {
             throw new ClassCastException(PARENT_CLASS
                     + " must implement " + OnAdapterInteractionListener.class);
-        } else mListener.onAdapterInteractionItemClicked(mDataSet.get(position), mDataSet);
+        } else mListener.onAdapterInteractionItemClicked(mDataSet.get(position));
     }
 
 }

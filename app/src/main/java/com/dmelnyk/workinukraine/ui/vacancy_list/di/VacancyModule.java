@@ -7,7 +7,7 @@ import com.dmelnyk.workinukraine.business.vacancy_list.VacancyListInteractor;
 import com.dmelnyk.workinukraine.data.vacancy_list.IVacancyListRepository;
 import com.dmelnyk.workinukraine.data.vacancy_list.VacancyListRepository;
 import com.dmelnyk.workinukraine.ui.vacancy_list.Contract;
-import com.dmelnyk.workinukraine.ui.vacancy_list.VacancyPresenter;
+import com.dmelnyk.workinukraine.ui.vacancy_list.VacancyListPresenter;
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import dagger.Module;
@@ -43,6 +43,6 @@ public class VacancyModule {
     @Provides
     @VacancyScope
     Contract.IVacancyPresenter providePresenter(IVacancyListInteractor interactor) {
-        return new VacancyPresenter(interactor, request);
+        return new VacancyListPresenter(interactor, request);
     }
 }

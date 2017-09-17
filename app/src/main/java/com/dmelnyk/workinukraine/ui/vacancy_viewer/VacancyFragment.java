@@ -110,11 +110,6 @@ public class VacancyFragment extends Fragment {
         mTitleTextView.setText(mTitle);
         mDateTextView.setText(mDate);
         configFavoriteIcon();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
         // Configuring progress bar / restoring state
         configProgressBar();
         configWebView();
@@ -240,17 +235,4 @@ public class VacancyFragment extends Fragment {
         intent.setType("text/plain");
         startActivity(intent);
     }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-//        mWebView.saveState(outState);
-    }
-
-    @Override
-    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
-        super.onViewStateRestored(savedInstanceState);
-//        mWebView.restoreState(savedInstanceState);
-    }
-
 }

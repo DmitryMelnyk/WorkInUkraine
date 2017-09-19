@@ -19,15 +19,6 @@ import io.reactivex.Observable;
 
 public interface IVacancyListInteractor {
 
-    String VACANCIES_ALL = "all";
-    String VACANCIES_FAVORITE = "TYPE_FAVORITE";
-    String VACANCIES_RECENT = "TYPE_RECENT";
-    String VACANCIES_NEW = "FRESH";
-    String VACANCIES_SITE_HH = "HEADHUNTERSUA";
-    String VACANCIES_SITE_JU = "JOBSUA";
-    String VACANCIES_SITE_RU = "RABOTAUA";
-    String VACANCIES_SITE_WN = "WORKNEWINFO";
-    String VACANCIES_SITE_WU = "WORKUA";
     String DATA_ALL = "all_vacancies";
     String DATA_NEW = "new_vacancies";
     String DATA_RECENT = "recent_vacancies";
@@ -37,15 +28,11 @@ public interface IVacancyListInteractor {
     String TITLE_RECENT = "recent_titles";
     String TITLE_NEW_AND_RECENT = "new_and_recent";
 
+    void onVacanciesViewed(String request);
+
     @StringDef({ TITLE_NEW, TITLE_NEW_AND_RECENT, TITLE_RECENT })
     @Retention(RetentionPolicy.CLASS)
     public @interface TitleResource {}
-
-//    @StringDef({ VACANCIES_ALL, VACANCIES_FAVORITE, VACANCIES_NEW, VACANCIES_RECENT,
-//            VACANCIES_SITE_HH, VACANCIES_SITE_JU, VACANCIES_SITE_RU,
-//            VACANCIES_SITE_WN, VACANCIES_SITE_WU})
-//    @Retention(RetentionPolicy.CLASS)
-//    public @interface VacancyResource {}
 
     /**
      * Clearing all resources

@@ -25,8 +25,8 @@ public class SiteUtil {
         }
 
         for (VacancyModel vacancy : vacancyContainerList) {
-            for (int i = 0; i < Tables.SearchSites.TYPE_SITES.length; i++) {
-                if (vacancy.site().equals(Tables.SearchSites.TYPE_SITES[i])) {
+            for (int i = 0; i < Tables.SearchSites.SITES.length; i++) {
+                if (vacancy.site().equals(Tables.SearchSites.SITES[i])) {
                     siteList[i].add(vacancy);
                     break;
                 }

@@ -36,7 +36,7 @@ public class RepeatingSearchRepository implements IRepeatingSearchRepository {
 
         Observable<List<VacancyModel>> result =
                 db.createQuery(TABLE_VACANCIES, "SELECT * FROM " + TABLE_VACANCIES
-                + " WHERE " + Tables.SearchSites.Columns.IS_NEW
+                + " WHERE " + Tables.SearchSites.Columns.TIME_STATUS
                 + " =1").mapToList(VacancyModel.MAPPER);
 
         return result.firstOrError();

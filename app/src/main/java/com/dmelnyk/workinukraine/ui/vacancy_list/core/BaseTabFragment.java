@@ -7,7 +7,6 @@ import android.support.annotation.StringDef;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,7 +17,6 @@ import com.dmelnyk.workinukraine.models.VacancyModel;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -79,7 +77,7 @@ public class BaseTabFragment extends Fragment implements
         mItems = getArguments().getParcelableArrayList(ARG_ITEMS);
         mCardAdapterType = getArguments().getInt(ARG_CARD_TYPE);
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_favorite, container, false);
+        View view = inflater.inflate(R.layout.fragment_base_rv, container, false);
 
         return view;
     }
@@ -94,12 +92,6 @@ public class BaseTabFragment extends Fragment implements
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        Log.e("222", "onResume " + (mCardAdapterType == 3 ? "Recent" : "Favorite"));
-    }
-
-    @Override
     public void onDetach() {
         super.onDetach();
         mListener = null;
@@ -109,7 +101,6 @@ public class BaseTabFragment extends Fragment implements
      * Creates and updates adapter
      */
     public void createProperAdapter() {
-        Log.e("!!!", "CreatingProperAdapter in " + this);
         if (mCardAdapterType == VacancyCardViewAdapter.TYPE_FAVORITE && mItems.isEmpty()) {
             mAdapter = new EmptyFavoriteViewAdapter(null, mCardAdapterType);
         } else {
@@ -119,8 +110,8 @@ public class BaseTabFragment extends Fragment implements
     }
 
     @Override
-    public void onAdapterInteractionItemClicked(VacancyModel vacancyClicked, List<VacancyModel> vacancies) {
-        mListener.onFragmentInteractionItemClicked(vacancyClicked, vacancies);
+    public void onAdapterInteractionItemClicked(VacancyModel vacancyClicked) {
+        mListener.onFragmentInteractionItemClicked(vacancyClicked);
     }
 
     @Override
@@ -129,7 +120,6 @@ public class BaseTabFragment extends Fragment implements
             @VacancyCardViewAdapter.VacancyPopupMenuType int type) {
         // Removing or adding vacancy to favorite list
         mListener.onFragmentInteractionPopupMenuClicked(vacancyClicked, type);
-        Log.e("222", "popup clicked. Current Fragment=" + this);
     }
     /**
      * This interface must be implemented by activities that contain this
@@ -138,7 +128,7 @@ public class BaseTabFragment extends Fragment implements
      * activity.
      */
     public interface OnFragmentInteractionListener {
-        void onFragmentInteractionItemClicked(VacancyModel vacancyModel, List<VacancyModel> vacancies);
+        void onFragmentInteractionItemClicked(VacancyModel vacancyModel);
 
         void onFragmentInteractionPopupMenuClicked(VacancyModel vacancy,
                                                    @VacancyCardViewAdapter.VacancyPopupMenuType int type);

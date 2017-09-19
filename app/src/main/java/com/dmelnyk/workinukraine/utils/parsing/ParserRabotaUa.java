@@ -84,7 +84,7 @@ public class ParserRabotaUa {
                         .setIsFavorite(false)
                         .setTimeStatus(1) // new
                         .setRequest(request)
-                        .setSite(Tables.SearchSites.TYPE_SITES[2])
+                        .setSite(Tables.SearchSites.SITES[2])
                         .setTitle(title)
                         .setUrl(url)
                         .build();

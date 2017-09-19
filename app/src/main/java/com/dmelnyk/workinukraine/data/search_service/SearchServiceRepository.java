@@ -77,7 +77,7 @@ public class SearchServiceRepository implements ISearchServiceRepository {
         Cursor newVacanciesCursor = db.query(
                 SELECT_ALL_FROM + Tables.SearchSites.TABLE_ALL_SITES
                 + WHERE_ + "'" + request + "' AND "
-                + Tables.SearchSites.Columns.IS_NEW + "=1");
+                + Tables.SearchSites.Columns.TIME_STATUS + "=1");
 
         int newVacancies = newVacanciesCursor.getCount();
         newVacanciesCursor.close();
@@ -104,6 +104,7 @@ public class SearchServiceRepository implements ISearchServiceRepository {
     }
 
     private void updateVacanciesDate(String request, List<VacancyModel> downloadedVacancies) throws Exception {
+        Timber.d("updateVacanciesDate");
         // finding the types we have in downloadedVacancies.
         // In case we didn't receive response from proper server
         // we don't need to remove that vacancies (because next time
@@ -113,6 +114,7 @@ public class SearchServiceRepository implements ISearchServiceRepository {
         for (VacancyModel vacancy : downloadedVacancies) {
             siteTypes.add(vacancy.site());
         }
+        Timber.d("siteTypes=" + siteTypes);
 
         for (String site : siteTypes) {
             List<VacancyModel> oldVacancies = getVacancies(request, site);
@@ -123,7 +125,8 @@ public class SearchServiceRepository implements ISearchServiceRepository {
                     updateVacancyWithDate(vacancy, newVacancies.date());
                 } else {
                     // remove old vacancy
-                    deleteVacancy(vacancy);
+                    // TODO: in test mode. Don't remove old vacancies
+//                    deleteVacancy(vacancy);
                 }
             }
         }
@@ -145,7 +148,7 @@ public class SearchServiceRepository implements ISearchServiceRepository {
     private List<VacancyModel> getVacancies(String request, String site) throws Exception {
         Cursor cursor = db.query("SELECT * FROM " + Tables.SearchSites.TABLE_ALL_SITES
                 + " WHERE " + Tables.SearchSites.Columns.REQUEST + " ='"
-                + request + "' AND " + Tables.SearchSites.Columns.TYPE + " ='"
+                + request + "' AND " + Tables.SearchSites.Columns.SITE + " ='"
                 + site + "'");
 
         List<VacancyModel> oldVacancies = new ArrayList<>();
@@ -183,6 +186,8 @@ public class SearchServiceRepository implements ISearchServiceRepository {
 
     private void writeVacanciesToSitesTable(boolean isNew, List<VacancyModel> list) {
         Timber.d("\nWriting into All table %d vacancies", list.size());
+
+        if (list.isEmpty()) return;
         BriteDatabase.Transaction transaction = db.newTransaction();
         try {
             for (VacancyModel vacancy : list) {

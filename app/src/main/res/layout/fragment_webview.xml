@@ -16,7 +16,7 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:background="@drawable/green_frame_bg"
+            android:background="@color/white"
 
             android:contentInsetLeft="0dp"
             android:contentInsetStart="0dp"
@@ -74,19 +74,16 @@
 
                 <TextView
                     android:id="@+id/title_text_view"
-                    android:layout_width="181dp"
-                    android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:layout_height="24dp"
                     android:gravity="center_vertical"
                     android:maxLines="1"
-                    android:text="Fake title"
                     android:textColor="@color/colorPrimary"
                     android:textSize="12sp"
                     android:layout_marginTop="8dp"
-                    app:layout_constraintRight_toLeftOf="@+id/share_image_view"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintLeft_toRightOf="@+id/site_icon_image_view"
-                    app:layout_constraintHorizontal_bias="0.058"
-                    app:layout_constraintVertical_bias="0.0"
+                    app:layout_constraintRight_toLeftOf="@+id/share_image_view"
                     />
 
                 <TextView
@@ -95,10 +92,8 @@
                     android:layout_height="wrap_content"
                     android:textColor="@color/grey"
                     android:textSize="12sp"
-                    android:text="date"
                     android:layout_marginBottom="4dp"
                     app:layout_constraintTop_toBottomOf="@+id/title_text_view"
-                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintLeft_toRightOf="@+id/site_icon_image_view"
                     />
 
@@ -112,9 +107,6 @@
                     app:layout_constraintLeft_toRightOf="parent"
                     style="?android:attr/progressBarStyleHorizontal" />
             </android.support.constraint.ConstraintLayout>
-
-
-
 
         </android.support.v7.widget.Toolbar>
     </android.support.design.widget.AppBarLayout>

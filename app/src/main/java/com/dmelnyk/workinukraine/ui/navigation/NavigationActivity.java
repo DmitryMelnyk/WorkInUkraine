@@ -166,8 +166,6 @@ public class NavigationActivity extends BaseAnimationActivity implements
         boolean fragmentPopped = fm.popBackStackImmediate(fragmentTag, 0);
         boolean backStackContainsFragment = fm.findFragmentByTag(fragmentTag) != null;
 
-        Log.e("1010", "fragmentPopped="+ fragmentPopped);
-        Log.e("1010", "fragment is in backstack=" + backStackContainsFragment);
         if (!fragmentPopped && !backStackContainsFragment) {
             fm.beginTransaction()
                     .replace(R.id.container, fragment, fragmentTag)

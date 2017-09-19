@@ -106,18 +106,14 @@ public class VacancyFragment extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        if (savedInstanceState == null) {
-            configWebView();
-        }
-
         // Setting title and date
         mTitleTextView.setText(mTitle);
         mDateTextView.setText(mDate);
+        configFavoriteIcon();
         // Configuring progress bar / restoring state
         configProgressBar();
-        configFavoriteIcon();
+        configWebView();
     }
-
 
     @Override
     public void onDestroyView() {
@@ -185,25 +181,30 @@ public class VacancyFragment extends Fragment {
             @Override
             public void onReceivedTitle(WebView view, String title) {
                 super.onReceivedTitle(view, title);
-                mTitleTextView.setText(title);
+                if (isAdded()) {
+                    mTitleTextView.setText(title);
+                }
             }
 
             @Override
             public void onReceivedTouchIconUrl(WebView view, String url, boolean precomposed) {
                 super.onReceivedTouchIconUrl(view, url, precomposed);
-                Glide.with(getContext()).load(url).listener(new RequestListener<Drawable>() {
-                    @Override
-                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                        return false;
-                    }
+                if (isAdded()) {
+                    Glide.with(getContext()).load(url).listener(new RequestListener<Drawable>() {
+                        @Override
+                        public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                            return false;
+                        }
 
-                    @Override
-                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                        mSiteIconImageView.setVisibility(View.VISIBLE);
-                        return false;
-                    }
-                }).into(mSiteIconImageView);
-
+                        @Override
+                        public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                            if (isAdded()) {
+                                mSiteIconImageView.setVisibility(View.VISIBLE);
+                            }
+                            return false;
+                        }
+                    }).into(mSiteIconImageView);
+                }
             }
         };
     }
@@ -234,17 +235,4 @@ public class VacancyFragment extends Fragment {
         intent.setType("text/plain");
         startActivity(intent);
     }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        mWebView.saveState(outState);
-    }
-
-    @Override
-    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
-        super.onViewStateRestored(savedInstanceState);
-        mWebView.restoreState(savedInstanceState);
-    }
-
 }

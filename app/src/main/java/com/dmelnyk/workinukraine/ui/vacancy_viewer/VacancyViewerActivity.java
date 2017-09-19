@@ -3,8 +3,8 @@ package com.dmelnyk.workinukraine.ui.vacancy_viewer;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
@@ -14,7 +14,6 @@ import com.dmelnyk.workinukraine.models.VacancyModel;
 import com.dmelnyk.workinukraine.ui.vacancy_viewer.di.DaggerVacancyViewerComponent;
 import com.dmelnyk.workinukraine.utils.BaseAnimationActivity;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -26,19 +25,34 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 public class VacancyViewerActivity extends BaseAnimationActivity
     implements Contract.IVacancyViewerView, VacancyFragment.CallbackListener {
 
-    private static final String EXTRA_VACANCIES = "extra_vacancies";
+    public static final String DATA_FAVORITE = "favorite";
+    public static final String DATA_NEW = "new";
+    public static final String DATA_RECENT = "recent";
+    public static final String DATA_SITE = "site";
+
+    private static final String EXTRA_TYPE = "extra_type";
     private static final String EXTRA_VACANCY_TO_DISPLAY = "extra_display_vacancy";
+
     @BindView(R.id.vacancy_container) ViewPager mVacancyContainer;
 
     @Inject
     Contract.IVacancyViewerPresenter presenter;
-    ArrayList<VacancyModel> mVacancies;
+    List<VacancyModel> mVacancies;
+    private VacancyAdapter mAdapter;
 
-    public static Intent getIntent(Context context, List<VacancyModel> vacancies, VacancyModel openVacancy) {
+    private String mRequest;
+    private String mSite;
+    private String mType;
+    private VacancyModel mVacancyToDisplay;
+
+    public static Intent getIntent(
+            Context context,
+            VacancyModel vacancyToOpen,
+            String type) {
         Intent intent = new Intent(context, VacancyViewerActivity.class);
-        intent.putParcelableArrayListExtra(EXTRA_VACANCIES,
-                (ArrayList<? extends Parcelable>) vacancies);
-        intent.putExtra(EXTRA_VACANCY_TO_DISPLAY, openVacancy);
+        intent.putExtra(EXTRA_VACANCY_TO_DISPLAY, vacancyToOpen);
+        intent.putExtra(EXTRA_TYPE, type);
+
         return intent;
     }
 
@@ -53,20 +67,23 @@ public class VacancyViewerActivity extends BaseAnimationActivity
                 .dbModule(new DbModule(getApplicationContext()))
                 .build().inject(this);
 
-        mVacancies = getIntent().getParcelableArrayListExtra(EXTRA_VACANCIES);
-        VacancyModel vacancyToDisplay = getIntent().getParcelableExtra(EXTRA_VACANCY_TO_DISPLAY);
+        // gets vacancy to show position
+        mVacancyToDisplay = getIntent().getParcelableExtra(EXTRA_VACANCY_TO_DISPLAY);
+        mRequest = mVacancyToDisplay.request();
+        mSite = mVacancyToDisplay.site();
+        mType = getIntent().getStringExtra(EXTRA_TYPE);
 
-        int showVacancyPosition = findPosition(vacancyToDisplay);
+        presenter.bindView(this);
+        presenter.getData(mRequest, mType, mSite);
 
-        VacancyAdapter adapter = new VacancyAdapter(getSupportFragmentManager(), mVacancies);
-        mVacancyContainer.setAdapter(adapter);
-        mVacancyContainer.setCurrentItem(showVacancyPosition);
+        Log.e("@@", "site=" + mSite);
+        Log.e("@@", "type=" + mType);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        presenter.bindView(this);
+
     }
 
     @Override
@@ -75,9 +92,17 @@ public class VacancyViewerActivity extends BaseAnimationActivity
         presenter.unbindView();
     }
 
-    private int findPosition(VacancyModel vacancyToDisplay) {
-        for (int i = 0; i < mVacancies.size(); i++) {
-            if (mVacancies.get(i).equals(vacancyToDisplay)) {
+    @Override
+    public void displayVacancies(List<VacancyModel> vacancies) {
+        mVacancies = vacancies;
+        mAdapter = new VacancyAdapter(getSupportFragmentManager(), mVacancies);
+        mVacancyContainer.setAdapter(mAdapter);
+        mVacancyContainer.setCurrentItem(findPosition(mVacancyToDisplay, mVacancies));
+    }
+
+    private int findPosition(VacancyModel vacancyToDisplay, List<VacancyModel> vacancies) {
+        for (int i = 0; i < vacancies.size(); i++) {
+            if (vacancies.get(i).equals(vacancyToDisplay)) {
                 return i;
             }
         }
@@ -92,6 +117,10 @@ public class VacancyViewerActivity extends BaseAnimationActivity
     @Override
     public void updateFavoriteVacancy(VacancyModel vacancy) {
         presenter.updateFavoriteStatusVacancy(vacancy);
+        VacancyModel updatedVacancy = vacancy.getUpdatedFavoriteVacancy();
+        Log.e("@@@", "updatedVacancy=" + updatedVacancy);
+        mVacancies.set(mVacancies.indexOf(vacancy), updatedVacancy);
+        mAdapter.notifyDataSetChanged();
     }
 
     @Override

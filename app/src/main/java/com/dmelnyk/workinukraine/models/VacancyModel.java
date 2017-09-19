@@ -45,9 +45,9 @@ public abstract class VacancyModel implements Parcelable {
             String title = Db.getString(cursor, Tables.SearchSites.Columns.TITLE);
             String date = Db.getString(cursor, Tables.SearchSites.Columns.DATE);
             String url = Db.getString(cursor, Tables.SearchSites.Columns.URL);
-            String site = Db.getString(cursor, Tables.SearchSites.Columns.TYPE);
+            String site = Db.getString(cursor, Tables.SearchSites.Columns.SITE);
             boolean isFavorite = Db.getBoolean(cursor, Tables.SearchSites.Columns.IS_FAVORITE);
-            int timeStatus = Db.getInt(cursor, Tables.SearchSites.Columns.IS_NEW);
+            int timeStatus = Db.getInt(cursor, Tables.SearchSites.Columns.TIME_STATUS);
 
             return VacancyModel.builder()
                     .setDate(date)
@@ -60,4 +60,22 @@ public abstract class VacancyModel implements Parcelable {
                     .build();
         }
     };
+
+    public VacancyModel getUpdatedFavoriteVacancy() {
+        return VacancyModel.builder()
+                .setDate(date())
+                .setIsFavorite(!isFavorite())
+                .setRequest(request())
+                .setSite(site())
+                .setTimeStatus(timeStatus())
+                .setTitle(title())
+                .setUrl(url())
+                .build();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        VacancyModel model = (VacancyModel) obj;
+        return this.url().equals(model.url());
+    }
 }

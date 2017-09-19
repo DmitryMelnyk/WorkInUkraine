@@ -24,6 +24,9 @@ public class Contract {
 
     public interface ISearchPresenter {
         void bindView(ISearchView view);
+
+        void editRequest(String previousRequest, String newRequest);
+
         void unbindView();
 
         void addRequest(String request);

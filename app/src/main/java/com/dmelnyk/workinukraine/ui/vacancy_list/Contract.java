@@ -22,7 +22,7 @@ public class Contract {
 
         void displayTabFragment(
                 String[] tabTitles,
-                Map<String, Integer> tabVacancyCount,
+                int[] tabVacancyCount,
                 int isButtonTubWithNewIcon,
                 Map<String, List<VacancyModel>> allVacancies);
 

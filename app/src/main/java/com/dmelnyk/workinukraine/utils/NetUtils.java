@@ -30,7 +30,7 @@ public class NetUtils {
     }
 
     private final OkHttpClient client = new OkHttpClient.Builder()
-            .retryOnConnectionFailure(false)
+            .retryOnConnectionFailure(true)
             .build();
 
     public String getHtmlPage(String url) {

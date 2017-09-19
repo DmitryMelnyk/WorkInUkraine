@@ -86,7 +86,7 @@ public class ParserHeadHunters {
                     .setIsFavorite(false)
                     .setTimeStatus(1) // new
                     .setRequest(request)
-                    .setSite(Tables.SearchSites.TYPE_SITES[0])
+                    .setSite(Tables.SearchSites.SITES[0])
                     .setTitle(title)
                     .setUrl(url)
                     .build();

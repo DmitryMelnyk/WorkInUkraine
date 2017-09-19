@@ -15,7 +15,7 @@
         <item name="colorControlNormal">@color/colorItem</item>
 
         <!-- FragmentSettings-->
-        <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
+        <!--<item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>-->
 
         <!-- Popup menu -->
         <item name="android:itemBackground">@color/colorBackground</item>

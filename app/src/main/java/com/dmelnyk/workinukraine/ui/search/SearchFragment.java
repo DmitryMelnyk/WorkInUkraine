@@ -29,7 +29,7 @@ import com.dmelnyk.workinukraine.ui.dialogs.request.DialogRequest;
 import com.dmelnyk.workinukraine.ui.search.Contract.ISearchPresenter;
 import com.dmelnyk.workinukraine.ui.search.di.DaggerSearchComponent;
 import com.dmelnyk.workinukraine.ui.search.di.SearchModule;
-import com.dmelnyk.workinukraine.ui.vacancy_list.VacancyActivity;
+import com.dmelnyk.workinukraine.ui.vacancy_list.VacancyListActivity;
 import com.dmelnyk.workinukraine.utils.BaseFragment;
 
 import java.lang.reflect.Field;
@@ -137,8 +137,6 @@ public class SearchFragment extends BaseFragment implements
         mRunDownloading = getArguments() != null
                 ? getArguments().getBoolean(ARGS_RUN_SEARCHING)
                 : false;
-
-        Log.e("1010", "SearchFragment onCreate");
     }
 
     @Override
@@ -394,13 +392,18 @@ public class SearchFragment extends BaseFragment implements
 
     // SearchAdapter.AdapterCallback for open Item Fragment
     @Override
-    public void onItemClicked(String itemRequestTitle) {
-        Timber.d("SearchAdapter.AdapterCallback.onItemClicked. Item = " + itemRequestTitle);
-        sItemClickedRequest = itemRequestTitle;
-        Intent vacancyActivityIntent = new Intent(getContext(), VacancyActivity.class);
-        vacancyActivityIntent.setAction(itemRequestTitle);
-        startActivityForResult(vacancyActivityIntent, REQUEST_CODE_VACANCY_ACTIVITY);
-        getActivity().overridePendingTransition(R.anim.slide_from_right, R.anim.slide_to_left);
+    public void onItemClicked(RequestModel itemRequest) {
+        Timber.d("SearchAdapter.AdapterCallback.onItemClicked. Item = " + itemRequest);
+        sItemClickedRequest = itemRequest.request();
+        if (itemRequest.vacanciesCount() == 0) {
+            Toast.makeText(getContext(), R.string.no_vacancies_found, Toast.LENGTH_LONG)
+                    .show();
+        } else {
+            Intent vacancyActivityIntent = new Intent(getContext(), VacancyListActivity.class);
+            vacancyActivityIntent.setAction(itemRequest.request());
+            startActivityForResult(vacancyActivityIntent, REQUEST_CODE_VACANCY_ACTIVITY);
+            getActivity().overridePendingTransition(R.anim.slide_from_right, R.anim.slide_to_left);
+        }
     }
 
     @Override
@@ -414,14 +417,12 @@ public class SearchFragment extends BaseFragment implements
     // CallbackListener add item
     @Override
     public void onTakeRequest(String request, @DialogRequest.MODE int mode) {
-        Log.e("1010", "DialogRequest. Mode=" + mode);
         switch (mode) {
             case DialogRequest.MODE_ADD_REQUEST:
                 presenter.addRequest(request);
                 break;
             case DialogRequest.MODE_EDIT_REQUEST:
-                presenter.removeRequest(sItemClickedRequest);
-                presenter.addRequest(request);
+                presenter.editRequest(sItemClickedRequest, request);
                 break;
         }
 
@@ -442,7 +443,6 @@ public class SearchFragment extends BaseFragment implements
     // CallbackListener remove item
     @Override
     public void onRemoveClicked(@DialogDelete.RemoveCode String removeCode) {
-        Timber.d("onRemoveClicked clicked. RequestCode=" + removeCode);
 
         switch (removeCode) {
             case DialogDelete.REMOVE_ALL_REQUESTS:
@@ -456,7 +456,6 @@ public class SearchFragment extends BaseFragment implements
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.e("999", "onActivityResult in SearchFragment");
         if (requestCode == REQUEST_CODE_VACANCY_ACTIVITY) {
             switch (resultCode) {
                 case RESULT_OK:
@@ -464,8 +463,7 @@ public class SearchFragment extends BaseFragment implements
                     presenter.getFreshRequests();
                     break;
                 case RESULT_CANCELED:
-                    Toast.makeText(getContext(), R.string.no_vacancies_found, Toast.LENGTH_LONG)
-                            .show();
+
                     break;
             }
         }

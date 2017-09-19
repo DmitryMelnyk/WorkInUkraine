@@ -27,6 +27,6 @@ class VacancyAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public int getCount() {
-        return mVacancies.size();
+        return mVacancies == null ? 0 : mVacancies.size();
     }
 }

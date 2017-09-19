@@ -109,7 +109,8 @@
         android:layout_height="match_parent"
         android:layout_width="match_parent"
         android:layout_marginTop="10dp"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        />
 
     <ImageButton
         android:id="@+id/settings_image_button"
@@ -121,7 +122,7 @@
         android:src="@mipmap/ic_settings_white"
         android:padding="8dp"
         android:transitionName="@string/fab_transition"
-        android:translationZ="12dp"
+        android:elevation="12dp"
         app:layout_anchor="@id/app_bar"
         app:layout_anchorGravity="bottom|right|end"
         />
@@ -133,7 +134,7 @@
         android:layout_marginLeft="20dp"
         android:layout_marginTop="25dp"
         android:padding="5dp"
-        android:translationZ="12dp"
+        android:elevation="12dp"
         android:visibility="gone"
         app:animation="true"
         app:backgroundColor="@color/colorAccent"

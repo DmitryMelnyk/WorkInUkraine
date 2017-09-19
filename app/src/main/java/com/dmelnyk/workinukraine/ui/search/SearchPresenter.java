@@ -120,8 +120,6 @@ public class SearchPresenter implements Contract.ISearchPresenter {
                 // -1l means that there was no search processing yet.
                 SimpleDateFormat timeFormat = new SimpleDateFormat("EE, HH:mm", Locale.getDefault());
                 String updated = timeFormat.format(new Date(time));
-                Log.e("1010", "updated time=" + updated);
-                view.updateLastSearchTime(updated);
                 return;
             }
 

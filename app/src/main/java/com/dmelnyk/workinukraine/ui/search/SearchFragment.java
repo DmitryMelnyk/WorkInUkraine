@@ -137,8 +137,6 @@ public class SearchFragment extends BaseFragment implements
         mRunDownloading = getArguments() != null
                 ? getArguments().getBoolean(ARGS_RUN_SEARCHING)
                 : false;
-
-        Log.e("1010", "SearchFragment onCreate");
     }
 
     @Override
@@ -419,7 +417,6 @@ public class SearchFragment extends BaseFragment implements
     // CallbackListener add item
     @Override
     public void onTakeRequest(String request, @DialogRequest.MODE int mode) {
-        Log.e("1010", "DialogRequest. Mode=" + mode);
         switch (mode) {
             case DialogRequest.MODE_ADD_REQUEST:
                 presenter.addRequest(request);
@@ -446,7 +443,6 @@ public class SearchFragment extends BaseFragment implements
     // CallbackListener remove item
     @Override
     public void onRemoveClicked(@DialogDelete.RemoveCode String removeCode) {
-        Timber.d("onRemoveClicked clicked. RequestCode=" + removeCode);
 
         switch (removeCode) {
             case DialogDelete.REMOVE_ALL_REQUESTS:
@@ -460,7 +456,6 @@ public class SearchFragment extends BaseFragment implements
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.e("999", "onActivityResult in SearchFragment");
         if (requestCode == REQUEST_CODE_VACANCY_ACTIVITY) {
             switch (resultCode) {
                 case RESULT_OK:

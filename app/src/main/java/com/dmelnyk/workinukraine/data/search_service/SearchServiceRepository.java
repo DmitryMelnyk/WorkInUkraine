@@ -125,7 +125,8 @@ public class SearchServiceRepository implements ISearchServiceRepository {
                     updateVacancyWithDate(vacancy, newVacancies.date());
                 } else {
                     // remove old vacancy
-                    deleteVacancy(vacancy);
+                    // TODO: in test mode. Don't remove old vacancies
+//                    deleteVacancy(vacancy);
                 }
             }
         }

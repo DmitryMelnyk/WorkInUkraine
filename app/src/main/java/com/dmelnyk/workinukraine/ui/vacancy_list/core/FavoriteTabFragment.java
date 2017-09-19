@@ -29,7 +29,7 @@ public class FavoriteTabFragment extends BaseTabFragment {
                              Bundle savedInstanceState) {
         createProperAdapter();
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_favorite, container, false);
+        View view = inflater.inflate(R.layout.fragment_base_rv, container, false);
 
         return view;
     }

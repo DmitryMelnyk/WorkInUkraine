@@ -24,6 +24,7 @@ import timber.log.Timber;
 
 public class VacancyListRepository implements IVacancyListRepository {
 
+    public static final String TABLE = Tables.SearchSites.TABLE_ALL_SITES;
     private final BriteDatabase db;
     private final Context context;
 
@@ -38,7 +39,7 @@ public class VacancyListRepository implements IVacancyListRepository {
 
         // All vacancies
         Observable<List<VacancyModel>> allObservable =
-                db.createQuery(Tables.SearchSites.TABLE_ALL_SITES, "SELECT * FROM "
+                db.createQuery(TABLE, "SELECT * FROM "
                         + Tables.SearchSites.TABLE_ALL_SITES + " WHERE "
                         + Tables.SearchSites.Columns.REQUEST + " ='" + request + "'")
                         .mapToList(VacancyModel.MAPPER);
@@ -84,14 +85,26 @@ public class VacancyListRepository implements IVacancyListRepository {
                     for (VacancyModel vacancy : all) {
                         Log.e("@@", "vacancy=" + vacancy);
                     }
-                    // After watching 'new' vacancies - update them to 'recent' (timeStatus = -1)
-                    if (!newest.isEmpty()) {
-                        convertRecentToOldVacancies(request);
-                        convertNewToRecentVacancies(request);
-                    }
+
                     db.close();
                     return result;
         });
+    }
+
+    @Override
+    public void updateTimeStatusVacancies(String request) {
+        // After watching 'new' vacancies - update them to 'recent' (timeStatus = -1)
+
+        Cursor cursorNewVacancies = db.query("SELECT * FROM " + TABLE
+                + " WHERE " + Tables.SearchSites.Columns.REQUEST + " ='" + request
+                + "' AND " + Tables.SearchSites.Columns.TIME_STATUS + " =1"); // new
+        if (cursorNewVacancies.getCount() > 0) {
+            convertRecentToOldVacancies(request);
+            convertNewToRecentVacancies(request);
+        }
+
+        cursorNewVacancies.close();
+        close();
     }
 
     private void convertRecentToOldVacancies(String request) {

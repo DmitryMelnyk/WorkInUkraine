@@ -106,10 +106,6 @@ public class VacancyListActivity extends BaseAnimationActivity implements
         initializeDependency(mRequest);
         initializeViews();
         presenter.bindView(this, mRequest);
-
-        if (savedInstanceState == null) {
-            mTabVacancyCount = null;
-        }
     }
 
     @Override
@@ -125,7 +121,6 @@ public class VacancyListActivity extends BaseAnimationActivity implements
         mSettingsImageButton.setOnClickListener(view -> startFilterActivity());
         CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) mSettingsImageButton.getLayoutParams();
         params.setBehavior(new ImageButtonBehavior());
-//        mSettingsImageButton.setLayoutParams(params);
         mSettingsImageButton.requestLayout();
 
         mButtonTabs.setOnTabClickListener(tabClicked -> {
@@ -134,6 +129,7 @@ public class VacancyListActivity extends BaseAnimationActivity implements
             updateTitleView(tabClicked);
         });
         mButtonTabs.setSaveEnabled(true);
+
     }
 
     private void startFilterActivity() {
@@ -233,7 +229,6 @@ public class VacancyListActivity extends BaseAnimationActivity implements
     public void onFragmentInteractionPopupMenuClicked(VacancyModel vacancy,
                                                       @VacancyCardViewAdapter.VacancyPopupMenuType int type) {
         presenter.onItemPopupMenuClicked(vacancy, type);
-        Timber.d("TAG", "popup menu clicked");
     }
 
     @Override
@@ -273,18 +268,21 @@ public class VacancyListActivity extends BaseAnimationActivity implements
             int buttonTabType,
             Map<String, List<VacancyModel>> allVacancies) {
 
-        mButtonTabType = buttonTabType;
-        // initialize ButtonTubs
-        initializeButtonTabs(buttonTabType);
         // Initialize tab titles
         mTabTitles = tabTitles;
         mTabVacancyCount = tabVacancyCount;
+        Log.e("ATTA", "mTabVacancyCount=" + mTabVacancyCount.toString());
+
+        mButtonTabType = buttonTabType;
+        // initialize ButtonTubs
+        initializeButtonTabs(buttonTabType);
         mSlideAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager(), mTabTitles, allVacancies);
         mViewPager.setAdapter(mSlideAdapter);
 
         if (!orientationHasChanged) {
             updateTitleView(0);
         }
+
     }
 
     @Override

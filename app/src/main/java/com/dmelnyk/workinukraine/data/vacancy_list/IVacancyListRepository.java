@@ -14,6 +14,13 @@ import io.reactivex.Observable;
 
 public interface IVacancyListRepository {
 
+    /**
+     * Converts 'new' vacancies to 'recent' and 'recent' to old
+     * This method should be called after displaying new vacancies
+     * @param request The request - vacancies with request that should be updated.
+     */
+    void updateTimeStatusVacancies(String request);
+
     Observable<List<VacancyModel>> getFavoriteVacancies(String request);
 
     /**

@@ -113,8 +113,10 @@ public class SitesTabFragment extends Fragment {
                     VacancyCardViewAdapter.TYPE_STANDARD);
             adapter.setOnAdapterInteractionListener(this);
 
-            RecyclerView recyclerView = new RecyclerView(container.getContext());
+            RecyclerView recyclerView = (RecyclerView) LayoutInflater.from(container.getContext())
+                    .inflate(R.layout.fragment_base_rv, null);
             recyclerView.setLayoutManager(new LinearLayoutManager(container.getContext()));
+
             recyclerView.setAdapter(adapter);
 
             container.addView(recyclerView);
@@ -157,7 +159,6 @@ public class SitesTabFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        Log.e("222", "onResume SitesTabFragment");
     }
 
     @Override

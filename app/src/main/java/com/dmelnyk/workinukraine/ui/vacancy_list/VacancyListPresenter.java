@@ -49,13 +49,11 @@ public class VacancyListPresenter implements Contract.IVacancyPresenter {
         this.view = view;
 
         // Don't do anything after orientation changes return
-        Log.e("!!!", "sIsDislpayed=" + sIsDisplayed);
         if (sIsDisplayed) return;
 
         // If request to database has been already received get the result in cache
         if (sDataCache != null) {
             // successful result
-            Log.e("!!!", "VacancyListPresenter. sDataCache=" + sDataCache);
             displayData(sDataCache);
         } else if (sError != null) {
             // error result
@@ -67,7 +65,7 @@ public class VacancyListPresenter implements Contract.IVacancyPresenter {
     @Override
     public void bindJustView(Contract.IVacancyView view) {
         this.view = view;
-        if (sDataCache != null) {
+        if (disposableFavorites != null) {
             updateFavorite();
         }
     }
@@ -143,6 +141,7 @@ public class VacancyListPresenter implements Contract.IVacancyPresenter {
     public void unbindView() {
         view = null;
         sIsDisplayed = false;
+        interactor.onVacanciesViewed(mRequest);
         // TODO: in bindView restore listeners
         if (saveOrRemoveDisposable != null) {
             saveOrRemoveDisposable.dispose();
@@ -175,7 +174,7 @@ public class VacancyListPresenter implements Contract.IVacancyPresenter {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(vacancies -> {
-                    Log.e("999", "updateFavorites is called");
+                    Log.e("VacancyListPres", "updateFavorites is called");
                     view.updateFavoriteTab(vacancies);
                     sFavoriteVacanciesCache = new ArrayList<VacancyModel>(vacancies);
                 }, throwable -> view.showErrorMessage(throwable.getMessage()));

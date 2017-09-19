@@ -63,4 +63,9 @@ public class VacancyListInteractor implements IVacancyListInteractor {
 
         return Completable.error(new Throwable("Error happened!"));
     }
+
+    @Override
+    public void onVacanciesViewed(String request) {
+        repository.updateTimeStatusVacancies(request);
+    }
 }

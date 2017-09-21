@@ -40,5 +40,7 @@ public class Contract {
                 VacancyModel vacancy, @VacancyCardViewAdapter.VacancyPopupMenuType int type);
 
         void clear();
+
+        void updateVacanciesTimeStatus();
     }
 }

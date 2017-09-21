@@ -3,10 +3,13 @@ package com.dmelnyk.workinukraine.data.repeating_search_service;
 import android.content.Context;
 import android.database.Cursor;
 
+import com.dmelnyk.workinukraine.data.settings.SettingsRepository;
 import com.dmelnyk.workinukraine.db.Tables;
 import com.dmelnyk.workinukraine.models.VacancyModel;
 import com.squareup.sqlbrite2.BriteDatabase;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import io.reactivex.Observable;
@@ -25,10 +28,12 @@ public class RepeatingSearchRepository implements IRepeatingSearchRepository {
 
     private final BriteDatabase db;
     private final Context appContext;
+    private final SettingsRepository settingsRepository;
 
-    public RepeatingSearchRepository(BriteDatabase db, Context context) {
+    public RepeatingSearchRepository(BriteDatabase db, Context context, SettingsRepository settingsRepo) {
         this.db = db;
         appContext = context;
+        settingsRepository = settingsRepo;
     }
 
     @Override
@@ -68,4 +73,59 @@ public class RepeatingSearchRepository implements IRepeatingSearchRepository {
     public void close() {
         db.close();
     }
+
+
+    @Override
+    public boolean isVibroEnable() {
+        return settingsRepository.getVibroCheckedStates();
+    }
+
+    @Override
+    public boolean isSoundEnable() {
+        return settingsRepository.getSoundCheckedStates();
+    }
+
+    @Override
+    public Calendar getCurrentTime() {
+        Calendar c = Calendar.getInstance();
+        c.setTime(new Date());
+        return c;
+    }
+
+    @Override
+    public Calendar getSleepFromTime() {
+        String time = settingsRepository.getSleepModeStatesFrom();
+        return getCalendarTime(time);
+    }
+
+    @Override
+    public Calendar getWakeTime() {
+        String time = settingsRepository.getSleepModeStatesTo();
+        return getCalendarTime(time);
+    }
+
+    @Override
+    public long getUpdateInterval() {
+        return settingsRepository.getPeriodInMillis();
+    }
+
+    @Override
+    public boolean isSleepModeEnabled() {
+        return settingsRepository.getSleepModeCheckedState();
+    }
+
+    private Calendar getCalendarTime(String time) {
+        String hour = time.split(":")[0];
+        String minute = time.split(":")[1];
+
+        Calendar c = Calendar.getInstance();
+        c.setTime(new Date());
+        c.set(Calendar.HOUR_OF_DAY, Integer.valueOf(hour));
+        c.set(Calendar.MINUTE, Integer.valueOf(minute));
+        c.set(Calendar.SECOND, 0);
+
+        return c;
+    }
+
+
 }

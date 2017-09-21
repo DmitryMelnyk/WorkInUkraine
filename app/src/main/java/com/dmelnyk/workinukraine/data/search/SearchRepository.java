@@ -31,12 +31,11 @@ public class SearchRepository implements ISearchRepository {
 
     @Override
     public Completable clearAllRequests() {
-        Log.e("555", "Clearing all data");
         try {
             db.delete(Tables.SearchRequest.TABLE_REQUEST, "");
             db.delete(Tables.SearchSites.TABLE_ALL_SITES, "");
         } catch (Exception e) {
-            Log.e("555", e.getMessage());
+            Timber.e(e.getMessage());
             return Completable.error(e);
         }
 

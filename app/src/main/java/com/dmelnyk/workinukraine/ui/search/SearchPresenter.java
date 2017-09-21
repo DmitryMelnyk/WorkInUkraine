@@ -35,12 +35,12 @@ public class SearchPresenter implements Contract.ISearchPresenter {
     @Override
     public void bindView(ISearchView view) {
         this.view = view;
-        // If you already receive data from interactor
+
+//         If you already receive data from interactor
         if (sCache != null) {
             displayData(sCache);
         }
     }
-
 
     @Override
     public void addRequest(String request) {
@@ -80,7 +80,6 @@ public class SearchPresenter implements Contract.ISearchPresenter {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(requestsList -> {
                     sCache = requestsList;
-
                     if (view != null) {
                         displayData(requestsList);
                     }

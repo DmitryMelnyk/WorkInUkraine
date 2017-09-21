@@ -1,5 +1,7 @@
 package com.dmelnyk.workinukraine.data.search_service;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
 
@@ -17,6 +19,8 @@ import java.util.Set;
 import io.reactivex.Observable;
 import timber.log.Timber;
 
+import static com.dmelnyk.workinukraine.data.vacancy_list.VacancyListRepository.SHARED_PREF;
+
 /**
  * Created by d264 on 7/25/17.
  */
@@ -24,14 +28,17 @@ import timber.log.Timber;
 public class SearchServiceRepository implements ISearchServiceRepository {
 
     private final BriteDatabase db;
+    private final Context context;
 
+    public static final String TABLE = Tables.SearchSites.TABLE_ALL_SITES;
     private static final String REQUEST_TABLE = Tables.SearchRequest.TABLE_REQUEST;
     private static final String SELECT_ALL_FROM = "SELECT * FROM ";
     private static final String WHERE_ = " WHERE "
             + Tables.SearchSites.Columns.REQUEST + " = ";
 
-    public SearchServiceRepository(BriteDatabase db) {
+    public SearchServiceRepository(BriteDatabase db, Context context) {
         this.db = db;
+        this.context = context;
     }
 
     @Override
@@ -50,9 +57,14 @@ public class SearchServiceRepository implements ISearchServiceRepository {
     @Override
     public void saveVacancies(List<VacancyModel> allVacancies) throws Exception {
         Timber.d("Found %d vacancies", allVacancies.size());
+
         if (allVacancies.isEmpty()) return; // TODO update data in request table
 
         String request = allVacancies.get(0).request();
+
+        if (shouldBeUpdated(request)) {
+            updateTimeStatusVacancies(request);
+        }
 
         // Getting previous vacancies
         List<VacancyModel> oldVacancies = getPreviousVacancies(request);
@@ -71,19 +83,6 @@ public class SearchServiceRepository implements ISearchServiceRepository {
         updateRequestTable(request, allVacancies.size(), newVacanciesCount, updatingTime);
 
         db.close();
-    }
-
-    private int getNewVacanciesCount(String request) {
-        Cursor newVacanciesCursor = db.query(
-                SELECT_ALL_FROM + Tables.SearchSites.TABLE_ALL_SITES
-                + WHERE_ + "'" + request + "' AND "
-                + Tables.SearchSites.Columns.TIME_STATUS + "=1");
-
-        int newVacancies = newVacanciesCursor.getCount();
-        newVacanciesCursor.close();
-        Timber.d("New vacancies count=" + newVacancies);
-
-        return newVacancies;
     }
 
     @NonNull
@@ -130,6 +129,66 @@ public class SearchServiceRepository implements ISearchServiceRepository {
                 }
             }
         }
+    }
+
+    private int getNewVacanciesCount(String request) {
+        Cursor newVacanciesCursor = db.query(
+                SELECT_ALL_FROM + Tables.SearchSites.TABLE_ALL_SITES
+                        + WHERE_ + "'" + request + "' AND "
+                        + Tables.SearchSites.Columns.TIME_STATUS + "=1");
+
+        int newVacancies = newVacanciesCursor.getCount();
+        newVacanciesCursor.close();
+        Timber.d("New vacancies count=" + newVacancies);
+
+        return newVacancies;
+    }
+
+    private boolean shouldBeUpdated(String request) {
+        SharedPreferences preferences = context.getSharedPreferences(SHARED_PREF, 0);
+        return preferences.getBoolean(request, false);
+    }
+
+    private void saveUpdatingTask(String request, boolean shouldBeUpdated) {
+        SharedPreferences preferences = context.getSharedPreferences(SHARED_PREF, 0);
+        preferences.edit().putBoolean(request, shouldBeUpdated).commit();
+    }
+
+    private void updateTimeStatusVacancies(String request) {
+        // After watching 'new' vacancies - update them to 'recent' (timeStatus = -1)
+
+        Cursor cursorNewVacancies = db.query("SELECT * FROM " + TABLE
+                + " WHERE " + Tables.SearchSites.Columns.REQUEST + " ='" + request
+                + "' AND " + Tables.SearchSites.Columns.TIME_STATUS + " =1"); // new
+        if (cursorNewVacancies.getCount() > 0) {
+            convertRecentToOldVacancies(request);
+            convertNewToRecentVacancies(request);
+        }
+
+        cursorNewVacancies.close();
+        saveUpdatingTask(request, false);
+    }
+
+    private void convertRecentToOldVacancies(String request) {
+        db.execute("UPDATE " + Tables.SearchSites.TABLE_ALL_SITES
+                + " SET " + Tables.SearchSites.Columns.TIME_STATUS + "=-1"
+                + " WHERE " + Tables.SearchSites.Columns.REQUEST + " ='" + request
+                + "' AND " + Tables.SearchSites.Columns.TIME_STATUS + "=0");
+    }
+
+    private void convertNewToRecentVacancies(String request) {
+        Timber.d("\nclearing New vacancies with request=%s", request);
+
+        db.execute("UPDATE " + Tables.SearchSites.TABLE_ALL_SITES
+                + " SET " + Tables.SearchSites.Columns.TIME_STATUS + "=0" // convert to recent
+                + " WHERE " + Tables.SearchSites.Columns.REQUEST + " ='" + request
+                + "' AND " + Tables.SearchSites.Columns.TIME_STATUS + "=1"); // from new
+
+        // updating Request's table
+        db.execute("UPDATE " + Tables.SearchRequest.TABLE_REQUEST
+                + " SET " + Tables.SearchRequest.Columns.NEW_VACANCIES
+                + "=0 WHERE " + Tables.SearchRequest.Columns.REQUEST
+                + "='" + request + "'");
     }
 
     private void updateVacancyWithDate(VacancyModel vacancy, String date) {

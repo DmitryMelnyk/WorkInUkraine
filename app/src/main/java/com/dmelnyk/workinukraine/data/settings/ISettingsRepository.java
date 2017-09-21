@@ -9,7 +9,7 @@ public interface ISettingsRepository {
     String getPeriodStatesText();
     boolean getSoundCheckedStates();
     boolean getVibroCheckedStates();
-    boolean getSleepModeCheckedStates();
+    boolean getSleepModeCheckedState();
 
     void savePeriodPosition(int checkedNumPosition);
     void saveSoundState(boolean checked);
@@ -25,6 +25,8 @@ public interface ISettingsRepository {
     String getVibroStateText();
 
     int getPeriodPosition();
+
+    int getPeriodInMillis();
 
     int getPeriodInMillis(int periodIndex);
 

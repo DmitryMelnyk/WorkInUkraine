@@ -141,7 +141,6 @@ public class VacancyListPresenter implements Contract.IVacancyPresenter {
     public void unbindView() {
         view = null;
         sIsDisplayed = false;
-        interactor.onVacanciesViewed(mRequest);
         // TODO: in bindView restore listeners
         if (saveOrRemoveDisposable != null) {
             saveOrRemoveDisposable.dispose();
@@ -149,6 +148,11 @@ public class VacancyListPresenter implements Contract.IVacancyPresenter {
         if (vacanciesDisposable != null) {
             vacanciesDisposable.dispose();
         }
+    }
+
+    @Override
+    public void updateVacanciesTimeStatus() {
+        interactor.onVacanciesViewed(mRequest);
     }
 
     @Override

@@ -19,7 +19,7 @@ public class SettingsInteractor implements ISettingsInteractor {
         boolean[] states = new boolean[3];
         states[0] = repository.getSoundCheckedStates();
         states[1] = repository.getVibroCheckedStates();
-        states[2] = repository.getSleepModeCheckedStates();
+        states[2] = repository.getSleepModeCheckedState();
         return states;
     }
 

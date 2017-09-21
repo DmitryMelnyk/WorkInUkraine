@@ -4,6 +4,7 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.icu.text.SimpleDateFormat;
 import android.os.SystemClock;
 import android.util.Log;
 
@@ -11,6 +12,8 @@ import com.dmelnyk.workinukraine.data.repeating_search_service.IRepeatingSearchR
 import com.dmelnyk.workinukraine.db.di.DbModule;
 import com.dmelnyk.workinukraine.services.alarm.di.DaggerRepeatingSearchComponent;
 import com.dmelnyk.workinukraine.services.alarm.di.RepeatingSearchModule;
+
+import java.util.Date;
 
 import javax.inject.Inject;
 
@@ -25,7 +28,7 @@ public class AlarmClockUtil {
 
     @Inject IRepeatingSearchRepository repository;
 
-    private static final long INTERVAL = AlarmManager.INTERVAL_HOUR;
+    private long INTERVAL = AlarmManager.INTERVAL_HOUR * 3;
     private AlarmManager alarmManager;
     private PendingIntent alarmIntent;
 
@@ -35,6 +38,8 @@ public class AlarmClockUtil {
                 .dbModule(new DbModule(context.getApplicationContext()))
                 .build()
                 .inject(this);
+
+        INTERVAL = repository.getUpdateInterval();
 
         alarmManager = (AlarmManager) context.getApplicationContext()
                 .getSystemService(Context.ALARM_SERVICE);
@@ -53,11 +58,27 @@ public class AlarmClockUtil {
             return;
         }
 
+
         Timber.d("AlarmClock starts!");
         Log.e("999", "alarm started!");
         stopAlarmClock();
         alarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
                 SystemClock.elapsedRealtime() + INTERVAL, INTERVAL, alarmIntent);
+    }
+
+    public void startAlarmClockAtTime(long time) {
+        if (repository.getRequestCount() == 0) {
+            // don't start repeating alarm if there is no request
+           Timber.d("repeating alarm doesn't start because of empty request list");
+            return;
+        }
+
+        SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy, hh:mm");
+        String nextAlarm = format.format(new Date(time));
+        Timber.d("AlarmClock will be running at =" + nextAlarm);
+        stopAlarmClock();
+        alarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
+                time, INTERVAL, alarmIntent);
     }
 
     /**

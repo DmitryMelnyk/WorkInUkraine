@@ -1,6 +1,8 @@
 package com.dmelnyk.workinukraine.services.alarm;
 
 import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -8,10 +10,16 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.RingtoneManager;
+import android.media.SoundPool;
+import android.net.Uri;
+import android.os.Build;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
+import android.provider.Settings;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.LocalBroadcastManager;
-import android.util.Base64;
 import android.util.Log;
 
 import com.dmelnyk.workinukraine.R;
@@ -22,7 +30,7 @@ import com.dmelnyk.workinukraine.services.alarm.di.DaggerRepeatingSearchComponen
 import com.dmelnyk.workinukraine.services.alarm.di.RepeatingSearchModule;
 import com.dmelnyk.workinukraine.ui.navigation.NavigationActivity;
 
-import java.io.ByteArrayOutputStream;
+import java.util.Calendar;
 
 import javax.inject.Inject;
 
@@ -36,6 +44,8 @@ public class AlarmReceiver extends BroadcastReceiver {
 
     @Inject
     IRepeatingSearchRepository repository;
+
+    @Inject AlarmClockUtil alarmClockUtil;
 
     private Context mContext;
 
@@ -51,9 +61,34 @@ public class AlarmReceiver extends BroadcastReceiver {
                 .build()
                 .inject(this);
 
-        registerSearchBroadcastReceiver(context);
-        // Starting searching service
-        startSearchVacanciesService(context);
+        // check i is time to turn of service. In that case starts morning alarm
+        // Starts repeating service if it is enable in settings and there is time
+        // before sleep.
+        if (!repository.isSleepModeEnabled()
+                || repository.getSleepFromTime().after(repository.getCurrentTime())) {
+            // Starting searching service
+            registerSearchBroadcastReceiver(context);
+            startSearchVacanciesService(context);
+        } else {
+                Timber.d("Vacancy service stopped! Time to sleep!");
+                Log.e("ALARM", "Vacancy service stopped! Time to sleep!");
+                // Starts wake alarm
+                long wakeUpTime = getMorningAlarm(
+                        repository.getCurrentTime(),
+                        repository.getWakeTime());
+
+                alarmClockUtil.startAlarmClockAtTime(wakeUpTime);
+            }
+    }
+
+    // Check if wake time is in the past. Then add 1 day.
+    private long getMorningAlarm(Calendar calendarNow, Calendar calendarWakeTime) {
+        if (calendarWakeTime.before(calendarNow)) {
+            // if time is in the past add 1 day
+            calendarWakeTime.add(Calendar.DATE, 1);
+        }
+
+        return calendarWakeTime.getTimeInMillis();
     }
 
     private void registerSearchBroadcastReceiver(Context context) {
@@ -106,19 +141,47 @@ public class AlarmReceiver extends BroadcastReceiver {
         final Bitmap largeExpandedAvatar = BitmapFactory.decodeResource(
                 mContext.getResources(), R.mipmap.ic_launcher);
 
-        Notification notification = new NotificationCompat.Builder(mContext)
+        boolean isVibroEnable = repository.isVibroEnable();
+        boolean isSoundEnable = repository.isSoundEnable();
+
+        // for Version >= 26
+        initChannels(mContext);
+
+        NotificationCompat.Builder notification = new NotificationCompat.Builder(mContext, "default")
                 .setContentTitle(mContext.getString(R.string.app_name))
                 .setContentText("Найдено новых вакансий: " + vacanciesFound)
                 .setSmallIcon(R.drawable.ic_work_black_24dp)
                 .setLargeIcon(largeExpandedAvatar)
                 .setContentIntent(createPendingIntent(mContext))
-                .setDefaults(Notification.DEFAULT_ALL)
-                .setAutoCancel(true)
-                .build();
+                .setAutoCancel(true);
+
+        if (isVibroEnable ) {
+            notification.setVibrate(new long[]{1000, 1000});
+        }
+
+        if (isSoundEnable) {
+            Uri notificationSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+            notification.setSound(notificationSound);
+        }
 
         NotificationManagerCompat nm = NotificationManagerCompat.from(mContext);
-        nm.notify(NotificationManagerCompat.IMPORTANCE_DEFAULT, notification);
+        nm.notify(NotificationManagerCompat.IMPORTANCE_DEFAULT, notification.build());
     }
+
+
+    public void initChannels(Context context) {
+        if (Build.VERSION.SDK_INT < 26) {
+            return;
+        }
+        NotificationManager notificationManager =
+                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        NotificationChannel channel = new NotificationChannel("default",
+                "Channel name",
+                NotificationManager.IMPORTANCE_DEFAULT);
+        channel.setDescription("Channel description");
+        notificationManager.createNotificationChannel(channel);
+    }
+
 
     private PendingIntent createPendingIntent(Context context) {
         Intent intent = new Intent(context, NavigationActivity.class);

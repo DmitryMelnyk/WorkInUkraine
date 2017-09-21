@@ -212,8 +212,6 @@ public class SearchFragment extends BaseFragment implements
         filter.addAction(SearchVacanciesService.ACTION_DOWNLOADING_IN_PROGRESS);
         LocalBroadcastManager.getInstance(getContext())
                 .registerReceiver(mDownloadingBroadcastReceiver, filter);
-
-//        presenter.getFreshRequests();
     }
 
     @Override

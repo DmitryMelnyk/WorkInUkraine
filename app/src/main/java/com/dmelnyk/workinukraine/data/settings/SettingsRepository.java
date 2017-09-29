@@ -4,6 +4,8 @@ import android.content.Context;
 
 import com.dmelnyk.workinukraine.R;
 
+import javax.inject.Inject;
+
 /**
  * Created by d264 on 6/27/17.
  */
@@ -25,6 +27,7 @@ public class SettingsRepository implements ISettingsRepository {
 
     private Context mContext;
 
+    @Inject
     public SettingsRepository(Context mContext) {
         this.mContext = mContext;
     }
@@ -35,6 +38,12 @@ public class SettingsRepository implements ISettingsRepository {
     public int getPeriodPosition() {
         return mContext.getSharedPreferences(SETTINGS, 0)
                 .getInt(PERIOD, PERIOD_DEFAULT);
+    }
+
+    @Override
+    public int getPeriodInMillis() {
+        int position = getPeriodPosition();
+        return getPeriodInMillis(position);
     }
 
     @Override
@@ -65,7 +74,7 @@ public class SettingsRepository implements ISettingsRepository {
     }
 
     @Override
-    public boolean getSleepModeCheckedStates() {
+    public boolean getSleepModeCheckedState() {
         return mContext.getSharedPreferences(SETTINGS, 0)
                 .getBoolean(SLEEP_MODE, CHECKED_DEFAULT);
     }

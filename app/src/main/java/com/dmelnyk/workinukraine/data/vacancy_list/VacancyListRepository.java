@@ -1,6 +1,7 @@
 package com.dmelnyk.workinukraine.data.vacancy_list;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.util.Log;
 
@@ -25,6 +26,7 @@ import timber.log.Timber;
 public class VacancyListRepository implements IVacancyListRepository {
 
     public static final String TABLE = Tables.SearchSites.TABLE_ALL_SITES;
+    public static final String SHARED_PREF = "shared_pref"; // for saving vacancy updating status
     private final BriteDatabase db;
     private final Context context;
 
@@ -37,6 +39,9 @@ public class VacancyListRepository implements IVacancyListRepository {
     public Observable<Map<String, List<VacancyModel>>> getAllVacancies(String request) {
         Timber.d("\ngetAllVacancies, request =%s", request);
 
+        if (shouldBeUpdated(request)) {
+            updateTimeStatusVacancies(request);
+        }
         // All vacancies
         Observable<List<VacancyModel>> allObservable =
                 db.createQuery(TABLE, "SELECT * FROM "
@@ -86,6 +91,11 @@ public class VacancyListRepository implements IVacancyListRepository {
                         Log.e("@@", "vacancy=" + vacancy);
                     }
 
+                    if (!newest.isEmpty()) {
+                        saveUpdatingTask(request, true);
+                        updateRequestTableData(request); // setting newVacancies count to 0
+                    }
+
                     db.close();
                     return result;
         });
@@ -104,29 +114,7 @@ public class VacancyListRepository implements IVacancyListRepository {
         }
 
         cursorNewVacancies.close();
-        close();
-    }
-
-    private void convertRecentToOldVacancies(String request) {
-        db.execute("UPDATE " + Tables.SearchSites.TABLE_ALL_SITES
-                + " SET " + Tables.SearchSites.Columns.TIME_STATUS + "=-1"
-                + " WHERE " + Tables.SearchSites.Columns.REQUEST + " ='" + request
-                + "' AND " + Tables.SearchSites.Columns.TIME_STATUS + "=0");
-    }
-
-    private void convertNewToRecentVacancies(String request) {
-        Timber.d("\nclearing New vacancies with request=%s", request);
-
-        db.execute("UPDATE " + Tables.SearchSites.TABLE_ALL_SITES
-                + " SET " + Tables.SearchSites.Columns.TIME_STATUS + "=0" // convert to recent
-                + " WHERE " + Tables.SearchSites.Columns.REQUEST + " ='" + request
-                + "' AND " + Tables.SearchSites.Columns.TIME_STATUS + "=1"); // from new
-
-        // updating Request's table
-        db.execute("UPDATE " + Tables.SearchRequest.TABLE_REQUEST
-                + " SET " + Tables.SearchRequest.Columns.NEW_VACANCIES
-                + "=0 WHERE " + Tables.SearchRequest.Columns.REQUEST
-                + "='" + request + "'");
+        saveUpdatingTask(request, false);
     }
 
     @Override
@@ -205,5 +193,40 @@ public class VacancyListRepository implements IVacancyListRepository {
     @Override
     public void close() {
         db.close();
+    }
+
+    private void convertRecentToOldVacancies(String request) {
+        db.execute("UPDATE " + Tables.SearchSites.TABLE_ALL_SITES
+                + " SET " + Tables.SearchSites.Columns.TIME_STATUS + "=-1"
+                + " WHERE " + Tables.SearchSites.Columns.REQUEST + " ='" + request
+                + "' AND " + Tables.SearchSites.Columns.TIME_STATUS + "=0");
+    }
+
+    private void convertNewToRecentVacancies(String request) {
+        Timber.d("\nclearing New vacancies with request=%s", request);
+
+        db.execute("UPDATE " + Tables.SearchSites.TABLE_ALL_SITES
+                + " SET " + Tables.SearchSites.Columns.TIME_STATUS + "=0" // convert to recent
+                + " WHERE " + Tables.SearchSites.Columns.REQUEST + " ='" + request
+                + "' AND " + Tables.SearchSites.Columns.TIME_STATUS + "=1"); // from new
+    }
+
+    private void updateRequestTableData(String request) {
+        // updating Request's table
+        Log.e("VLR", "updating request table");
+        db.execute("UPDATE " + Tables.SearchRequest.TABLE_REQUEST
+                + " SET " + Tables.SearchRequest.Columns.NEW_VACANCIES
+                + "=0 WHERE " + Tables.SearchRequest.Columns.REQUEST
+                + "='" + request + "'");
+    }
+
+    private boolean shouldBeUpdated(String request) {
+        SharedPreferences preferences = context.getSharedPreferences(SHARED_PREF, 0);
+        return preferences.getBoolean(request, false);
+    }
+
+    private void saveUpdatingTask(String request, boolean shouldBeUpdated) {
+        SharedPreferences preferences = context.getSharedPreferences(SHARED_PREF, 0);
+        preferences.edit().putBoolean(request, shouldBeUpdated).commit();
     }
 }

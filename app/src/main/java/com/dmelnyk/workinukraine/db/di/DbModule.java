@@ -58,7 +58,7 @@ public class DbModule {
     }
 
     @Provides @Singleton
-    ISearchServiceRepository provideSearchRepository(BriteDatabase database) {
-        return new SearchServiceRepository(database);
+    ISearchServiceRepository provideSearchRepository(BriteDatabase database, Context context) {
+        return new SearchServiceRepository(database, context);
     }
 }

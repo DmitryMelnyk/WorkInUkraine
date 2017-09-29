@@ -2,6 +2,7 @@ package com.dmelnyk.workinukraine.data.repeating_search_service;
 
 import com.dmelnyk.workinukraine.models.VacancyModel;
 
+import java.util.Calendar;
 import java.util.List;
 
 import io.reactivex.Single;
@@ -34,4 +35,39 @@ public interface IRepeatingSearchRepository {
     void saveNewVacanciesCount(int newVacancies);
 
     void close();
+
+    /**
+     * @return The info about vibration settings for notification.
+     */
+    boolean isVibroEnable();
+
+    /**
+     * @return The info about sound settings for notification.
+     */
+    boolean isSoundEnable();
+
+    /**
+     * @return The calendar with current time
+     */
+    Calendar getCurrentTime();
+
+    /**
+     * @return The calendar with time when app should STOP receiving new vacancies
+     */
+    Calendar getSleepFromTime();
+
+    /**
+     * @return The calendar with time when app should START receiving new vacancies
+     */
+    Calendar getWakeTime();
+
+    /**
+     * @return The time for repeating search in milliseconds
+     */
+    long getUpdateInterval();
+
+    /**
+     * @return The status of enabling repeated search
+     */
+    boolean isSleepModeEnabled();
 }

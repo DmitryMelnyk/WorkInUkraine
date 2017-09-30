@@ -78,6 +78,10 @@ public class VacancyViewerActivity extends BaseAnimationActivity
 
         Log.e("@@", "site=" + mSite);
         Log.e("@@", "type=" + mType);
+
+        // callback result used by VacancyListActivity to get fresh favorite vacancies
+        // because they can be changed by adding/removing in this activity
+        setResult(RESULT_OK);
     }
 
     @Override

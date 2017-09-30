@@ -28,6 +28,7 @@ public class DialogDownloading extends BaseDialog {
 
     private static final String ARG_IS_DOWNLOADING = "animation_is_on";
     private static final java.lang.String ARG_TOTAL_VACANCIES_COUNT = "total_vacancies_count";
+    @BindView(R.id.button_cancel) Button buttonCancel;
     @BindView(R.id.button_ok) Button buttonOk;
     @BindView(R.id.rotateLoading) RotateLoading rotateLoading;
     @BindView(R.id.downloadingStartedLayout) LinearLayout downloadingStartedLayout;
@@ -78,13 +79,18 @@ public class DialogDownloading extends BaseDialog {
         downloadingStartedLayout.setVisibility(View.GONE);
         downloadingFinishedLayout.setVisibility(View.VISIBLE);
         mVacancyCountTextView.setText("" + count);
+        buttonCancel.setVisibility(View.GONE);
         buttonOk.setEnabled(true);
         buttonOk.setVisibility(View.VISIBLE);
     }
 
-    @OnClick(R.id.button_ok)
+    @OnClick({ R.id.button_ok, R.id.button_cancel })
     public void onViewClicked(View view) {
         switch (view.getId()) {
+            case R.id.button_cancel:
+                mCallback.onCancelClickedDownloadingDialog();
+                dismiss();
+                break;
             case R.id.button_ok:
                 mCallback.onOkClickedInDownloadingDialog();
                 dismiss();
@@ -95,7 +101,10 @@ public class DialogDownloading extends BaseDialog {
     public void setCallback(CallbackLister callback) {
         this.mCallback = callback;
     }
+
     public interface CallbackLister {
         void onOkClickedInDownloadingDialog();
+
+        void onCancelClickedDownloadingDialog();
     }
 }

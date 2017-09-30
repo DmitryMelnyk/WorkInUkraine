@@ -1,16 +1,18 @@
 package com.dmelnyk.workinukraine.ui.search;
 
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -223,22 +225,9 @@ public class SearchFragment extends BaseFragment implements
     @Override
     public void onStop() {
         super.onStop();
+        unbindSearchService();
         LocalBroadcastManager.getInstance(getContext())
                 .unregisterReceiver(mDownloadingBroadcastReceiver);
-    }
-
-    private void restoreDialogs() {
-        // restoring DeleteDialog if needed
-        mDialogDelete = (DialogDelete) getFragmentManager().findFragmentByTag(TAG_DIALOG_DELETE);
-        if (mDialogDelete != null) {
-            mDialogDelete.setCallback(this);
-        }
-
-        // restoring RequestDialog if needed
-        mDialogRequest = (DialogRequest) getFragmentManager().findFragmentByTag(TAG_DIALOG_REQUEST);
-        if (mDialogRequest != null) {
-            mDialogRequest.setCallback(this);
-        }
     }
 
     @Override
@@ -316,7 +305,11 @@ public class SearchFragment extends BaseFragment implements
                 getContext().getApplicationContext(), SearchVacanciesService.class);
 
         searchService.putExtra(SearchVacanciesService.EXTRA_MODE, SearchVacanciesService.MODE_SEARCH);
-        getContext().startService(searchService);
+        getContext().bindService(searchService, mSearchConnection, Context.BIND_AUTO_CREATE);
+    }
+
+   private void stopSearchVacanciesService() {
+       mSearchVacanciesService.cancelDownloading();
     }
 
     @Override
@@ -360,7 +353,6 @@ public class SearchFragment extends BaseFragment implements
 
     @Override
     public void showErrorMessage(String message) {
-//        Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
         Toast.makeText(getContext(), getString(R.string.errors_db_request_already_exists), Toast.LENGTH_SHORT).show();
     }
 
@@ -406,10 +398,18 @@ public class SearchFragment extends BaseFragment implements
 
     @Override
     public void onOkClickedInDownloadingDialog() {
+        unbindSearchService();
         resetDialogDownloading();
         // close NavigationActivity's menu in case
         // downloading was started from NavigationActivity
         closeMainMenuCallback();
+    }
+
+    @Override
+    public void onCancelClickedDownloadingDialog() {
+        stopSearchVacanciesService();
+        unbindSearchService();
+        resetDialogDownloading();
     }
 
     // CallbackListener add item
@@ -464,6 +464,42 @@ public class SearchFragment extends BaseFragment implements
 
                     break;
             }
+        }
+    }
+
+    private boolean mBound;
+    private SearchVacanciesService mSearchVacanciesService;
+    private ServiceConnection mSearchConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+            SearchVacanciesService.SearchBinder binder = (SearchVacanciesService.SearchBinder) iBinder;
+            mBound = true;
+            mSearchVacanciesService = binder.getService();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) {
+            mBound = false;
+        }
+    };
+
+    private void unbindSearchService() {
+        if (mBound) {
+            getContext().unbindService(mSearchConnection);
+        }
+    }
+
+    private void restoreDialogs() {
+        // restoring DeleteDialog if needed
+        mDialogDelete = (DialogDelete) getFragmentManager().findFragmentByTag(TAG_DIALOG_DELETE);
+        if (mDialogDelete != null) {
+            mDialogDelete.setCallback(this);
+        }
+
+        // restoring RequestDialog if needed
+        mDialogRequest = (DialogRequest) getFragmentManager().findFragmentByTag(TAG_DIALOG_REQUEST);
+        if (mDialogRequest != null) {
+            mDialogRequest.setCallback(this);
         }
     }
 

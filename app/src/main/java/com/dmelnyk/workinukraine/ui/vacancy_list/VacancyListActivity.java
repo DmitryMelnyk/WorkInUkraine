@@ -290,6 +290,7 @@ public class VacancyListActivity extends BaseAnimationActivity implements
             updateTitleView(0);
         }
 
+
     }
 
     @Override
@@ -352,6 +353,15 @@ public class VacancyListActivity extends BaseAnimationActivity implements
         mTabVacancyCount[2] = vacancies.size();
         if (mViewPager.getCurrentItem() == 2) {
             updateTitleView(2);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == WEBVIEW_REQUEST_CODE) {
+            // call to load fresh list of favorites vacancies
+            presenter.bindJustView(this);
         }
     }
 }

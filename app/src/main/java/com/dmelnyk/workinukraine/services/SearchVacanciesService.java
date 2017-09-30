@@ -2,8 +2,12 @@ package com.dmelnyk.workinukraine.services;
 
 import android.app.IntentService;
 import android.content.Intent;
+import android.os.Binder;
+import android.os.IBinder;
 import android.support.annotation.IntDef;
+import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 
 import com.dmelnyk.workinukraine.models.RequestModel;
 import com.dmelnyk.workinukraine.db.di.DaggerDbComponent;
@@ -45,6 +49,7 @@ public class SearchVacanciesService extends IntentService {
     public static final String ACTION_DOWNLOADING_IN_PROGRESS = "downloading in process";
 
     public static boolean sIsDownloadingFinished = false;
+    private ExecutorService pool;
 
     @IntDef({MODE_SEARCH, MODE_REPEATING_SEARCH})
     @Retention(RetentionPolicy.CLASS)
@@ -63,6 +68,9 @@ public class SearchVacanciesService extends IntentService {
     private final static int WORKUA        = 4;
 
     private int mMode;
+
+    // Binder given to clients
+    private final IBinder mBinder = new SearchBinder();
 
     public SearchVacanciesService() {
         super(SearchVacanciesService.class.getName());
@@ -88,8 +96,25 @@ public class SearchVacanciesService extends IntentService {
                 });
     }
 
+    @Nullable
+    @Override
+    public IBinder onBind(Intent intent) {
+        return mBinder;
+    }
+
+    public void cancelDownloading() {
+        Log.e(getClass().getSimpleName(), "stopService()");
+        pool.shutdownNow();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.e(getClass().getSimpleName(), "onDestroy()");
+    }
+
     private void startSearching(List<RequestModel> requests) {
-        ExecutorService pool = Executors.newCachedThreadPool();
+        pool = Executors.newCachedThreadPool();
         // Creating parallel search tasks for each search request
         long startTime = System.currentTimeMillis();
 
@@ -219,6 +244,12 @@ public class SearchVacanciesService extends IntentService {
         // Saves vacancies after getting results from all 5 sites
         if (count.get(request) == 5) {
             repository.saveVacancies(cache.get(request));
+        }
+    }
+
+    public class SearchBinder extends Binder {
+        public SearchVacanciesService getService() {
+            return SearchVacanciesService.this;
         }
     }
 }

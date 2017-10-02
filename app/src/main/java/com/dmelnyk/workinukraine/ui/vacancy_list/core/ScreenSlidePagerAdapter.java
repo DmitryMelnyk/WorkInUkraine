@@ -5,7 +5,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.view.ViewGroup;
 
-import com.dmelnyk.workinukraine.business.vacancy_list.IVacancyListInteractor;
+import com.dmelnyk.workinukraine.ui.vacancy_list.business.IVacancyListInteractor;
 import com.dmelnyk.workinukraine.models.VacancyModel;
 import com.dmelnyk.workinukraine.utils.SiteUtil;
 

@@ -4,7 +4,7 @@ import android.database.Cursor;
 import android.os.Parcelable;
 
 import com.dmelnyk.workinukraine.db.Db;
-import com.dmelnyk.workinukraine.db.Tables;
+import com.dmelnyk.workinukraine.db.DbContract;
 import com.google.auto.value.AutoValue;
 
 import io.reactivex.annotations.NonNull;
@@ -28,10 +28,10 @@ public abstract class RequestModel implements Parcelable {
 
     public static Function<Cursor, RequestModel> MAPPER = new Function<Cursor, RequestModel>() {
         @Override public RequestModel apply(@NonNull Cursor cursor) throws Exception {
-            String request = Db.getString(cursor, Tables.SearchRequest.Columns.REQUEST);
-            int vacanciesCount = Db.getInt(cursor, Tables.SearchRequest.Columns.VACANCIES);
-            int newVacanciesCount = Db.getInt(cursor, Tables.SearchRequest.Columns.NEW_VACANCIES);
-            long updated = Db.getLong(cursor, Tables.SearchRequest.Columns.UPDATED);
+            String request = Db.getString(cursor, DbContract.SearchRequest.Columns.REQUEST);
+            int vacanciesCount = Db.getInt(cursor, DbContract.SearchRequest.Columns.VACANCIES);
+            int newVacanciesCount = Db.getInt(cursor, DbContract.SearchRequest.Columns.NEW_VACANCIES);
+            long updated = Db.getLong(cursor, DbContract.SearchRequest.Columns.UPDATED);
             return create(request, vacanciesCount, newVacanciesCount, updated);
         }
     };

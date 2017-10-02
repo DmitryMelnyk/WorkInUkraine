@@ -1,12 +1,15 @@
 package com.dmelnyk.workinukraine.ui.search.di;
 
 
-import com.dmelnyk.workinukraine.business.search.ISearchInteractor;
-import com.dmelnyk.workinukraine.business.search.SearchInteractor;
-import com.dmelnyk.workinukraine.data.search.ISearchRepository;
-import com.dmelnyk.workinukraine.data.search.SearchRepository;
+import android.content.Context;
+
+import com.dmelnyk.workinukraine.ui.search.business.ISearchInteractor;
+import com.dmelnyk.workinukraine.ui.search.business.SearchInteractor;
+import com.dmelnyk.workinukraine.ui.search.repository.ISearchRepository;
+import com.dmelnyk.workinukraine.ui.search.repository.SearchRepository;
 import com.dmelnyk.workinukraine.ui.search.Contract;
 import com.dmelnyk.workinukraine.ui.search.SearchPresenter;
+import com.dmelnyk.workinukraine.utils.SharedPrefUtil;
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import dagger.Module;
@@ -21,8 +24,8 @@ public class SearchModule {
 
     @Provides
     @SearchScope
-    ISearchRepository providesISearchRepository(BriteDatabase bd) {
-        return new SearchRepository(bd);
+    ISearchRepository providesISearchRepository(BriteDatabase bd, SharedPrefUtil sharedPrefUtil) {
+        return new SearchRepository(bd, sharedPrefUtil);
     }
 
     @Provides

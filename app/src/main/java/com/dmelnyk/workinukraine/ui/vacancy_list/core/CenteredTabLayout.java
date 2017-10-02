@@ -36,7 +36,6 @@ public class CenteredTabLayout extends TabLayout {
         int childrenWidth = 0;
         for(int i = 0; i < childCount; i++){
             childrenWidth += tabLayout.getChildAt(i).getMeasuredWidth();
-            Log.d("CenteredTabLayout", "childWidth=" + tabLayout.getChildAt(i).getMeasuredWidth());
         }
 
         if (childrenWidth == screenWidth) return;
@@ -46,8 +45,5 @@ public class CenteredTabLayout extends TabLayout {
         } else {
             setTabMode(MODE_SCROLLABLE);
         }
-
-        Log.d("CenteredTabLayout", "mode=" + (getTabMode() == 0 ? "MODE_SCROLLABLE" : "MODE_FIXED"));
-        Log.d("CenteredTabLayout", "gravity=" + (getTabGravity() == 0 ? "GRAVITY_FILL" : "GRAVITY_CENTER"));
     }
 }

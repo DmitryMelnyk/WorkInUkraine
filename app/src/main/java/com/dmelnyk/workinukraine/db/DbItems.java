@@ -12,26 +12,26 @@ public class DbItems {
 
     public static ContentValues createVacancyFavoriteItem(boolean isFavorite, VacancyModel vacancy) {
         final ContentValues values = new ContentValues();
-        values.put(Tables.SearchSites.Columns.DATE, vacancy.date());
-        values.put(Tables.SearchSites.Columns.IS_FAVORITE, isFavorite);
-        values.put(Tables.SearchSites.Columns.TIME_STATUS, vacancy.timeStatus());
-        values.put(Tables.SearchSites.Columns.REQUEST, vacancy.request());
-        values.put(Tables.SearchSites.Columns.TITLE, vacancy.title());
-        values.put(Tables.SearchSites.Columns.URL, vacancy.url());
-        values.put(Tables.SearchSites.Columns.SITE, vacancy.site());
+        values.put(DbContract.SearchSites.Columns.DATE, vacancy.date());
+        values.put(DbContract.SearchSites.Columns.IS_FAVORITE, isFavorite);
+        values.put(DbContract.SearchSites.Columns.TIME_STATUS, vacancy.timeStatus());
+        values.put(DbContract.SearchSites.Columns.REQUEST, vacancy.request());
+        values.put(DbContract.SearchSites.Columns.TITLE, vacancy.title());
+        values.put(DbContract.SearchSites.Columns.URL, vacancy.url());
+        values.put(DbContract.SearchSites.Columns.SITE, vacancy.site());
 
         return values;
     }
 
     public static ContentValues createVacancyNewItem(boolean isNew, VacancyModel vacancy) {
         final ContentValues values = new ContentValues();
-        values.put(Tables.SearchSites.Columns.DATE, vacancy.date());
-        values.put(Tables.SearchSites.Columns.IS_FAVORITE, vacancy.isFavorite());
-        values.put(Tables.SearchSites.Columns.TIME_STATUS, isNew);
-        values.put(Tables.SearchSites.Columns.REQUEST, vacancy.request());
-        values.put(Tables.SearchSites.Columns.TITLE, vacancy.title());
-        values.put(Tables.SearchSites.Columns.SITE, vacancy.site());
-        values.put(Tables.SearchSites.Columns.URL, vacancy.url());
+        values.put(DbContract.SearchSites.Columns.DATE, vacancy.date());
+        values.put(DbContract.SearchSites.Columns.IS_FAVORITE, vacancy.isFavorite());
+        values.put(DbContract.SearchSites.Columns.TIME_STATUS, isNew);
+        values.put(DbContract.SearchSites.Columns.REQUEST, vacancy.request());
+        values.put(DbContract.SearchSites.Columns.TITLE, vacancy.title());
+        values.put(DbContract.SearchSites.Columns.SITE, vacancy.site());
+        values.put(DbContract.SearchSites.Columns.URL, vacancy.url());
 
         return values;
     }
@@ -39,10 +39,10 @@ public class DbItems {
     public static ContentValues createRequestItem(
             String request, int vacanciesCount, int newVacanciesCount, long updated) {
         final ContentValues values = new ContentValues();
-        values.put(Tables.SearchRequest.Columns.REQUEST, request);
-        values.put(Tables.SearchRequest.Columns.VACANCIES, vacanciesCount);
-        values.put(Tables.SearchRequest.Columns.NEW_VACANCIES, newVacanciesCount);
-        values.put(Tables.SearchRequest.Columns.UPDATED, updated);
+        values.put(DbContract.SearchRequest.Columns.REQUEST, request);
+        values.put(DbContract.SearchRequest.Columns.VACANCIES, vacanciesCount);
+        values.put(DbContract.SearchRequest.Columns.NEW_VACANCIES, newVacanciesCount);
+        values.put(DbContract.SearchRequest.Columns.UPDATED, updated);
 
         return values;
     }

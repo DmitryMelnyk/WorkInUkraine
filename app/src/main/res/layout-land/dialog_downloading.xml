@@ -93,6 +93,21 @@
     </LinearLayout>
 
     <Button
+        android:id="@+id/button_cancel"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="20"
+        android:layout_marginTop="16dp"
+        android:gravity="center"
+        android:background="@drawable/button_ok_blue"
+        android:text="@string/cancel"
+        android:textColor="@color/white_soft"
+        android:textSize="26sp"
+        fontPath="fonts/FranckerCYR-ExtraBold.otf"
+        tools:ignore="MissingPrefix"
+        />
+
+    <Button
         android:id="@+id/button_ok"
         android:layout_width="match_parent"
         android:layout_height="0dp"

@@ -2,7 +2,7 @@ package com.dmelnyk.workinukraine.ui.vacancy_list;
 
 import android.util.Log;
 
-import com.dmelnyk.workinukraine.business.vacancy_list.IVacancyListInteractor;
+import com.dmelnyk.workinukraine.ui.vacancy_list.business.IVacancyListInteractor;
 import com.dmelnyk.workinukraine.models.VacancyModel;
 import com.dmelnyk.workinukraine.ui.vacancy_list.core.VacancyCardViewAdapter;
 

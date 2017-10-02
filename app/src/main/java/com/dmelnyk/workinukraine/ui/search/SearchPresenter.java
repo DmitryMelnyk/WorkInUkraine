@@ -1,8 +1,6 @@
 package com.dmelnyk.workinukraine.ui.search;
 
-import android.util.Log;
-
-import com.dmelnyk.workinukraine.business.search.ISearchInteractor;
+import com.dmelnyk.workinukraine.ui.search.business.ISearchInteractor;
 import com.dmelnyk.workinukraine.models.RequestModel;
 import com.dmelnyk.workinukraine.ui.search.Contract.ISearchView;
 
@@ -52,7 +50,14 @@ public class SearchPresenter implements Contract.ISearchPresenter {
 
     @Override
     public void editRequest(String previousRequest, String newRequest) {
-        interactor.editRequest(previousRequest, newRequest);
+        interactor.editRequest(previousRequest, newRequest)
+                .subscribe(
+                        () -> { /* NOP */},
+                        throwable -> view.showErrorMessage(null)
+                );
+
+
+        ;
     }
 
     @Override
@@ -75,6 +80,16 @@ public class SearchPresenter implements Contract.ISearchPresenter {
         getRequests();
     }
 
+    @Override
+    public void removeRequest(String request) {
+        interactor.removeRequest(request);
+    }
+
+    @Override
+    public void updateData() {
+        getRequests();
+    }
+
     private void getRequests() {
         disposableRequests = interactor.getRequests()
                 .observeOn(AndroidSchedulers.mainThread())
@@ -93,16 +108,6 @@ public class SearchPresenter implements Contract.ISearchPresenter {
         updateLastUpdateTime(requestsList);
     }
 
-    @Override
-    public void removeRequest(String request) {
-        interactor.removeRequest(request);
-    }
-
-    @Override
-    public void updateData() {
-        getRequests();
-    }
-
     private void updateLastUpdateTime(List<RequestModel> requestsList) {
         if (requestsList.isEmpty()) {
             // show empty time
@@ -119,11 +124,10 @@ public class SearchPresenter implements Contract.ISearchPresenter {
                 // -1l means that there was no search processing yet.
                 SimpleDateFormat timeFormat = new SimpleDateFormat("EE, HH:mm", Locale.getDefault());
                 String updated = timeFormat.format(new Date(time));
+                view.updateLastSearchTime(updated);
+
                 return;
             }
-
-            // show empty time
-            view.updateLastSearchTime("");
         }
     }
 

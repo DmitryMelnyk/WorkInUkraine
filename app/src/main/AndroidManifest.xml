@@ -33,7 +33,7 @@
         </activity>
 
         <!-- <service android:name=".services.GetDataIntentService"/> -->
-        <service android:name=".services.SearchVacanciesService" />
+        <service android:name=".services.search.SearchVacanciesService" />
 
         <activity
             android:name=".ui.vacancy_list.VacancyListActivity"

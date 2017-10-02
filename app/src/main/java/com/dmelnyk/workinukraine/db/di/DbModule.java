@@ -4,8 +4,9 @@ import android.content.Context;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.dmelnyk.workinukraine.db.DbOpenHelper;
-import com.dmelnyk.workinukraine.data.search_service.ISearchServiceRepository;
-import com.dmelnyk.workinukraine.data.search_service.SearchServiceRepository;
+import com.dmelnyk.workinukraine.services.search.repository.ISearchServiceRepository;
+import com.dmelnyk.workinukraine.services.search.repository.SearchServiceRepository;
+import com.dmelnyk.workinukraine.utils.SharedPrefUtil;
 import com.squareup.sqlbrite2.BriteDatabase;
 import com.squareup.sqlbrite2.SqlBrite;
 
@@ -58,7 +59,13 @@ public class DbModule {
     }
 
     @Provides @Singleton
-    ISearchServiceRepository provideSearchRepository(BriteDatabase database, Context context) {
-        return new SearchServiceRepository(database, context);
+    SharedPrefUtil providesSharedPrefUtil(Context context) {
+        return new SharedPrefUtil(context);
+    }
+
+    @Provides @Singleton
+    ISearchServiceRepository provideSearchRepository(BriteDatabase database, Context context,
+                                                     SharedPrefUtil sharedPrefUtil) {
+        return new SearchServiceRepository(database, context, sharedPrefUtil);
     }
 }

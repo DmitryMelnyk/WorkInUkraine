@@ -4,7 +4,7 @@ import android.database.Cursor;
 import android.os.Parcelable;
 
 import com.dmelnyk.workinukraine.db.Db;
-import com.dmelnyk.workinukraine.db.Tables;
+import com.dmelnyk.workinukraine.db.DbContract;
 import com.google.auto.value.AutoValue;
 
 import io.reactivex.functions.Function;
@@ -41,13 +41,13 @@ public abstract class VacancyModel implements Parcelable {
 
     public static Function<Cursor, VacancyModel> MAPPER = new Function<Cursor, VacancyModel>() {
         @Override public VacancyModel apply(Cursor cursor) {
-            String request = Db.getString(cursor, Tables.SearchSites.Columns.REQUEST);
-            String title = Db.getString(cursor, Tables.SearchSites.Columns.TITLE);
-            String date = Db.getString(cursor, Tables.SearchSites.Columns.DATE);
-            String url = Db.getString(cursor, Tables.SearchSites.Columns.URL);
-            String site = Db.getString(cursor, Tables.SearchSites.Columns.SITE);
-            boolean isFavorite = Db.getBoolean(cursor, Tables.SearchSites.Columns.IS_FAVORITE);
-            int timeStatus = Db.getInt(cursor, Tables.SearchSites.Columns.TIME_STATUS);
+            String request = Db.getString(cursor, DbContract.SearchSites.Columns.REQUEST);
+            String title = Db.getString(cursor, DbContract.SearchSites.Columns.TITLE);
+            String date = Db.getString(cursor, DbContract.SearchSites.Columns.DATE);
+            String url = Db.getString(cursor, DbContract.SearchSites.Columns.URL);
+            String site = Db.getString(cursor, DbContract.SearchSites.Columns.SITE);
+            boolean isFavorite = Db.getBoolean(cursor, DbContract.SearchSites.Columns.IS_FAVORITE);
+            int timeStatus = Db.getInt(cursor, DbContract.SearchSites.Columns.TIME_STATUS);
 
             return VacancyModel.builder()
                     .setDate(date)

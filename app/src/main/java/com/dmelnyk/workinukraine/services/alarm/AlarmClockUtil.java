@@ -8,10 +8,9 @@ import android.icu.text.SimpleDateFormat;
 import android.os.SystemClock;
 import android.util.Log;
 
-import com.dmelnyk.workinukraine.data.repeating_search_service.IRepeatingSearchRepository;
+import com.dmelnyk.workinukraine.services.alarm.repo.IRepeatingSearchRepository;
 import com.dmelnyk.workinukraine.db.di.DbModule;
 import com.dmelnyk.workinukraine.services.alarm.di.DaggerRepeatingSearchComponent;
-import com.dmelnyk.workinukraine.services.alarm.di.RepeatingSearchModule;
 
 import java.util.Date;
 

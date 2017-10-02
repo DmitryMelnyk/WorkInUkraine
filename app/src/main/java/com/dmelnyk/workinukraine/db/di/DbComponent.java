@@ -1,6 +1,6 @@
 package com.dmelnyk.workinukraine.db.di;
 
-import com.dmelnyk.workinukraine.services.SearchVacanciesService;
+import com.dmelnyk.workinukraine.services.search.SearchVacanciesService;
 
 import javax.inject.Singleton;
 

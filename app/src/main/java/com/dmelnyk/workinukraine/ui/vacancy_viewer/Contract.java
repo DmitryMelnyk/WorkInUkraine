@@ -26,5 +26,7 @@ public class Contract {
         void getData(String request, String type, @Nullable String site);
 
         void unbindView();
+
+        void onDestroy();
     }
 }

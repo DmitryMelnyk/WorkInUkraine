@@ -21,6 +21,7 @@ public class SearchInteractor implements ISearchInteractor {
 
     @Override
     public Completable clearAllRequests() {
+        repository.clearAllSharedPrefData();
         return repository.clearAllRequests();
     }
 
@@ -32,6 +33,7 @@ public class SearchInteractor implements ISearchInteractor {
     @Override
     public void removeRequest(String request) {
         repository.removeRequest(request);
+        repository.clearAllSharedPrefData();
     }
 
     @Override
@@ -42,6 +44,7 @@ public class SearchInteractor implements ISearchInteractor {
     @Override
     public void editRequest(String previousRequest, String newRequest) {
         repository.updateRequest(previousRequest, newRequest);
+        repository.clearAllSharedPrefData();
     }
 
 }

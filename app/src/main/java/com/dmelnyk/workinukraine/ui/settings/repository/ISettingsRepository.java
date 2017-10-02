@@ -1,4 +1,4 @@
-package com.dmelnyk.workinukraine.data.settings;
+package com.dmelnyk.workinukraine.ui.settings.data;
 
 /**
  * Created by d264 on 6/27/17.

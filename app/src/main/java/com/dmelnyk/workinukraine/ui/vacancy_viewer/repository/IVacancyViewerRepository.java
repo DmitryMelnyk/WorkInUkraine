@@ -1,4 +1,4 @@
-package com.dmelnyk.workinukraine.data.vacancy_viewer;
+package com.dmelnyk.workinukraine.ui.vacancy_viewer.data;
 
 import com.dmelnyk.workinukraine.models.VacancyModel;
 

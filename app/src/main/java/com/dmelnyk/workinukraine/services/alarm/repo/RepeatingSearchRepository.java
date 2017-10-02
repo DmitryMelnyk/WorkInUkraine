@@ -1,9 +1,9 @@
 package com.dmelnyk.workinukraine.data.repeating_search_service;
 
-import android.content.Context;
 import android.database.Cursor;
 
-import com.dmelnyk.workinukraine.data.settings.SettingsRepository;
+import com.dmelnyk.workinukraine.data.SharedPrefUtil;
+import com.dmelnyk.workinukraine.ui.settings.data.SettingsRepository;
 import com.dmelnyk.workinukraine.db.Tables;
 import com.dmelnyk.workinukraine.models.VacancyModel;
 import com.squareup.sqlbrite2.BriteDatabase;
@@ -11,6 +11,8 @@ import com.squareup.sqlbrite2.BriteDatabase;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+
+import javax.inject.Inject;
 
 import io.reactivex.Observable;
 import io.reactivex.Single;
@@ -22,17 +24,16 @@ import io.reactivex.Single;
 public class RepeatingSearchRepository implements IRepeatingSearchRepository {
 
     private static final String TABLE_REQUEST = Tables.SearchRequest.TABLE_REQUEST;
-    private static final String PREF_FILE = "saved_vacancies_count";
-    private static final String KEY_PREVIOUS_NEW_VACANCIES_COUNT = "previous_new_vacancies";
     private static final String TABLE_VACANCIES = Tables.SearchSites.TABLE_ALL_SITES;
 
     private final BriteDatabase db;
-    private final Context appContext;
     private final SettingsRepository settingsRepository;
 
-    public RepeatingSearchRepository(BriteDatabase db, Context context, SettingsRepository settingsRepo) {
+    @Inject
+    SharedPrefUtil sharedPrefUtil;
+
+    public RepeatingSearchRepository(BriteDatabase db, SettingsRepository settingsRepo) {
         this.db = db;
-        appContext = context;
         settingsRepository = settingsRepo;
     }
 
@@ -58,15 +59,12 @@ public class RepeatingSearchRepository implements IRepeatingSearchRepository {
 
     @Override
     public int getPreviousNewVacanciesCount() {
-        return appContext.getSharedPreferences(PREF_FILE, Context.MODE_PRIVATE)
-                .getInt(KEY_PREVIOUS_NEW_VACANCIES_COUNT, 0);
+        return sharedPrefUtil.getPreviousNewVacanciesCount();
     }
 
     @Override
     public void saveNewVacanciesCount(int newVacancies) {
-        appContext.getSharedPreferences(PREF_FILE, Context.MODE_PRIVATE)
-                .edit().putInt(KEY_PREVIOUS_NEW_VACANCIES_COUNT, newVacancies)
-                .commit();
+        sharedPrefUtil.saveNewVacanciesCount(newVacancies);
     }
 
     @Override

@@ -1,15 +1,18 @@
-package com.dmelnyk.workinukraine.data.search;
+package com.dmelnyk.workinukraine.ui.search.data;
 
 import android.content.ContentValues;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.dmelnyk.workinukraine.data.SharedPrefUtil;
+import com.dmelnyk.workinukraine.db.DbContract;
 import com.dmelnyk.workinukraine.models.RequestModel;
 import com.dmelnyk.workinukraine.db.DbItems;
-import com.dmelnyk.workinukraine.db.Tables;
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import java.util.List;
+
+import javax.inject.Inject;
 
 import io.reactivex.Completable;
 import io.reactivex.Observable;
@@ -21,9 +24,12 @@ import timber.log.Timber;
 
 public class SearchRepository implements ISearchRepository {
 
-    private static final String REQUEST_TABLE = Tables.SearchRequest.TABLE_REQUEST;
-    private static final String VACANCY_TABLE = Tables.SearchSites.TABLE_ALL_SITES;
+    private static final String REQUEST_TABLE = DbContract.SearchRequest.TABLE_REQUEST;
+    private static final String VACANCY_TABLE = DbContract.SearchSites.TABLE_ALL_SITES;
     private final BriteDatabase db;
+
+    @Inject
+    SharedPrefUtil sharedPrefUtil;
 
     public SearchRepository(BriteDatabase db) {
         this.db = db;
@@ -32,14 +38,19 @@ public class SearchRepository implements ISearchRepository {
     @Override
     public Completable clearAllRequests() {
         try {
-            db.delete(Tables.SearchRequest.TABLE_REQUEST, "");
-            db.delete(Tables.SearchSites.TABLE_ALL_SITES, "");
+            db.delete(DbContract.SearchRequest.TABLE_REQUEST, "");
+            db.delete(DbContract.SearchSites.TABLE_ALL_SITES, "");
         } catch (Exception e) {
             Timber.e(e.getMessage());
             return Completable.error(e);
         }
 
         return Completable.complete();
+    }
+
+    @Override
+    public void clearAllSharedPrefData() {
+        sharedPrefUtil.clearData();
     }
 
     @Override
@@ -72,7 +83,7 @@ public class SearchRepository implements ISearchRepository {
 
         // edits  request
         ContentValues newItem = DbItems.createRequestItem(newRequest, 0, 0, -1l);
-        db.update(Tables.SearchRequest.TABLE_REQUEST, newItem, Tables.SearchRequest.Columns.REQUEST
+        db.update(DbContract.SearchRequest.TABLE_REQUEST, newItem, DbContract.SearchRequest.Columns.REQUEST
                 + " ='" + oldRequest + "'");
 
         // removes previous request's vacancy
@@ -80,6 +91,6 @@ public class SearchRepository implements ISearchRepository {
     }
 
     private String where(String request) {
-        return Tables.SearchRequest.Columns.REQUEST + " = '" + request + "'";
+        return DbContract.SearchRequest.Columns.REQUEST + " = '" + request + "'";
     }
 }

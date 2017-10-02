@@ -5,8 +5,8 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
 
+import com.dmelnyk.workinukraine.db.DbContract;
 import com.dmelnyk.workinukraine.db.DbItems;
-import com.dmelnyk.workinukraine.db.Tables;
 import com.dmelnyk.workinukraine.models.RequestModel;
 import com.dmelnyk.workinukraine.models.VacancyModel;
 import com.squareup.sqlbrite2.BriteDatabase;
@@ -19,7 +19,7 @@ import java.util.Set;
 import io.reactivex.Observable;
 import timber.log.Timber;
 
-import static com.dmelnyk.workinukraine.data.vacancy_list.VacancyListRepository.SHARED_PREF;
+import static com.dmelnyk.workinukraine.ui.vacancy_list.repository.VacancyListRepository.SHARED_PREF;
 
 /**
  * Created by d264 on 7/25/17.
@@ -30,11 +30,11 @@ public class SearchServiceRepository implements ISearchServiceRepository {
     private final BriteDatabase db;
     private final Context context;
 
-    public static final String TABLE = Tables.SearchSites.TABLE_ALL_SITES;
-    private static final String REQUEST_TABLE = Tables.SearchRequest.TABLE_REQUEST;
+    public static final String TABLE = DbContract.SearchSites.TABLE_ALL_SITES;
+    private static final String REQUEST_TABLE = DbContract.SearchRequest.TABLE_REQUEST;
     private static final String SELECT_ALL_FROM = "SELECT * FROM ";
     private static final String WHERE_ = " WHERE "
-            + Tables.SearchSites.Columns.REQUEST + " = ";
+            + DbContract.SearchSites.Columns.REQUEST + " = ";
 
     public SearchServiceRepository(BriteDatabase db, Context context) {
         this.db = db;
@@ -87,7 +87,7 @@ public class SearchServiceRepository implements ISearchServiceRepository {
 
     @NonNull
     private List<VacancyModel> getPreviousVacancies(String request) throws Exception {
-        String table = Tables.SearchSites.TABLE_ALL_SITES;
+        String table = DbContract.SearchSites.TABLE_ALL_SITES;
 
         List<VacancyModel> oldVacancies = new ArrayList<>();
 
@@ -133,9 +133,9 @@ public class SearchServiceRepository implements ISearchServiceRepository {
 
     private int getNewVacanciesCount(String request) {
         Cursor newVacanciesCursor = db.query(
-                SELECT_ALL_FROM + Tables.SearchSites.TABLE_ALL_SITES
+                SELECT_ALL_FROM + DbContract.SearchSites.TABLE_ALL_SITES
                         + WHERE_ + "'" + request + "' AND "
-                        + Tables.SearchSites.Columns.TIME_STATUS + "=1");
+                        + DbContract.SearchSites.Columns.TIME_STATUS + "=1");
 
         int newVacancies = newVacanciesCursor.getCount();
         newVacanciesCursor.close();
@@ -158,8 +158,8 @@ public class SearchServiceRepository implements ISearchServiceRepository {
         // After watching 'new' vacancies - update them to 'recent' (timeStatus = -1)
 
         Cursor cursorNewVacancies = db.query("SELECT * FROM " + TABLE
-                + " WHERE " + Tables.SearchSites.Columns.REQUEST + " ='" + request
-                + "' AND " + Tables.SearchSites.Columns.TIME_STATUS + " =1"); // new
+                + " WHERE " + DbContract.SearchSites.Columns.REQUEST + " ='" + request
+                + "' AND " + DbContract.SearchSites.Columns.TIME_STATUS + " =1"); // new
         if (cursorNewVacancies.getCount() > 0) {
             convertRecentToOldVacancies(request);
             convertNewToRecentVacancies(request);
@@ -170,44 +170,44 @@ public class SearchServiceRepository implements ISearchServiceRepository {
     }
 
     private void convertRecentToOldVacancies(String request) {
-        db.execute("UPDATE " + Tables.SearchSites.TABLE_ALL_SITES
-                + " SET " + Tables.SearchSites.Columns.TIME_STATUS + "=-1"
-                + " WHERE " + Tables.SearchSites.Columns.REQUEST + " ='" + request
-                + "' AND " + Tables.SearchSites.Columns.TIME_STATUS + "=0");
+        db.execute("UPDATE " + DbContract.SearchSites.TABLE_ALL_SITES
+                + " SET " + DbContract.SearchSites.Columns.TIME_STATUS + "=-1"
+                + " WHERE " + DbContract.SearchSites.Columns.REQUEST + " ='" + request
+                + "' AND " + DbContract.SearchSites.Columns.TIME_STATUS + "=0");
     }
 
     private void convertNewToRecentVacancies(String request) {
         Timber.d("\nclearing New vacancies with request=%s", request);
 
-        db.execute("UPDATE " + Tables.SearchSites.TABLE_ALL_SITES
-                + " SET " + Tables.SearchSites.Columns.TIME_STATUS + "=0" // convert to recent
-                + " WHERE " + Tables.SearchSites.Columns.REQUEST + " ='" + request
-                + "' AND " + Tables.SearchSites.Columns.TIME_STATUS + "=1"); // from new
+        db.execute("UPDATE " + DbContract.SearchSites.TABLE_ALL_SITES
+                + " SET " + DbContract.SearchSites.Columns.TIME_STATUS + "=0" // convert to recent
+                + " WHERE " + DbContract.SearchSites.Columns.REQUEST + " ='" + request
+                + "' AND " + DbContract.SearchSites.Columns.TIME_STATUS + "=1"); // from new
 
         // updating Request's table
-        db.execute("UPDATE " + Tables.SearchRequest.TABLE_REQUEST
-                + " SET " + Tables.SearchRequest.Columns.NEW_VACANCIES
-                + "=0 WHERE " + Tables.SearchRequest.Columns.REQUEST
+        db.execute("UPDATE " + DbContract.SearchRequest.TABLE_REQUEST
+                + " SET " + DbContract.SearchRequest.Columns.NEW_VACANCIES
+                + "=0 WHERE " + DbContract.SearchRequest.Columns.REQUEST
                 + "='" + request + "'");
     }
 
     private void updateVacancyWithDate(VacancyModel vacancy, String date) {
-        db.execute("UPDATE " + Tables.SearchSites.TABLE_ALL_SITES
-                + " SET " + Tables.SearchSites.Columns.DATE
-                + " ='" + date + "' WHERE " + Tables.SearchSites.Columns.URL
+        db.execute("UPDATE " + DbContract.SearchSites.TABLE_ALL_SITES
+                + " SET " + DbContract.SearchSites.Columns.DATE
+                + " ='" + date + "' WHERE " + DbContract.SearchSites.Columns.URL
                 + " ='" + vacancy.url() + "'");
     }
 
     private void deleteVacancy(VacancyModel vacancy) {
         Timber.d("Removing old vacancy=", vacancy);
-        db.delete(Tables.SearchSites.TABLE_ALL_SITES, Tables.SearchSites.Columns.URL
+        db.delete(DbContract.SearchSites.TABLE_ALL_SITES, DbContract.SearchSites.Columns.URL
                 + " ='" + vacancy.url() + "'");
     }
 
     private List<VacancyModel> getVacancies(String request, String site) throws Exception {
-        Cursor cursor = db.query("SELECT * FROM " + Tables.SearchSites.TABLE_ALL_SITES
-                + " WHERE " + Tables.SearchSites.Columns.REQUEST + " ='"
-                + request + "' AND " + Tables.SearchSites.Columns.SITE + " ='"
+        Cursor cursor = db.query("SELECT * FROM " + DbContract.SearchSites.TABLE_ALL_SITES
+                + " WHERE " + DbContract.SearchSites.Columns.REQUEST + " ='"
+                + request + "' AND " + DbContract.SearchSites.Columns.SITE + " ='"
                 + site + "'");
 
         List<VacancyModel> oldVacancies = new ArrayList<>();
@@ -227,9 +227,9 @@ public class SearchServiceRepository implements ISearchServiceRepository {
         Timber.d("\nUpdating request info. Request=%s, vacancyCount=%d, newVacanciesCount=%d, lastUpdateTime=%d",
                 request, vacancyCount, newVacanciesCount, lastUpdateTime);
 
-        db.update(Tables.SearchRequest.TABLE_REQUEST,
+        db.update(DbContract.SearchRequest.TABLE_REQUEST,
                 DbItems.createRequestItem(request, vacancyCount, newVacanciesCount, lastUpdateTime),
-                Tables.SearchRequest.Columns.REQUEST + " ='"
+                DbContract.SearchRequest.Columns.REQUEST + " ='"
                 + request + "'");
     }
 
@@ -250,7 +250,7 @@ public class SearchServiceRepository implements ISearchServiceRepository {
         BriteDatabase.Transaction transaction = db.newTransaction();
         try {
             for (VacancyModel vacancy : list) {
-                db.insert(Tables.SearchSites.TABLE_ALL_SITES,
+                db.insert(DbContract.SearchSites.TABLE_ALL_SITES,
                         DbItems.createVacancyNewItem(isNew, vacancy));
             }
             transaction.markSuccessful();

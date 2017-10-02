@@ -1,4 +1,4 @@
-package com.dmelnyk.workinukraine.data.search;
+package com.dmelnyk.workinukraine.ui.search.data;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -47,4 +47,11 @@ public interface ISearchRepository {
      * @return
      */
     Completable clearAllRequests();
+
+
+    /**
+     * Removes count of new vacancies saved in SharedPreferences
+     */
+    void clearAllSharedPrefData();
+
 }

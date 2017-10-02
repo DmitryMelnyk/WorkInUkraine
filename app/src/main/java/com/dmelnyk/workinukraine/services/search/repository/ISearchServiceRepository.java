@@ -1,4 +1,4 @@
-package com.dmelnyk.workinukraine.data.search_service;
+package com.dmelnyk.workinukraine.services.search.repository;
 
 import com.dmelnyk.workinukraine.models.RequestModel;
 import com.dmelnyk.workinukraine.models.VacancyModel;

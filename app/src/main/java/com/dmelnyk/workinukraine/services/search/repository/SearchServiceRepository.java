@@ -1,4 +1,4 @@
-package com.dmelnyk.workinukraine.data.search_service;
+package com.dmelnyk.workinukraine.services.search.repository;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -9,6 +9,7 @@ import com.dmelnyk.workinukraine.db.DbContract;
 import com.dmelnyk.workinukraine.db.DbItems;
 import com.dmelnyk.workinukraine.models.RequestModel;
 import com.dmelnyk.workinukraine.models.VacancyModel;
+import com.dmelnyk.workinukraine.utils.SharedPrefUtil;
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import java.util.ArrayList;
@@ -27,18 +28,20 @@ import static com.dmelnyk.workinukraine.ui.vacancy_list.repository.VacancyListRe
 
 public class SearchServiceRepository implements ISearchServiceRepository {
 
-    private final BriteDatabase db;
-    private final Context context;
-
-    public static final String TABLE = DbContract.SearchSites.TABLE_ALL_SITES;
     private static final String REQUEST_TABLE = DbContract.SearchRequest.TABLE_REQUEST;
     private static final String SELECT_ALL_FROM = "SELECT * FROM ";
-    private static final String WHERE_ = " WHERE "
-            + DbContract.SearchSites.Columns.REQUEST + " = ";
+    public static final String TABLE = DbContract.SearchSites.TABLE_ALL_SITES;
+    private static final String WHERE_ = " WHERE " + DbContract.SearchSites.Columns.REQUEST + " = ";
 
-    public SearchServiceRepository(BriteDatabase db, Context context) {
+    private final BriteDatabase db;
+    private final Context context;
+    private final SharedPrefUtil sharedPrefUtil;
+
+
+    public SearchServiceRepository(BriteDatabase db, Context context, SharedPrefUtil sharedPrefUtil) {
         this.db = db;
         this.context = context;
+        this.sharedPrefUtil = sharedPrefUtil;
     }
 
     @Override
@@ -145,13 +148,11 @@ public class SearchServiceRepository implements ISearchServiceRepository {
     }
 
     private boolean shouldBeUpdated(String request) {
-        SharedPreferences preferences = context.getSharedPreferences(SHARED_PREF, 0);
-        return preferences.getBoolean(request, false);
+        return sharedPrefUtil.shouldBeUpdated(request);
     }
 
     private void saveUpdatingTask(String request, boolean shouldBeUpdated) {
-        SharedPreferences preferences = context.getSharedPreferences(SHARED_PREF, 0);
-        preferences.edit().putBoolean(request, shouldBeUpdated).commit();
+        sharedPrefUtil.saveUpdatingTask(request, shouldBeUpdated);
     }
 
     private void updateTimeStatusVacancies(String request) {

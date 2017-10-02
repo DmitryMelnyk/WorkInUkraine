@@ -1,6 +1,6 @@
 package com.dmelnyk.workinukraine.ui.settings;
 
-import com.dmelnyk.workinukraine.business.settings.ISettingsInteractor;
+import com.dmelnyk.workinukraine.ui.settings.business.ISettingsInteractor;
 import com.dmelnyk.workinukraine.ui.settings.Contract.ISettingsView;
 
 /**

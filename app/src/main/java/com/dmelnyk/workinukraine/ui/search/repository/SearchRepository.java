@@ -1,18 +1,17 @@
-package com.dmelnyk.workinukraine.ui.search.data;
+package com.dmelnyk.workinukraine.ui.search.repository;
 
 import android.content.ContentValues;
+import android.database.sqlite.SQLiteConstraintException;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
-import com.dmelnyk.workinukraine.data.SharedPrefUtil;
+import com.dmelnyk.workinukraine.utils.SharedPrefUtil;
 import com.dmelnyk.workinukraine.db.DbContract;
 import com.dmelnyk.workinukraine.models.RequestModel;
 import com.dmelnyk.workinukraine.db.DbItems;
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import java.util.List;
-
-import javax.inject.Inject;
 
 import io.reactivex.Completable;
 import io.reactivex.Observable;
@@ -28,11 +27,11 @@ public class SearchRepository implements ISearchRepository {
     private static final String VACANCY_TABLE = DbContract.SearchSites.TABLE_ALL_SITES;
     private final BriteDatabase db;
 
-    @Inject
-    SharedPrefUtil sharedPrefUtil;
+    private final SharedPrefUtil sharedPrefUtil;
 
-    public SearchRepository(BriteDatabase db) {
+    public SearchRepository(BriteDatabase db, SharedPrefUtil sharedPrefUtil) {
         this.db = db;
+        this.sharedPrefUtil = sharedPrefUtil;
     }
 
     @Override
@@ -75,19 +74,26 @@ public class SearchRepository implements ISearchRepository {
     }
 
     @Override
-    public void updateRequest(@NonNull String oldRequest, String newRequest) {
+    public Completable updateRequest(@NonNull String oldRequest, String newRequest) {
         Timber.d("\nupdateRequest");
-
-        Log.e("@@", "old==new =" + oldRequest.equals(newRequest));
-        if (oldRequest.equals(newRequest)) return;
+//
+//        Log.e("@@", "old==new =" + oldRequest.equals(newRequest));
+//        if (oldRequest.equals(newRequest)) return Completable.error(new Throwable("Error"));
 
         // edits  request
         ContentValues newItem = DbItems.createRequestItem(newRequest, 0, 0, -1l);
-        db.update(DbContract.SearchRequest.TABLE_REQUEST, newItem, DbContract.SearchRequest.Columns.REQUEST
-                + " ='" + oldRequest + "'");
+        try {
+            db.update(DbContract.SearchRequest.TABLE_REQUEST, newItem,
+                    DbContract.SearchRequest.Columns.REQUEST + " ='" + oldRequest + "'");
 
-        // removes previous request's vacancy
-        db.delete(VACANCY_TABLE, oldRequest);
+            // removes previous request's vacancy
+            db.delete(VACANCY_TABLE, DbContract.SearchSites.Columns.REQUEST + "='"+ oldRequest + "'");
+            return Completable.complete();
+
+            // if request already exist in db throws exception
+        } catch (SQLiteConstraintException exception) {
+            return Completable.error(new Throwable("Error"));
+        }
     }
 
     private String where(String request) {

@@ -5,8 +5,8 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.dmelnyk.workinukraine.application.WorkInUaApplication;
+import com.dmelnyk.workinukraine.db.DbContract;
 import com.dmelnyk.workinukraine.models.VacancyModel;
-import com.dmelnyk.workinukraine.db.Tables;
 import com.dmelnyk.workinukraine.utils.CityUtils;
 import com.dmelnyk.workinukraine.utils.NetUtils;
 import com.dmelnyk.workinukraine.utils.di.DaggerUtilComponent;
@@ -78,7 +78,7 @@ public class ParserWorkUa {
                     .setTimeStatus(1) // new
                     .setRequest(request)
                     .setTitle(title)
-                    .setSite(Tables.SearchSites.SITES[4])
+                    .setSite(DbContract.SearchSites.SITES[4])
                     .setUrl(url)
                     .build();
 

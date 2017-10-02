@@ -1,9 +1,8 @@
-package com.dmelnyk.workinukraine.business.vacancy_viewer;
+package com.dmelnyk.workinukraine.ui.vacancy_viewer.business;
 
 import android.support.annotation.Nullable;
 
-import com.dmelnyk.workinukraine.data.vacancy_viewer.IVacancyViewerRepository;
-import com.dmelnyk.workinukraine.db.Tables;
+import com.dmelnyk.workinukraine.ui.vacancy_viewer.repository.IVacancyViewerRepository;
 import com.dmelnyk.workinukraine.models.VacancyModel;
 import com.dmelnyk.workinukraine.ui.vacancy_viewer.VacancyViewerActivity;
 
@@ -23,6 +22,10 @@ public class VacancyViewInteractor implements IVacancyViewInteractor {
         this.repository = repository;
     }
 
+    @Override
+    public void clear() {
+        repository.close();
+    }
 
     @Override
     public Single<List<VacancyModel>> getVacancies(String request, String type, @Nullable String site) {

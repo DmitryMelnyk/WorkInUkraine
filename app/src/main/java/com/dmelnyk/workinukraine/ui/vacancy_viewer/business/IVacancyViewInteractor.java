@@ -1,4 +1,4 @@
-package com.dmelnyk.workinukraine.business.vacancy_viewer;
+package com.dmelnyk.workinukraine.ui.vacancy_viewer.business;
 
 import android.support.annotation.Nullable;
 
@@ -27,4 +27,9 @@ public interface IVacancyViewInteractor {
      * @return
      */
     Single<List<VacancyModel>> getVacancies(String request, String type, @Nullable String site);
+
+    /**
+     * Closes all unneeded connections.
+     */
+    void clear();
 }

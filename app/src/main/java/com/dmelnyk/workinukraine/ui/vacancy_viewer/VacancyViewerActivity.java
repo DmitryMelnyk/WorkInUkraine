@@ -20,6 +20,7 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import timber.log.Timber;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class VacancyViewerActivity extends BaseAnimationActivity
@@ -76,9 +77,6 @@ public class VacancyViewerActivity extends BaseAnimationActivity
         presenter.bindView(this);
         presenter.getData(mRequest, mType, mSite);
 
-        Log.e("@@", "site=" + mSite);
-        Log.e("@@", "type=" + mType);
-
         // callback result used by VacancyListActivity to get fresh favorite vacancies
         // because they can be changed by adding/removing in this activity
         setResult(RESULT_OK);
@@ -94,6 +92,12 @@ public class VacancyViewerActivity extends BaseAnimationActivity
     protected void onStop() {
         super.onStop();
         presenter.unbindView();
+    }
+
+    @Override
+    protected void onDestroy() {
+        presenter.onDestroy();
+        super.onDestroy();
     }
 
     @Override
@@ -122,7 +126,7 @@ public class VacancyViewerActivity extends BaseAnimationActivity
     public void updateFavoriteVacancy(VacancyModel vacancy) {
         presenter.updateFavoriteStatusVacancy(vacancy);
         VacancyModel updatedVacancy = vacancy.getUpdatedFavoriteVacancy();
-        Log.e("@@@", "updatedVacancy=" + updatedVacancy);
+        Timber.i("updatedVacancy=" + updatedVacancy);
         mVacancies.set(mVacancies.indexOf(vacancy), updatedVacancy);
         mAdapter.notifyDataSetChanged();
     }

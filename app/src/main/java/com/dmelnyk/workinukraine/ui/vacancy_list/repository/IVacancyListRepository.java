@@ -1,4 +1,4 @@
-package com.dmelnyk.workinukraine.ui.vacancy_list.data;
+package com.dmelnyk.workinukraine.ui.vacancy_list.repository;
 
 import com.dmelnyk.workinukraine.models.VacancyModel;
 

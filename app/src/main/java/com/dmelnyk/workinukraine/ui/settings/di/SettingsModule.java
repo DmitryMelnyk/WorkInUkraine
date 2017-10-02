@@ -2,10 +2,10 @@ package com.dmelnyk.workinukraine.ui.settings.di;
 
 import android.content.Context;
 
-import com.dmelnyk.workinukraine.business.settings.ISettingsInteractor;
-import com.dmelnyk.workinukraine.business.settings.SettingsInteractor;
-import com.dmelnyk.workinukraine.data.settings.ISettingsRepository;
-import com.dmelnyk.workinukraine.data.settings.SettingsRepository;
+import com.dmelnyk.workinukraine.ui.settings.business.ISettingsInteractor;
+import com.dmelnyk.workinukraine.ui.settings.business.SettingsInteractor;
+import com.dmelnyk.workinukraine.ui.settings.repository.ISettingsRepository;
+import com.dmelnyk.workinukraine.ui.settings.repository.SettingsRepository;
 import com.dmelnyk.workinukraine.ui.settings.Contract.ISettingsPresenter;
 import com.dmelnyk.workinukraine.ui.settings.SettingsPresenter;
 

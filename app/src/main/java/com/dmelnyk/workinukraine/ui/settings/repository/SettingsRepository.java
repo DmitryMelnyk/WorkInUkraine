@@ -1,4 +1,4 @@
-package com.dmelnyk.workinukraine.ui.settings.data;
+package com.dmelnyk.workinukraine.ui.settings.repository;
 
 import android.content.Context;
 

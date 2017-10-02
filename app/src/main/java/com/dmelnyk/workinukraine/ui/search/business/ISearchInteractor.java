@@ -1,4 +1,4 @@
-package com.dmelnyk.workinukraine.business.search;
+package com.dmelnyk.workinukraine.ui.search.business;
 
 import com.dmelnyk.workinukraine.models.RequestModel;
 
@@ -34,5 +34,5 @@ public interface ISearchInteractor {
 
     Completable clearAllRequests();
 
-    void editRequest(String previousRequest, String newRequest);
+    Completable editRequest(String previousRequest, String newRequest);
 }

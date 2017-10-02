@@ -2,13 +2,16 @@ package com.dmelnyk.workinukraine.ui.vacancy_list.di;
 
 import android.content.Context;
 
-import com.dmelnyk.workinukraine.business.vacancy_list.IVacancyListInteractor;
-import com.dmelnyk.workinukraine.business.vacancy_list.VacancyListInteractor;
-import com.dmelnyk.workinukraine.data.vacancy_list.IVacancyListRepository;
-import com.dmelnyk.workinukraine.data.vacancy_list.VacancyListRepository;
+import com.dmelnyk.workinukraine.ui.vacancy_list.business.IVacancyListInteractor;
+import com.dmelnyk.workinukraine.ui.vacancy_list.business.VacancyListInteractor;
+import com.dmelnyk.workinukraine.ui.vacancy_list.repository.IVacancyListRepository;
+import com.dmelnyk.workinukraine.ui.vacancy_list.repository.VacancyListRepository;
 import com.dmelnyk.workinukraine.ui.vacancy_list.Contract;
 import com.dmelnyk.workinukraine.ui.vacancy_list.VacancyListPresenter;
+import com.dmelnyk.workinukraine.utils.SharedPrefUtil;
 import com.squareup.sqlbrite2.BriteDatabase;
+
+import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
@@ -30,8 +33,8 @@ public class VacancyModule {
 
     @Provides
     @VacancyScope
-    IVacancyListRepository provideIVacancyRepository(BriteDatabase db) {
-        return new VacancyListRepository(db, context);
+    IVacancyListRepository provideIVacancyRepository(BriteDatabase db, SharedPrefUtil sharedPrefUtil) {
+        return new VacancyListRepository(db, context, sharedPrefUtil);
     }
 
     @Provides

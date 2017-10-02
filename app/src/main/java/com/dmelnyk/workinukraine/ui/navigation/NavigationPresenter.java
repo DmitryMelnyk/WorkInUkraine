@@ -1,6 +1,6 @@
 package com.dmelnyk.workinukraine.ui.navigation;
 
-import com.dmelnyk.workinukraine.data.navigation.INavigationRepository;
+import com.dmelnyk.workinukraine.ui.navigation.repository.INavigationRepository;
 
 /**
  * Created by d264 on 6/14/17.

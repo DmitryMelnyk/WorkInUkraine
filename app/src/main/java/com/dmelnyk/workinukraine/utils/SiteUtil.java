@@ -1,6 +1,6 @@
 package com.dmelnyk.workinukraine.utils;
 
-import com.dmelnyk.workinukraine.db.Tables;
+import com.dmelnyk.workinukraine.db.DbContract;
 import com.dmelnyk.workinukraine.models.VacancyModel;
 
 import java.util.ArrayList;
@@ -25,8 +25,8 @@ public class SiteUtil {
         }
 
         for (VacancyModel vacancy : vacancyContainerList) {
-            for (int i = 0; i < Tables.SearchSites.SITES.length; i++) {
-                if (vacancy.site().equals(Tables.SearchSites.SITES[i])) {
+            for (int i = 0; i < DbContract.SearchSites.SITES.length; i++) {
+                if (vacancy.site().equals(DbContract.SearchSites.SITES[i])) {
                     siteList[i].add(vacancy);
                     break;
                 }

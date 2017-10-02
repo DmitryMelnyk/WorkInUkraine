@@ -1,10 +1,9 @@
-package com.dmelnyk.workinukraine.data.vacancy_viewer;
+package com.dmelnyk.workinukraine.ui.vacancy_viewer.repository;
 
 import android.content.ContentValues;
-import android.util.Log;
 
+import com.dmelnyk.workinukraine.db.DbContract;
 import com.dmelnyk.workinukraine.db.DbItems;
-import com.dmelnyk.workinukraine.db.Tables;
 import com.dmelnyk.workinukraine.models.VacancyModel;
 import com.squareup.sqlbrite2.BriteDatabase;
 
@@ -19,7 +18,7 @@ import timber.log.Timber;
 
 public class VacancyViewerRepository implements IVacancyViewerRepository {
 
-    private static final String TABLE = Tables.SearchSites.TABLE_ALL_SITES;
+    private static final String TABLE = DbContract.SearchSites.TABLE_ALL_SITES;
 
     private final BriteDatabase db;
 
@@ -28,12 +27,17 @@ public class VacancyViewerRepository implements IVacancyViewerRepository {
     }
 
     @Override
+    public void close() {
+        db.close();
+    }
+
+    @Override
     public Single<List<VacancyModel>> getFavoriteVacancies(String request) {
         Timber.d("getFavoriteVacancies");
 
         return db.createQuery(TABLE, "SELECT * FROM " + TABLE
-                + " WHERE " + Tables.SearchSites.Columns.REQUEST
-                + " ='" + request + "' AND " + Tables.SearchSites.Columns.IS_FAVORITE
+                + " WHERE " + DbContract.SearchSites.Columns.REQUEST
+                + " ='" + request + "' AND " + DbContract.SearchSites.Columns.IS_FAVORITE
                 + " =1").mapToList(VacancyModel.MAPPER).elementAtOrError(0);
     }
 
@@ -42,8 +46,8 @@ public class VacancyViewerRepository implements IVacancyViewerRepository {
         Timber.d("getNewVacancies");
 
         return db.createQuery(TABLE, "SELECT * FROM " + TABLE
-                + " WHERE " + Tables.SearchSites.Columns.REQUEST
-                + " ='" + request + "' AND " + Tables.SearchSites.Columns.TIME_STATUS
+                + " WHERE " + DbContract.SearchSites.Columns.REQUEST
+                + " ='" + request + "' AND " + DbContract.SearchSites.Columns.TIME_STATUS
                 + " =1").mapToList(VacancyModel.MAPPER).elementAtOrError(0);
     }
 
@@ -52,8 +56,8 @@ public class VacancyViewerRepository implements IVacancyViewerRepository {
         Timber.d("getRecentVacancies");
 
         return db.createQuery(TABLE, "SELECT * FROM " + TABLE
-                + " WHERE " + Tables.SearchSites.Columns.REQUEST
-                + " ='" + request + "' AND " + Tables.SearchSites.Columns.TIME_STATUS
+                + " WHERE " + DbContract.SearchSites.Columns.REQUEST
+                + " ='" + request + "' AND " + DbContract.SearchSites.Columns.TIME_STATUS
                 + " =0").mapToList(VacancyModel.MAPPER).elementAtOrError(0);
     }
 
@@ -62,8 +66,8 @@ public class VacancyViewerRepository implements IVacancyViewerRepository {
         Timber.d("getSiteVacancies " + site);
 
         return db.createQuery(TABLE, "SELECT * FROM " + TABLE
-                + " WHERE " + Tables.SearchSites.Columns.REQUEST
-                + " ='" + request + "' AND " + Tables.SearchSites.Columns.SITE
+                + " WHERE " + DbContract.SearchSites.Columns.REQUEST
+                + " ='" + request + "' AND " + DbContract.SearchSites.Columns.SITE
                 + " ='" + site + "'").mapToList(VacancyModel.MAPPER).elementAtOrError(0);
     }
 
@@ -73,8 +77,8 @@ public class VacancyViewerRepository implements IVacancyViewerRepository {
 
         return Single.fromCallable(() -> {
             ContentValues updatedVacancy = DbItems.createVacancyFavoriteItem(!vacancy.isFavorite(), vacancy);
-            db.update(Tables.SearchSites.TABLE_ALL_SITES, updatedVacancy,
-                    Tables.SearchSites.Columns.URL + " ='" + vacancy.url() + "'");
+            db.update(DbContract.SearchSites.TABLE_ALL_SITES, updatedVacancy,
+                    DbContract.SearchSites.Columns.URL + " ='" + vacancy.url() + "'");
             return !vacancy.isFavorite();
         });
     }

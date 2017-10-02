@@ -1,6 +1,6 @@
-package com.dmelnyk.workinukraine.services;
+package com.dmelnyk.workinukraine.services.search;
 
-import android.app.IntentService;
+import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
@@ -12,7 +12,7 @@ import android.util.Log;
 import com.dmelnyk.workinukraine.models.RequestModel;
 import com.dmelnyk.workinukraine.db.di.DaggerDbComponent;
 import com.dmelnyk.workinukraine.db.di.DbModule;
-import com.dmelnyk.workinukraine.data.search_service.ISearchServiceRepository;
+import com.dmelnyk.workinukraine.services.search.repository.ISearchServiceRepository;
 import com.dmelnyk.workinukraine.models.VacancyModel;
 import com.dmelnyk.workinukraine.utils.parsing.ParserHeadHunters;
 import com.dmelnyk.workinukraine.utils.parsing.ParserJobsUa;
@@ -39,7 +39,7 @@ import timber.log.Timber;
  * Created by dmitry on 09.03.17.
  */
 
-public class SearchVacanciesService extends IntentService {
+public class SearchVacanciesService extends Service {
 
     // MODE_SEARCH - for DialogDownloading, MODE_REPEATING_SEARCH - for BroadcastReceiver
     public static final int MODE_SEARCH = -1;
@@ -70,21 +70,26 @@ public class SearchVacanciesService extends IntentService {
     private int mMode;
 
     // Binder given to clients
-    private final IBinder mBinder = new SearchBinder();
-
-    public SearchVacanciesService() {
-        super(SearchVacanciesService.class.getName());
-    }
+    private final IBinder mBinder = new SearchServiceBinder();
 
     @Override
-    protected void onHandleIntent(Intent intent) {
-        Timber.d("\nSearching vacancies started!");
-
+    public void onCreate() {
+        super.onCreate();
+        Log.d(getClass().getSimpleName(), "onCreate()");
         DaggerDbComponent.builder()
                 .dbModule(new DbModule(getApplicationContext()))
                 .build()
                 .inject(this);
+    }
 
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        Log.e(getClass().getSimpleName(), "onStartCommand()");
+        startSearchingProcess(intent);
+        return super.onStartCommand(intent, flags, startId);
+    }
+
+    private void startSearchingProcess(Intent intent) {
         sIsDownloadingFinished = false;
 
         mMode = intent.getIntExtra(EXTRA_MODE, MODE_REPEATING_SEARCH);
@@ -96,6 +101,27 @@ public class SearchVacanciesService extends IntentService {
                 });
     }
 
+
+//    @Override
+//    protected void onHandleIntent(Intent intent) {
+//        Timber.d("\nSearching vacancies started!");
+//
+//        DaggerDbComponent.builder()
+//                .dbModule(new DbModule(getApplicationContext()))
+//                .build()
+//                .inject(this);
+//
+//        sIsDownloadingFinished = false;
+//
+//        mMode = intent.getIntExtra(EXTRA_MODE, MODE_REPEATING_SEARCH);
+//
+//        // Gets request list and starts searching
+//        repository.getRequests()
+//                .subscribe(requests -> {
+//                    startSearching(requests);
+//                });
+//    }
+
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
@@ -104,7 +130,9 @@ public class SearchVacanciesService extends IntentService {
 
     public void cancelDownloading() {
         Log.e(getClass().getSimpleName(), "stopService()");
-        pool.shutdownNow();
+        if (pool != null) {
+            pool.shutdownNow();
+        }
     }
 
     @Override
@@ -116,7 +144,7 @@ public class SearchVacanciesService extends IntentService {
     private void startSearching(List<RequestModel> requests) {
         pool = Executors.newCachedThreadPool();
         // Creating parallel search tasks for each search request
-        long startTime = System.currentTimeMillis();
+        long startTime = System.nanoTime();
 
         List<Future> futures = new ArrayList<>();
         for (RequestModel requestModel : requests) {
@@ -139,8 +167,8 @@ public class SearchVacanciesService extends IntentService {
         }
 
         sendBroadcastMessage(ACTION_FINISHED, null /* request no need */, totalVacanciesCount);
-        long endTime = System.currentTimeMillis();
-        Timber.d("\nSearch completed at %d seconds", (endTime - startTime) / 1000);
+        long endTime = System.nanoTime();
+        Timber.d("\nSearch completed at %d seconds", (endTime - startTime) / 1000000);
     }
 
     private void sendBroadcastMessage(String action, String request, int vacanciesCount) {
@@ -247,9 +275,13 @@ public class SearchVacanciesService extends IntentService {
         }
     }
 
-    public class SearchBinder extends Binder {
+    public class SearchServiceBinder extends Binder {
         public SearchVacanciesService getService() {
             return SearchVacanciesService.this;
+        }
+
+        public void startSearching(Intent intent) {
+            startSearchingProcess(intent);
         }
     }
 }

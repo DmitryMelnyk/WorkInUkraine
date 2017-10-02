@@ -4,7 +4,7 @@ package com.dmelnyk.workinukraine.db;
  * Created by d264 on 7/19/17.
  */
 
-public class Tables {
+public class DbContract {
 
     public static final class SearchRequest {
         public static final String TABLE_REQUEST = "search_requests";

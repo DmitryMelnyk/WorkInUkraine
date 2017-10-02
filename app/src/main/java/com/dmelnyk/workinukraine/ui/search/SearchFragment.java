@@ -13,6 +13,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,7 +25,7 @@ import android.widget.Toast;
 import com.dmelnyk.workinukraine.R;
 import com.dmelnyk.workinukraine.models.RequestModel;
 import com.dmelnyk.workinukraine.db.di.DbModule;
-import com.dmelnyk.workinukraine.services.SearchVacanciesService;
+import com.dmelnyk.workinukraine.services.search.SearchVacanciesService;
 import com.dmelnyk.workinukraine.ui.dialogs.delete.DialogDelete;
 import com.dmelnyk.workinukraine.ui.dialogs.downloading.DialogDownloading;
 import com.dmelnyk.workinukraine.ui.dialogs.request.DialogRequest;
@@ -107,11 +108,6 @@ public class SearchFragment extends BaseFragment implements
                     // updating data after searching vacancies
                     presenter.updateData();
                     break;
-
-                case SearchVacanciesService.ACTION_DOWNLOADING_IN_PROGRESS:
-//                    sTotalVacanciesCount += intent.getIntExtra(
-//                            SearchVacanciesService.KEY_TOTAL_VACANCIES_COUNT, -1);
-//                    Toast.makeText(context, request + sTotalVacanciesCount, Toast.LENGTH_SHORT).show();
             }
         }
     };
@@ -301,11 +297,8 @@ public class SearchFragment extends BaseFragment implements
     }
 
     private void startSearchVacanciesService() {
-        Intent searchService = new Intent(
-                getContext().getApplicationContext(), SearchVacanciesService.class);
-
-        searchService.putExtra(SearchVacanciesService.EXTRA_MODE, SearchVacanciesService.MODE_SEARCH);
-        getContext().bindService(searchService, mSearchConnection, Context.BIND_AUTO_CREATE);
+        Intent intentSearchService = new Intent(getContext(), SearchVacanciesService.class);
+        getContext().bindService(intentSearchService, mSearchConnection, Context.BIND_AUTO_CREATE);
     }
 
    private void stopSearchVacanciesService() {
@@ -454,6 +447,8 @@ public class SearchFragment extends BaseFragment implements
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Timber.i("onActivityResult. requestCode=" + requestCode);
+        Log.e("SearchFragment", "onActivityResult. requestCode=" + requestCode);
         if (requestCode == REQUEST_CODE_VACANCY_ACTIVITY) {
             switch (resultCode) {
                 case RESULT_OK:
@@ -472,9 +467,17 @@ public class SearchFragment extends BaseFragment implements
     private ServiceConnection mSearchConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-            SearchVacanciesService.SearchBinder binder = (SearchVacanciesService.SearchBinder) iBinder;
+            SearchVacanciesService.SearchServiceBinder binder =
+                    (SearchVacanciesService.SearchServiceBinder) iBinder;
             mBound = true;
             mSearchVacanciesService = binder.getService();
+            Log.e("!!!", "service=" + mSearchVacanciesService);
+
+            Intent searchService = new Intent(
+                    getContext().getApplicationContext(), SearchVacanciesService.class);
+
+            searchService.putExtra(SearchVacanciesService.EXTRA_MODE, SearchVacanciesService.MODE_SEARCH);
+            binder.startSearching(searchService);
         }
 
         @Override
@@ -487,6 +490,8 @@ public class SearchFragment extends BaseFragment implements
         if (mBound) {
             getContext().unbindService(mSearchConnection);
         }
+
+        mBound = false;
     }
 
     private void restoreDialogs() {

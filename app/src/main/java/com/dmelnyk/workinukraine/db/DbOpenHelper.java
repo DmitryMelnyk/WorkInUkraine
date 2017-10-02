@@ -12,22 +12,22 @@ public class DbOpenHelper extends SQLiteOpenHelper {
     private static final int VERSION = 1;
 
     private static final String CREATE_SEARCH_REQUEST_TABLE = ""
-            + "CREATE TABLE " + Tables.SearchRequest.TABLE_REQUEST + "("
-            + Tables.SearchRequest.Columns.REQUEST + " TEXT NOT NULL PRIMARY KEY, "
-            + Tables.SearchRequest.Columns.VACANCIES + " INTEGER NOT NULL, "
-            + Tables.SearchRequest.Columns.NEW_VACANCIES + " INTEGER NOT NULL, "
-            + Tables.SearchRequest.Columns.UPDATED + " INTEGER NOT NULL)";
+            + "CREATE TABLE " + DbContract.SearchRequest.TABLE_REQUEST + "("
+            + DbContract.SearchRequest.Columns.REQUEST + " TEXT NOT NULL PRIMARY KEY, "
+            + DbContract.SearchRequest.Columns.VACANCIES + " INTEGER NOT NULL, "
+            + DbContract.SearchRequest.Columns.NEW_VACANCIES + " INTEGER NOT NULL, "
+            + DbContract.SearchRequest.Columns.UPDATED + " INTEGER NOT NULL)";
 
     private static final String CREATE_VACANCIES_TABLE = "CREATE TABLE "
-            + Tables.SearchSites.TABLE_ALL_SITES + "("
+            + DbContract.SearchSites.TABLE_ALL_SITES + "("
             + "_id INTEGER PRIMARY KEY AUTOINCREMENT, "
-            + Tables.SearchSites.Columns.REQUEST + " TEXT NOT NULL, "
-            + Tables.SearchSites.Columns.SITE + " TEXT NOT NULL, "
-            + Tables.SearchSites.Columns.TITLE + " TEXT NOT NULL, "
-            + Tables.SearchSites.Columns.DATE + " TEXT, "
-            + Tables.SearchSites.Columns.URL + " TEXT NOT NULL, "
-            + Tables.SearchSites.Columns.IS_FAVORITE + " INTEGER NOT NULL, "
-            + Tables.SearchSites.Columns.TIME_STATUS + " INTEGER NOT NULL);";
+            + DbContract.SearchSites.Columns.REQUEST + " TEXT NOT NULL, "
+            + DbContract.SearchSites.Columns.SITE + " TEXT NOT NULL, "
+            + DbContract.SearchSites.Columns.TITLE + " TEXT NOT NULL, "
+            + DbContract.SearchSites.Columns.DATE + " TEXT, "
+            + DbContract.SearchSites.Columns.URL + " TEXT NOT NULL, "
+            + DbContract.SearchSites.Columns.IS_FAVORITE + " INTEGER NOT NULL, "
+            + DbContract.SearchSites.Columns.TIME_STATUS + " INTEGER NOT NULL);";
 
     public DbOpenHelper(Context context) {
         super(context, "main.db", null /* factory */, VERSION);

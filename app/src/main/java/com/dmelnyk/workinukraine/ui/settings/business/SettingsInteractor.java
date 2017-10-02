@@ -1,6 +1,6 @@
-package com.dmelnyk.workinukraine.business.settings;
+package com.dmelnyk.workinukraine.ui.settings.business;
 
-import com.dmelnyk.workinukraine.data.settings.ISettingsRepository;
+import com.dmelnyk.workinukraine.ui.settings.repository.ISettingsRepository;
 
 /**
  * Created by d264 on 6/27/17.

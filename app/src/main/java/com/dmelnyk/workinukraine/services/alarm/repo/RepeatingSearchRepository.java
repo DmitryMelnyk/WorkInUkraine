@@ -1,10 +1,10 @@
-package com.dmelnyk.workinukraine.data.repeating_search_service;
+package com.dmelnyk.workinukraine.services.alarm.repo;
 
 import android.database.Cursor;
 
-import com.dmelnyk.workinukraine.data.SharedPrefUtil;
-import com.dmelnyk.workinukraine.ui.settings.data.SettingsRepository;
-import com.dmelnyk.workinukraine.db.Tables;
+import com.dmelnyk.workinukraine.utils.SharedPrefUtil;
+import com.dmelnyk.workinukraine.db.DbContract;
+import com.dmelnyk.workinukraine.ui.settings.repository.SettingsRepository;
 import com.dmelnyk.workinukraine.models.VacancyModel;
 import com.squareup.sqlbrite2.BriteDatabase;
 
@@ -23,8 +23,8 @@ import io.reactivex.Single;
 
 public class RepeatingSearchRepository implements IRepeatingSearchRepository {
 
-    private static final String TABLE_REQUEST = Tables.SearchRequest.TABLE_REQUEST;
-    private static final String TABLE_VACANCIES = Tables.SearchSites.TABLE_ALL_SITES;
+    private static final String TABLE_REQUEST = DbContract.SearchRequest.TABLE_REQUEST;
+    private static final String TABLE_VACANCIES = DbContract.SearchSites.TABLE_ALL_SITES;
 
     private final BriteDatabase db;
     private final SettingsRepository settingsRepository;
@@ -42,7 +42,7 @@ public class RepeatingSearchRepository implements IRepeatingSearchRepository {
 
         Observable<List<VacancyModel>> result =
                 db.createQuery(TABLE_VACANCIES, "SELECT * FROM " + TABLE_VACANCIES
-                + " WHERE " + Tables.SearchSites.Columns.TIME_STATUS
+                + " WHERE " + DbContract.SearchSites.Columns.TIME_STATUS
                 + " =1").mapToList(VacancyModel.MAPPER);
 
         return result.firstOrError();

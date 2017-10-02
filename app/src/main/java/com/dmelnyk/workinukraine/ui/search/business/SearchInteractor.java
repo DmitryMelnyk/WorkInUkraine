@@ -1,7 +1,7 @@
-package com.dmelnyk.workinukraine.business.search;
+package com.dmelnyk.workinukraine.ui.search.business;
 
 import com.dmelnyk.workinukraine.models.RequestModel;
-import com.dmelnyk.workinukraine.data.search.ISearchRepository;
+import com.dmelnyk.workinukraine.ui.search.repository.ISearchRepository;
 
 import java.util.List;
 
@@ -42,9 +42,9 @@ public class SearchInteractor implements ISearchInteractor {
     }
 
     @Override
-    public void editRequest(String previousRequest, String newRequest) {
-        repository.updateRequest(previousRequest, newRequest);
-        repository.clearAllSharedPrefData();
+    public Completable editRequest(String previousRequest, String newRequest) {
+//        repository.clearAllSharedPrefData();
+        return repository.updateRequest(previousRequest, newRequest);
     }
 
 }

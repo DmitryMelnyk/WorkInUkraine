@@ -1,4 +1,4 @@
-package com.dmelnyk.workinukraine.ui.vacancy_list.data;
+package com.dmelnyk.workinukraine.ui.vacancy_list.repository;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -9,6 +9,7 @@ import com.dmelnyk.workinukraine.R;
 import com.dmelnyk.workinukraine.db.DbContract;
 import com.dmelnyk.workinukraine.ui.vacancy_list.business.IVacancyListInteractor;
 import com.dmelnyk.workinukraine.models.VacancyModel;
+import com.dmelnyk.workinukraine.utils.SharedPrefUtil;
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import java.util.HashMap;
@@ -29,10 +30,12 @@ public class VacancyListRepository implements IVacancyListRepository {
     public static final String SHARED_PREF = "shared_pref"; // for saving vacancy updating status
     private final BriteDatabase db;
     private final Context context;
+    private final SharedPrefUtil sharedPrefUtil;
 
-    public VacancyListRepository(BriteDatabase db, Context context) {
+    public VacancyListRepository(BriteDatabase db, Context context, SharedPrefUtil util) {
         this.db = db;
         this.context = context;
+        this.sharedPrefUtil = util;
     }
 
     @Override
@@ -82,21 +85,14 @@ public class VacancyListRepository implements IVacancyListRepository {
                     result.put(IVacancyListInteractor.DATA_RECENT, recent);
                     result.put(IVacancyListInteractor.DATA_FAVORITE, favorite);
 
-                    Log.e("@@", "all=" + all.size());
-                    Log.e("@@", "new=" + newest.size());
-                    Log.e("@@", "recent=" + recent.size());
-                    Log.e("@@", "favorite=" + favorite.size());
-
-                    for (VacancyModel vacancy : all) {
-                        Log.e("@@", "vacancy=" + vacancy);
-                    }
 
                     if (!newest.isEmpty()) {
                         saveUpdatingTask(request, true);
                         updateRequestTableData(request); // setting newVacancies count to 0
                     }
 
-                    db.close();
+                    close();
+                    close();
                     return result;
         });
     }
@@ -221,12 +217,10 @@ public class VacancyListRepository implements IVacancyListRepository {
     }
 
     private boolean shouldBeUpdated(String request) {
-        SharedPreferences preferences = context.getSharedPreferences(SHARED_PREF, 0);
-        return preferences.getBoolean(request, false);
+        return sharedPrefUtil.shouldBeUpdated(request);
     }
 
     private void saveUpdatingTask(String request, boolean shouldBeUpdated) {
-        SharedPreferences preferences = context.getSharedPreferences(SHARED_PREF, 0);
-        preferences.edit().putBoolean(request, shouldBeUpdated).commit();
+        sharedPrefUtil.saveUpdatingTask(request, shouldBeUpdated);
     }
 }

@@ -1,4 +1,4 @@
-package com.dmelnyk.workinukraine.data.repeating_search_service;
+package com.dmelnyk.workinukraine.services.alarm.repo;
 
 import com.dmelnyk.workinukraine.models.VacancyModel;
 

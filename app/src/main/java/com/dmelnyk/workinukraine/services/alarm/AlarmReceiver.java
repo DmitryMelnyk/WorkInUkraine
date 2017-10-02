@@ -1,6 +1,5 @@
 package com.dmelnyk.workinukraine.services.alarm;
 
-import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -11,21 +10,17 @@ import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.RingtoneManager;
-import android.media.SoundPool;
 import android.net.Uri;
 import android.os.Build;
-import android.os.VibrationEffect;
-import android.os.Vibrator;
-import android.provider.Settings;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.dmelnyk.workinukraine.R;
-import com.dmelnyk.workinukraine.data.repeating_search_service.IRepeatingSearchRepository;
+import com.dmelnyk.workinukraine.services.alarm.repo.IRepeatingSearchRepository;
 import com.dmelnyk.workinukraine.db.di.DbModule;
-import com.dmelnyk.workinukraine.services.SearchVacanciesService;
+import com.dmelnyk.workinukraine.services.search.SearchVacanciesService;
 import com.dmelnyk.workinukraine.services.alarm.di.DaggerRepeatingSearchComponent;
 import com.dmelnyk.workinukraine.services.alarm.di.RepeatingSearchModule;
 import com.dmelnyk.workinukraine.ui.navigation.NavigationActivity;

@@ -1,4 +1,4 @@
-package com.dmelnyk.workinukraine.ui.search.data;
+package com.dmelnyk.workinukraine.ui.search.repository;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -40,7 +40,7 @@ public interface ISearchRepository {
      * @param oldRequest The request that will be removed from database
      * @param newRequest The request that will be added to database
      */
-    void updateRequest(@NonNull String oldRequest, String newRequest);
+    Completable updateRequest(@NonNull String oldRequest, String newRequest);
 
     /**
      * Removes all requests and vacancies from request's and vacancies's tables

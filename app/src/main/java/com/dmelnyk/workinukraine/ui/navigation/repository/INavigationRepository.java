@@ -1,4 +1,4 @@
-package com.dmelnyk.workinukraine.ui.navigation.repo;
+package com.dmelnyk.workinukraine.ui.navigation.repository;
 
 /**
  * Created by d264 on 6/23/17.

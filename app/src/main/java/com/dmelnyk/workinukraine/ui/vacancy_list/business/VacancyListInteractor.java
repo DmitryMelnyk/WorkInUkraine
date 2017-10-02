@@ -1,6 +1,6 @@
-package com.dmelnyk.workinukraine.business.vacancy_list;
+package com.dmelnyk.workinukraine.ui.vacancy_list.business;
 
-import com.dmelnyk.workinukraine.data.vacancy_list.IVacancyListRepository;
+import com.dmelnyk.workinukraine.ui.vacancy_list.repository.IVacancyListRepository;
 import com.dmelnyk.workinukraine.models.VacancyModel;
 import com.dmelnyk.workinukraine.ui.vacancy_list.core.VacancyCardViewAdapter;
 

@@ -158,13 +158,13 @@ public class VacancyListActivity extends BaseAnimationActivity implements
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        presenter.clear();
         presenter.updateVacanciesTimeStatus();
         Log.e("VLA", "onDestroy()");
     }
 
     @Override
     public void onBackPressed() {
-        presenter.clear();
         finish();
     }
 

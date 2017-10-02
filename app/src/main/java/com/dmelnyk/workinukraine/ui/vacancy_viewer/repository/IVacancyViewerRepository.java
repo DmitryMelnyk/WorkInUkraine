@@ -1,10 +1,9 @@
-package com.dmelnyk.workinukraine.ui.vacancy_viewer.data;
+package com.dmelnyk.workinukraine.ui.vacancy_viewer.repository;
 
 import com.dmelnyk.workinukraine.models.VacancyModel;
 
 import java.util.List;
 
-import io.reactivex.Completable;
 import io.reactivex.Single;
 
 /**
@@ -21,6 +20,8 @@ public interface IVacancyViewerRepository {
     Single<Boolean> updateFavorite(VacancyModel vacancy);
 
     Single<List<VacancyModel>> getSiteVacancies(String request, String site);
+
+    void close();
 
     Single<List<VacancyModel>> getFavoriteVacancies(String request);
 

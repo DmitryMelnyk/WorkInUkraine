@@ -6,7 +6,7 @@ import android.util.Log;
 
 import com.dmelnyk.workinukraine.application.WorkInUaApplication;
 import com.dmelnyk.workinukraine.models.VacancyModel;
-import com.dmelnyk.workinukraine.db.Tables;
+import com.dmelnyk.workinukraine.db.DbContract;
 import com.dmelnyk.workinukraine.utils.CityUtils;
 import com.dmelnyk.workinukraine.utils.NetUtils;
 import com.dmelnyk.workinukraine.utils.di.DaggerUtilComponent;
@@ -86,7 +86,7 @@ public class ParserHeadHunters {
                     .setIsFavorite(false)
                     .setTimeStatus(1) // new
                     .setRequest(request)
-                    .setSite(Tables.SearchSites.SITES[0])
+                    .setSite(DbContract.SearchSites.SITES[0])
                     .setTitle(title)
                     .setUrl(url)
                     .build();

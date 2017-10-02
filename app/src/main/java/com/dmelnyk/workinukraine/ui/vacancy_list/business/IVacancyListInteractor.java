@@ -1,4 +1,4 @@
-package com.dmelnyk.workinukraine.business.vacancy_list;
+package com.dmelnyk.workinukraine.ui.vacancy_list.business;
 
 import android.support.annotation.StringDef;
 

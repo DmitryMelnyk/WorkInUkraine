@@ -1,8 +1,6 @@
 package com.dmelnyk.workinukraine.ui.search;
 
-import android.util.Log;
-
-import com.dmelnyk.workinukraine.business.search.ISearchInteractor;
+import com.dmelnyk.workinukraine.ui.search.business.ISearchInteractor;
 import com.dmelnyk.workinukraine.models.RequestModel;
 import com.dmelnyk.workinukraine.ui.search.Contract.ISearchView;
 
@@ -52,7 +50,14 @@ public class SearchPresenter implements Contract.ISearchPresenter {
 
     @Override
     public void editRequest(String previousRequest, String newRequest) {
-        interactor.editRequest(previousRequest, newRequest);
+        interactor.editRequest(previousRequest, newRequest)
+                .subscribe(
+                        () -> { /* NOP */},
+                        throwable -> view.showErrorMessage(null)
+                );
+
+
+        ;
     }
 
     @Override
@@ -75,6 +80,16 @@ public class SearchPresenter implements Contract.ISearchPresenter {
         getRequests();
     }
 
+    @Override
+    public void removeRequest(String request) {
+        interactor.removeRequest(request);
+    }
+
+    @Override
+    public void updateData() {
+        getRequests();
+    }
+
     private void getRequests() {
         disposableRequests = interactor.getRequests()
                 .observeOn(AndroidSchedulers.mainThread())
@@ -91,16 +106,6 @@ public class SearchPresenter implements Contract.ISearchPresenter {
         view.updateVacanciesCount(countAllVacancies(requestsList));
         view.updateNewVacanciesCount(countAllNewVacancies(requestsList));
         updateLastUpdateTime(requestsList);
-    }
-
-    @Override
-    public void removeRequest(String request) {
-        interactor.removeRequest(request);
-    }
-
-    @Override
-    public void updateData() {
-        getRequests();
     }
 
     private void updateLastUpdateTime(List<RequestModel> requestsList) {

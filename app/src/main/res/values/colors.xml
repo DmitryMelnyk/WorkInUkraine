@@ -25,8 +25,10 @@
     <color name="transparent">#00000000</color>
 
     <color name="blue_dark">#2d3e50</color>
+    <!--<color name="green">@android:color/holo_orange_dark</color>-->
     <color name="green">#1bbc9b</color>
     <color name="pink">#ed356b</color>
 
     <color name="text_shadow_white">#FFFFFF</color>
+    <color name="colorAccent2">@android:color/holo_orange_light</color>
 </resources>

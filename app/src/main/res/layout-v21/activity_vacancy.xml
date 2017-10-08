@@ -11,19 +11,24 @@
     <android.support.design.widget.AppBarLayout
         android:id="@+id/app_bar"
         android:layout_width="match_parent"
-        android:layout_height="160dp"
+        android:layout_height="wrap_content"
         >
 
         <android.support.design.widget.CollapsingToolbarLayout
             android:id="@+id/toolbar_layout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@drawable/bg_vinnytsia"
+            android:layout_height="wrap_content"
             app:titleEnabled="true"
             app:title="Title"
             app:contentScrim="@color/blue_dark"
             app:layout_scrollFlags="scroll|exitUntilCollapsed"
             >
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="160dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/bg_vinnytsia"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -101,6 +106,17 @@
                 </RelativeLayout>
             </android.support.v7.widget.Toolbar>
 
+            <FrameLayout
+                android:id="@+id/animationContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/colorAccent2">
+
+                <include
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    layout="@layout/view_filter" />
+            </FrameLayout>
         </android.support.design.widget.CollapsingToolbarLayout>
     </android.support.design.widget.AppBarLayout>
 

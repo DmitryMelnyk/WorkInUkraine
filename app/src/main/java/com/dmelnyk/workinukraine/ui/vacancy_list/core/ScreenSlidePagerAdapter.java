@@ -3,6 +3,7 @@ package com.dmelnyk.workinukraine.ui.vacancy_list.core;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.util.Log;
 import android.view.ViewGroup;
 
 import com.dmelnyk.workinukraine.ui.vacancy_list.business.IVacancyListInteractor;
@@ -115,6 +116,10 @@ public class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {
     }
 
     public void updateFavoriteData(List<VacancyModel> vacancies) {
+        if (ScreenSlidePagerAdapter.this == null) {
+            Log.d("!!!", "adapter isn't created");
+            return;
+        }
         mFavoriteFragmentData = vacancies;
         if (mFragment2 instanceof FavoriteTabFragment) {
             ((FavoriteTabFragment) mFragment2).updateData(vacancies);

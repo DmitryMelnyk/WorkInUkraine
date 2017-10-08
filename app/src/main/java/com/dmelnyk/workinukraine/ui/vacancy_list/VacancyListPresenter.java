@@ -67,6 +67,8 @@ public class VacancyListPresenter implements Contract.IVacancyPresenter {
         this.view = view;
         if (disposableFavorites != null) {
             updateFavorite();
+        } else {
+            updateFavorite();
         }
     }
 

@@ -1,37 +1,52 @@
 package com.dmelnyk.workinukraine.ui.vacancy_list;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.constraint.ConstraintLayout;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.view.ViewPager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewAnimationUtils;
+import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.WindowManager;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.dmelnyk.workinukraine.R;
-import com.dmelnyk.workinukraine.models.VacancyModel;
 import com.dmelnyk.workinukraine.db.di.DbModule;
+import com.dmelnyk.workinukraine.models.VacancyModel;
 import com.dmelnyk.workinukraine.ui.filter.FilterActivity;
-import com.dmelnyk.workinukraine.ui.vacancy_viewer.VacancyViewerActivity;
 import com.dmelnyk.workinukraine.ui.vacancy_list.core.BaseTabFragment;
+import com.dmelnyk.workinukraine.ui.vacancy_list.core.FilterAdapter;
+import com.dmelnyk.workinukraine.ui.vacancy_list.core.ScreenSlidePagerAdapter;
 import com.dmelnyk.workinukraine.ui.vacancy_list.core.SitesTabFragment;
 import com.dmelnyk.workinukraine.ui.vacancy_list.core.VacancyCardViewAdapter;
-import com.dmelnyk.workinukraine.ui.vacancy_list.core.ScreenSlidePagerAdapter;
 import com.dmelnyk.workinukraine.ui.vacancy_list.di.DaggerVacancyComponent;
 import com.dmelnyk.workinukraine.ui.vacancy_list.di.VacancyModule;
+import com.dmelnyk.workinukraine.ui.vacancy_viewer.VacancyViewerActivity;
 import com.dmelnyk.workinukraine.utils.BaseAnimationActivity;
 import com.dmelnyk.workinukraine.utils.buttontab.ButtonTabs;
 import com.dmelnyk.workinukraine.utils.buttontab.ImageButtonBehavior;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -46,21 +61,30 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 public class VacancyListActivity extends BaseAnimationActivity implements
         BaseTabFragment.OnFragmentInteractionListener,
         SitesTabFragment.OnFragmentInteractionListener,
+        FilterAdapter.CallbackListener,
         Contract.IVacancyView {
 
-    private static final String KEY_CURRENT_POSITION = "current_position";
-    private static final String KEY_TAB_TITLES = "tab_titles";
-    private static final String KEY_TAB_VACANCY_COUNT = "tab_vacancy_count";
-    private static final String KEY_ORIENTATION_CHANGED = "orientation_changed";
+    private static final String KEY_CURRENT_POSITION = "KEY_CURRENT_POSITION";
+    private static final String KEY_TAB_TITLES = "KEY_TAB_TITLES";
+    private static final String KEY_TAB_VACANCY_COUNT = "KEY_TAB_VACANCY_COUNT";
+    private static final String KEY_ORIENTATION_CHANGED = "KEY_ORIENTATION_CHANGED";
+    private static final String KEY_TOOLBAR_DEFAULT_HEIGHT = "KEY_TOOLBAR_DEFAULT_HEIGHT";
+    private static final String KEY_SETTINGS_FLAG = "KEY_SETTINGS_FLAG";
+    private static final String TAG = "TAG";
+    private static final String KEY_REVEAL_X = "KEY_REVEAL_X";
+    private static final String KEY_REVEAL_Y = "KEY_REVEAL_Y";
     private static final int WEBVIEW_REQUEST_CODE = 1002;
 
-    @Inject Contract.IVacancyPresenter presenter;
+    @Inject
+    Contract.IVacancyPresenter presenter;
 
     @BindView(R.id.title_text_view) TextView mTitleTextView;
     @BindView(R.id.vacancies_count_text_view) TextView mTitleVacanciesCountTextView;
     @BindView(R.id.pager) ViewPager mViewPager;
     @BindView(R.id.button_tabs) ButtonTabs mButtonTabs;
     @BindView(R.id.settings_image_button) ImageButton mSettingsImageButton;
+    @BindView(R.id.animationContainer) FrameLayout animationContainer;
+    @BindView(R.id.app_bar) AppBarLayout appBar;
 
     private ScreenSlidePagerAdapter mSlideAdapter;
     private String mRequest;
@@ -68,7 +92,22 @@ public class VacancyListActivity extends BaseAnimationActivity implements
     private int[] mTabVacancyCount;
     private String[] mTabTitles;
     private boolean orientationHasChanged;
-    private int mButtonTabType; // @look initializeButtonTabs() function
+    private int mButtonTabType; // look initializeButtonTabs() function
+
+    private ConstraintLayout animationLayout;
+    private RecyclerView mRecyclerView;
+
+    private Animation alphaAnim;
+    private Animation rotateRightAnim;
+    private Animation rotateLeftAnim;
+    private boolean flag = true;
+    private int mHeight;
+    private int toolbarHeight;
+    private int revealX;
+    private int revealY;
+    private ValueAnimator expandingHeightAnimator;
+    private FilterAdapter adapter;
+    private List<String> items = new ArrayList<>();
 
     @OnClick(R.id.favorite_image_view)
     public void onViewClicked() {
@@ -91,7 +130,7 @@ public class VacancyListActivity extends BaseAnimationActivity implements
         // sets result to update
         setResult(RESULT_OK);
         // Makes status bar transparent
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             getWindow().setNavigationBarColor(Color.BLACK);
             getWindow().setFlags(
                     WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
@@ -105,6 +144,7 @@ public class VacancyListActivity extends BaseAnimationActivity implements
         mRequest = getIntent().getAction();
         initializeDependency(mRequest);
         initializeViews();
+        initializeFilterView(savedInstanceState);
         presenter.bindView(this, mRequest);
     }
 
@@ -118,7 +158,7 @@ public class VacancyListActivity extends BaseAnimationActivity implements
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
 
         mSettingsImageButton = (ImageButton) findViewById(R.id.settings_image_button);
-        mSettingsImageButton.setOnClickListener(view -> startFilterActivity());
+        mSettingsImageButton.setOnClickListener(view -> launchFilterAnimation(mSettingsImageButton));
         CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) mSettingsImageButton.getLayoutParams();
         params.setBehavior(new ImageButtonBehavior());
         mSettingsImageButton.requestLayout();
@@ -132,15 +172,44 @@ public class VacancyListActivity extends BaseAnimationActivity implements
 
     }
 
-    private void startFilterActivity() {
-        Intent intent = new Intent(this, FilterActivity.class);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            ActivityOptionsCompat option = ActivityOptionsCompat.makeSceneTransitionAnimation(
-                    this, (View) mSettingsImageButton, getString(R.string.fab_transition));
-            ActivityCompat.startActivity(this, intent, option.toBundle());
-        } else {
-            startActivity(intent);
+    private void initializeFilterView(Bundle savedInstanceState) {
+        animationLayout = (ConstraintLayout) findViewById(R.id.filter_layout);
+
+        alphaAnim = AnimationUtils.loadAnimation(this, R.anim.alpha);
+        rotateRightAnim = AnimationUtils.loadAnimation(this, R.anim.rotate_right);
+        rotateLeftAnim = AnimationUtils.loadAnimation(this, R.anim.rotate_left);
+
+        if (savedInstanceState != null) {
+            flag = savedInstanceState.getBoolean(KEY_SETTINGS_FLAG);
+            toolbarHeight = savedInstanceState.getInt(KEY_TOOLBAR_DEFAULT_HEIGHT);
+            revealX = savedInstanceState.getInt(KEY_REVEAL_X);
+            revealY = savedInstanceState.getInt(KEY_REVEAL_Y);
+            Log.d(TAG, "flag=" + flag);
         }
+
+        items.add("Senior");
+        items.add("java");
+        adapter = new FilterAdapter(items, this);
+        mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+        mRecyclerView.setAdapter(adapter);
+        // measuring height of filter view. Then hid it.
+        animationLayout.getViewTreeObserver().addOnGlobalLayoutListener(
+                new ViewTreeObserver.OnGlobalLayoutListener() {
+                    @Override
+                    public void onGlobalLayout() {
+                        mHeight = animationLayout.getHeight();
+                        animationLayout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                        if (mHeight < toolbarHeight) {
+                            mHeight = toolbarHeight;
+                        }
+
+                        if (flag) {
+                            animationLayout.setVisibility(View.INVISIBLE);
+                            animationContainer.setVisibility(View.GONE);
+                        }
+                    }
+                }
+        );
     }
 
     @Override
@@ -175,6 +244,10 @@ public class VacancyListActivity extends BaseAnimationActivity implements
         outState.putStringArray(KEY_TAB_TITLES, mTabTitles);
         outState.putIntArray(KEY_TAB_VACANCY_COUNT, mTabVacancyCount);
         outState.putBoolean(KEY_ORIENTATION_CHANGED, true);
+        outState.putBoolean(KEY_SETTINGS_FLAG, flag);
+        outState.putInt(KEY_TOOLBAR_DEFAULT_HEIGHT, toolbarHeight);
+        outState.putInt(KEY_REVEAL_X, revealX);
+        outState.putInt(KEY_REVEAL_Y, revealY);
     }
 
     @Override
@@ -202,6 +275,7 @@ public class VacancyListActivity extends BaseAnimationActivity implements
 
     /**
      * Types: DATA_SITE, DATA_NEW, DATA_RECENT, DATA_FAVORITE
+     *
      * @return The type of active tab in viewPager
      */
     private String getCurrentTabType() {
@@ -289,8 +363,6 @@ public class VacancyListActivity extends BaseAnimationActivity implements
         if (!orientationHasChanged) {
             updateTitleView(0);
         }
-
-
     }
 
     @Override
@@ -347,12 +419,13 @@ public class VacancyListActivity extends BaseAnimationActivity implements
     @Override
     public void updateFavoriteTab(List<VacancyModel> vacancies) {
         // updating data in adapters
-        mSlideAdapter.updateFavoriteData(vacancies);
-        // updating title manually if current tab is FAVORITE;
-        // TODO: edit this!!!
-        mTabVacancyCount[2] = vacancies.size();
-        if (mViewPager.getCurrentItem() == 2) {
-            updateTitleView(2);
+        if (mSlideAdapter != null) {
+            mSlideAdapter.updateFavoriteData(vacancies);
+            // updating title manually if current tab is FAVORITE;
+            mTabVacancyCount[2] = vacancies.size();
+            if (mViewPager.getCurrentItem() == 2) {
+                updateTitleView(2);
+            }
         }
     }
 
@@ -363,5 +436,93 @@ public class VacancyListActivity extends BaseAnimationActivity implements
             // call to load fresh list of favorites vacancies
             presenter.bindJustView(this);
         }
+    }
+
+    @Override
+    public void onRemoveClicked(String item) {
+        Toast.makeText(this, "onRemoveItemClicked=" + item, Toast.LENGTH_SHORT).show();
+    }
+
+    // triggered by clicking imageButton
+    public void launchFilterAnimation(View view) {
+        if (flag) {
+            // start and end positions of image button (reveal starting point) are the same
+            revealX = (int) (mSettingsImageButton.getX() + mSettingsImageButton.getWidth() / 2);
+            revealY = (int) (mSettingsImageButton.getY() + mSettingsImageButton.getHeight() / 2);
+
+            toolbarHeight = appBar.getHeight();
+            int hypotenuse = (int) Math.hypot(appBar.getWidth(), appBar.getHeight());
+//            mSettingsImageButton.setBackgroundResource(R.drawable.rounded_cancell_button);
+//            mSettingsImageButton.setImageResource(R.mipmap.image_cancel);
+            Log.e("!!!", "revealX=" + revealX + ", revealY=" + revealY);
+
+            FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) animationContainer.getLayoutParams();
+            params.width = appBar.getWidth();
+            params.height = appBar.getHeight();
+            animationContainer.setLayoutParams(params);
+            animationContainer.setVisibility(View.VISIBLE);
+
+            final Animator revealAnim = ViewAnimationUtils.createCircularReveal(animationContainer, revealX, revealY, 0, hypotenuse);
+            revealAnim.setDuration(300);
+            revealAnim.setInterpolator(new AccelerateDecelerateInterpolator());
+            revealAnim.addListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    super.onAnimationEnd(animation);
+                    animationLayout.setVisibility(View.VISIBLE);
+                    animationLayout.startAnimation(alphaAnim);
+
+                    createExpandingHeightAnimation(toolbarHeight, mHeight + 50);
+                    expandingHeightAnimator.start();
+                    mSettingsImageButton.startAnimation(rotateRightAnim);
+                }
+            });
+
+            revealAnim.start();
+            flag = false;
+        } else {
+            // reduce to 200 dp
+            revealX = (int) (mSettingsImageButton.getX() + mSettingsImageButton.getWidth() / 2);
+            revealY = mHeight;
+            mSettingsImageButton.startAnimation(rotateLeftAnim);
+
+            createExpandingHeightAnimation(mHeight + 50, toolbarHeight);
+            expandingHeightAnimator.start();
+            expandingHeightAnimator.addListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    int hypotenuse = (int) Math.hypot(animationContainer.getWidth(), animationContainer.getHeight());
+                    Animator revealAnim = ViewAnimationUtils.createCircularReveal(animationContainer, revealX, revealY, hypotenuse, 0);
+                    revealAnim.setDuration(300);
+                    revealAnim.addListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            animationContainer.setVisibility(View.GONE);
+                            animationLayout.setVisibility(View.INVISIBLE);
+
+//                            mSettingsImageButton.setBackgroundResource(R.drawable.rounded_button);
+//                            mSettingsImageButton.setImageResource(R.mipmap.ic_settings);
+                        }
+                    });
+
+                    revealAnim.start();
+                    flag = true;
+                }
+            });
+        }
+    }
+
+    private void createExpandingHeightAnimation(int startHeight, int finalHeight) {
+        expandingHeightAnimator = ValueAnimator.ofInt(startHeight, finalHeight);
+        expandingHeightAnimator.setDuration(getResources().getInteger(R.integer.anim_duration_short));
+        expandingHeightAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                int val = (Integer) animation.getAnimatedValue();
+                ViewGroup.LayoutParams layoutParams = animationContainer.getLayoutParams();
+                layoutParams.height = val;
+                animationContainer.setLayoutParams(layoutParams);
+            }
+        });
     }
 }

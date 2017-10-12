@@ -8,6 +8,7 @@ import com.dmelnyk.workinukraine.ui.vacancy_list.repository.IVacancyListReposito
 import com.dmelnyk.workinukraine.ui.vacancy_list.repository.VacancyListRepository;
 import com.dmelnyk.workinukraine.ui.vacancy_list.Contract;
 import com.dmelnyk.workinukraine.ui.vacancy_list.VacancyListPresenter;
+import com.dmelnyk.workinukraine.utils.SharedPrefFilterUtil;
 import com.dmelnyk.workinukraine.utils.SharedPrefUtil;
 import com.squareup.sqlbrite2.BriteDatabase;
 
@@ -31,10 +32,15 @@ public class VacancyModule {
         this.context = context.getApplicationContext();
     }
 
+    @Provides @Singleton
+    SharedPrefFilterUtil providesFilterUtil() {return new SharedPrefFilterUtil(context); }
+
     @Provides
     @VacancyScope
-    IVacancyListRepository provideIVacancyRepository(BriteDatabase db, SharedPrefUtil sharedPrefUtil) {
-        return new VacancyListRepository(db, context, sharedPrefUtil);
+    IVacancyListRepository provideIVacancyRepository(BriteDatabase db,
+                                                     SharedPrefUtil sharedPrefUtil,
+                                                     SharedPrefFilterUtil filterUtil) {
+        return new VacancyListRepository(db, context, sharedPrefUtil, filterUtil, request);
     }
 
     @Provides

@@ -76,9 +76,6 @@ public class SearchRepository implements ISearchRepository {
     @Override
     public Completable updateRequest(@NonNull String oldRequest, String newRequest) {
         Timber.d("\nupdateRequest");
-//
-//        Log.e("@@", "old==new =" + oldRequest.equals(newRequest));
-//        if (oldRequest.equals(newRequest)) return Completable.error(new Throwable("Error"));
 
         // edits  request
         ContentValues newItem = DbItems.createRequestItem(newRequest, 0, 0, -1l);

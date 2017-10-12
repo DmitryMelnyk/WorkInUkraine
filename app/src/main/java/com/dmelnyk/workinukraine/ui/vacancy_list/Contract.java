@@ -1,10 +1,13 @@
 package com.dmelnyk.workinukraine.ui.vacancy_list;
 
+import android.util.Pair;
+
 import com.dmelnyk.workinukraine.models.VacancyModel;
 import com.dmelnyk.workinukraine.ui.vacancy_list.core.VacancyCardViewAdapter;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by d264 on 7/28/17.
@@ -42,5 +45,9 @@ public class Contract {
         void clear();
 
         void updateVacanciesTimeStatus();
+
+        Pair<Boolean,Set<String>> getFilterData();
+
+        void filterUpdated(Pair<Boolean, Set<String>> data);
     }
 }

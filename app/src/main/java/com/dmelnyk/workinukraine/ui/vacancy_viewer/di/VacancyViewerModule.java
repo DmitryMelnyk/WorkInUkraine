@@ -1,11 +1,14 @@
 package com.dmelnyk.workinukraine.ui.vacancy_viewer.di;
 
+import android.content.Context;
+
 import com.dmelnyk.workinukraine.ui.vacancy_viewer.business.IVacancyViewInteractor;
 import com.dmelnyk.workinukraine.ui.vacancy_viewer.business.VacancyViewInteractor;
 import com.dmelnyk.workinukraine.ui.vacancy_viewer.repository.IVacancyViewerRepository;
 import com.dmelnyk.workinukraine.ui.vacancy_viewer.repository.VacancyViewerRepository;
 import com.dmelnyk.workinukraine.ui.vacancy_viewer.Contract;
 import com.dmelnyk.workinukraine.ui.vacancy_viewer.VacancyViewerPresenter;
+import com.dmelnyk.workinukraine.utils.SharedPrefFilterUtil;
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import dagger.Module;
@@ -19,9 +22,14 @@ import dagger.Provides;
 public class VacancyViewerModule {
 
     @Provides
+    SharedPrefFilterUtil providesFilterUtil(Context context) {
+        return new SharedPrefFilterUtil(context);
+    }
+
+    @Provides
     @VacancyViewerScope
-    IVacancyViewerRepository providesIVacancyViewerRepository(BriteDatabase db) {
-        return new VacancyViewerRepository(db);
+    IVacancyViewerRepository providesIVacancyViewerRepository(BriteDatabase db, SharedPrefFilterUtil util) {
+        return new VacancyViewerRepository(db, util);
     }
 
     @Provides

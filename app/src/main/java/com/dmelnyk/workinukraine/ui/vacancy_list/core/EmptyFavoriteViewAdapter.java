@@ -29,7 +29,6 @@ class EmptyFavoriteViewAdapter extends VacancyCardViewAdapter {
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
-//        super.onBindViewHolder(holder, position);
     }
 
     @Override

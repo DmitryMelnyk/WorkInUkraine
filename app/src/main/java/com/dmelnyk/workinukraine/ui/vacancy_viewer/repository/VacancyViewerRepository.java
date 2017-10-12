@@ -1,13 +1,17 @@
 package com.dmelnyk.workinukraine.ui.vacancy_viewer.repository;
 
 import android.content.ContentValues;
+import android.util.Log;
 
 import com.dmelnyk.workinukraine.db.DbContract;
 import com.dmelnyk.workinukraine.db.DbItems;
 import com.dmelnyk.workinukraine.models.VacancyModel;
+import com.dmelnyk.workinukraine.utils.SharedPrefFilterUtil;
 import com.squareup.sqlbrite2.BriteDatabase;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import io.reactivex.Single;
 import timber.log.Timber;
@@ -21,9 +25,11 @@ public class VacancyViewerRepository implements IVacancyViewerRepository {
     private static final String TABLE = DbContract.SearchSites.TABLE_ALL_SITES;
 
     private final BriteDatabase db;
+    private final SharedPrefFilterUtil filterUtil;
 
-    public VacancyViewerRepository(BriteDatabase db) {
+    public VacancyViewerRepository(BriteDatabase db, SharedPrefFilterUtil filterUtil) {
         this.db = db;
+        this.filterUtil = filterUtil;
     }
 
     @Override
@@ -38,7 +44,9 @@ public class VacancyViewerRepository implements IVacancyViewerRepository {
         return db.createQuery(TABLE, "SELECT * FROM " + TABLE
                 + " WHERE " + DbContract.SearchSites.Columns.REQUEST
                 + " ='" + request + "' AND " + DbContract.SearchSites.Columns.IS_FAVORITE
-                + " =1").mapToList(VacancyModel.MAPPER).elementAtOrError(0);
+                + " =1")
+                .mapToList(VacancyModel.MAPPER)
+                .elementAtOrError(0);
     }
 
     @Override
@@ -81,5 +89,15 @@ public class VacancyViewerRepository implements IVacancyViewerRepository {
                     DbContract.SearchSites.Columns.URL + " ='" + vacancy.url() + "'");
             return !vacancy.isFavorite();
         });
+    }
+
+    @Override
+    public boolean isFilterEnable(String request) {
+        return filterUtil.isFilterEnable(request);
+    }
+
+    @Override
+    public Set<String> getFilterWords(String request) {
+        return filterUtil.getFilterWords(request);
     }
 }

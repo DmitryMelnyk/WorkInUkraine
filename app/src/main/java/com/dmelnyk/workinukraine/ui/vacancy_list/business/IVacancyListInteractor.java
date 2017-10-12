@@ -1,6 +1,7 @@
 package com.dmelnyk.workinukraine.ui.vacancy_list.business;
 
 import android.support.annotation.StringDef;
+import android.util.Pair;
 
 import com.dmelnyk.workinukraine.models.VacancyModel;
 import com.dmelnyk.workinukraine.ui.vacancy_list.core.VacancyCardViewAdapter;
@@ -9,6 +10,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import io.reactivex.Completable;
 import io.reactivex.Observable;
@@ -28,7 +30,7 @@ public interface IVacancyListInteractor {
     String TITLE_RECENT = "recent_titles";
     String TITLE_NEW_AND_RECENT = "new_and_recent";
 
-    void onVacanciesViewed(String request);
+    void updateFilter(Pair<Boolean, Set<String>> data);
 
     @StringDef({ TITLE_NEW, TITLE_NEW_AND_RECENT, TITLE_RECENT })
     @Retention(RetentionPolicy.CLASS)
@@ -68,4 +70,13 @@ public interface IVacancyListInteractor {
     Completable onPopupMenuClicked(VacancyModel vacancy,
                                    @VacancyCardViewAdapter.VacancyPopupMenuType int operation);
 
+    /**
+     * @param request Request to update time data.
+     */
+    void onVacanciesViewed(String request);
+
+    /**
+     * @return Data to initialize FilterView
+     */
+    Pair<Boolean,Set<String>> getFilterData();
 }

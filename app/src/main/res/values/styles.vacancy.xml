@@ -25,7 +25,7 @@
         <item name="android:paddingRight">@dimen/dimen_24dp</item>
         <item name="android:paddingTop">@dimen/dimen_8dp</item>
         <item name="android:paddingBottom">@dimen/dimen_8dp</item>
-        <item name="android:background">@drawable/stroke_button</item>
+        <item name="android:background">@drawable/stroke_button_white</item>
         <item name="android:minHeight">@dimen/dimen_0dp</item>
         <item name="android:minWidth">@dimen/dimen_0dp</item>
     </style>

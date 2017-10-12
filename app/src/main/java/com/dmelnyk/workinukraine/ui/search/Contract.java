@@ -36,7 +36,5 @@ public class Contract {
         void clearAllRequest();
 
         void updateData();
-
-        void getFreshRequests();
     }
 }

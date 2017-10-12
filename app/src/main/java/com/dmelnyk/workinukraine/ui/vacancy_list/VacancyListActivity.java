@@ -8,15 +8,12 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.view.ViewPager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.util.Pair;
 import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
@@ -33,9 +30,9 @@ import android.widget.Toast;
 import com.dmelnyk.workinukraine.R;
 import com.dmelnyk.workinukraine.db.di.DbModule;
 import com.dmelnyk.workinukraine.models.VacancyModel;
-import com.dmelnyk.workinukraine.ui.filter.FilterActivity;
 import com.dmelnyk.workinukraine.ui.vacancy_list.core.BaseTabFragment;
 import com.dmelnyk.workinukraine.ui.vacancy_list.core.FilterAdapter;
+import com.dmelnyk.workinukraine.ui.vacancy_list.core.FilterView;
 import com.dmelnyk.workinukraine.ui.vacancy_list.core.ScreenSlidePagerAdapter;
 import com.dmelnyk.workinukraine.ui.vacancy_list.core.SitesTabFragment;
 import com.dmelnyk.workinukraine.ui.vacancy_list.core.VacancyCardViewAdapter;
@@ -46,9 +43,9 @@ import com.dmelnyk.workinukraine.utils.BaseAnimationActivity;
 import com.dmelnyk.workinukraine.utils.buttontab.ButtonTabs;
 import com.dmelnyk.workinukraine.utils.buttontab.ImageButtonBehavior;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -62,7 +59,7 @@ public class VacancyListActivity extends BaseAnimationActivity implements
         BaseTabFragment.OnFragmentInteractionListener,
         SitesTabFragment.OnFragmentInteractionListener,
         FilterAdapter.CallbackListener,
-        Contract.IVacancyView {
+        Contract.IVacancyView, FilterView.CallbackListener {
 
     private static final String KEY_CURRENT_POSITION = "KEY_CURRENT_POSITION";
     private static final String KEY_TAB_TITLES = "KEY_TAB_TITLES";
@@ -93,9 +90,7 @@ public class VacancyListActivity extends BaseAnimationActivity implements
     private String[] mTabTitles;
     private boolean orientationHasChanged;
     private int mButtonTabType; // look initializeButtonTabs() function
-
-    private ConstraintLayout animationLayout;
-    private RecyclerView mRecyclerView;
+    private FilterView animationLayout;
 
     private Animation alphaAnim;
     private Animation rotateRightAnim;
@@ -106,8 +101,6 @@ public class VacancyListActivity extends BaseAnimationActivity implements
     private int revealX;
     private int revealY;
     private ValueAnimator expandingHeightAnimator;
-    private FilterAdapter adapter;
-    private List<String> items = new ArrayList<>();
 
     @OnClick(R.id.favorite_image_view)
     public void onViewClicked() {
@@ -173,7 +166,8 @@ public class VacancyListActivity extends BaseAnimationActivity implements
     }
 
     private void initializeFilterView(Bundle savedInstanceState) {
-        animationLayout = (ConstraintLayout) findViewById(R.id.filter_layout);
+        animationLayout = (FilterView) findViewById(R.id.filter_view);
+        animationLayout.setData(presenter.getFilterData(), this);
 
         alphaAnim = AnimationUtils.loadAnimation(this, R.anim.alpha);
         rotateRightAnim = AnimationUtils.loadAnimation(this, R.anim.rotate_right);
@@ -187,11 +181,6 @@ public class VacancyListActivity extends BaseAnimationActivity implements
             Log.d(TAG, "flag=" + flag);
         }
 
-        items.add("Senior");
-        items.add("java");
-        adapter = new FilterAdapter(items, this);
-        mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
-        mRecyclerView.setAdapter(adapter);
         // measuring height of filter view. Then hid it.
         animationLayout.getViewTreeObserver().addOnGlobalLayoutListener(
                 new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -267,8 +256,6 @@ public class VacancyListActivity extends BaseAnimationActivity implements
     public void onFragmentInteractionItemClicked(VacancyModel vacancyModel) {
         // Activity with multiple vacancy
         String type = getCurrentTabType();
-
-
         Intent vacancyContainerIntent = VacancyViewerActivity.getIntent(this, vacancyModel, type);
         startActivityForResult(vacancyContainerIntent, WEBVIEW_REQUEST_CODE);
     }
@@ -472,7 +459,7 @@ public class VacancyListActivity extends BaseAnimationActivity implements
                     animationLayout.setVisibility(View.VISIBLE);
                     animationLayout.startAnimation(alphaAnim);
 
-                    createExpandingHeightAnimation(toolbarHeight, mHeight + 50);
+                    createExpandingHeightAnimation(toolbarHeight, mHeight);
                     expandingHeightAnimator.start();
                     mSettingsImageButton.startAnimation(rotateRightAnim);
                 }
@@ -486,7 +473,7 @@ public class VacancyListActivity extends BaseAnimationActivity implements
             revealY = mHeight;
             mSettingsImageButton.startAnimation(rotateLeftAnim);
 
-            createExpandingHeightAnimation(mHeight + 50, toolbarHeight);
+            createExpandingHeightAnimation(mHeight, toolbarHeight);
             expandingHeightAnimator.start();
             expandingHeightAnimator.addListener(new AnimatorListenerAdapter() {
                 @Override
@@ -524,5 +511,13 @@ public class VacancyListActivity extends BaseAnimationActivity implements
                 animationContainer.setLayoutParams(layoutParams);
             }
         });
+    }
+
+    @Override
+    public void updateFilter(Pair<Boolean, Set<String>> data) {
+        Toast.makeText(this, "filterUpdated TODO! " + data.second + " isEnable=" + data.first,
+                Toast.LENGTH_SHORT).show();
+        presenter.filterUpdated(data);
+        launchFilterAnimation(mSettingsImageButton);
     }
 }

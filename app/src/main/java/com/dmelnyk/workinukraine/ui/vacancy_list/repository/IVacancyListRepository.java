@@ -4,6 +4,7 @@ import com.dmelnyk.workinukraine.models.VacancyModel;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import io.reactivex.Completable;
 import io.reactivex.Observable;
@@ -50,4 +51,12 @@ public interface IVacancyListRepository {
     String[] getNewAndRecent();
 
     void close();
+
+    void setIsFilterEnable(boolean isFilterEnable);
+
+    void saveFilterWords(Set<String> words);
+
+    boolean isFilterEnable();
+
+    Set<String> getFilterWords();
 }

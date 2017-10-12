@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import com.dmelnyk.workinukraine.db.DbOpenHelper;
 import com.dmelnyk.workinukraine.services.search.repository.ISearchServiceRepository;
 import com.dmelnyk.workinukraine.services.search.repository.SearchServiceRepository;
+import com.dmelnyk.workinukraine.utils.SharedPrefFilterUtil;
 import com.dmelnyk.workinukraine.utils.SharedPrefUtil;
 import com.squareup.sqlbrite2.BriteDatabase;
 import com.squareup.sqlbrite2.SqlBrite;

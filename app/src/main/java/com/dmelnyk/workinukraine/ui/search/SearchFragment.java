@@ -12,6 +12,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -76,7 +77,7 @@ public class SearchFragment extends BaseFragment implements
 
     @BindView(R.id.backImageView) ImageView mBackImageView;
     @BindView(R.id.settings_image_view) ImageView mSettingsImageView;
-    @BindView((R.id.recyclerView)) RecyclerView mRecyclerView;
+    @BindView((R.id.recyclerView)) RecyclerViewModified mRecyclerView;
     @BindView(R.id.buttonAdd) ImageView mButtonAdd;
     @BindView(R.id.buttonSearch) ImageView mButtonSearch;
     @BindView(R.id.vacancies_count_text_view) TextView mVacanciesCountTextView;
@@ -84,6 +85,8 @@ public class SearchFragment extends BaseFragment implements
     @BindView(R.id.refreshed_text_view) TextView mLastUpdateTimeTextView;
     @BindView(R.id.new_text_view) TextView mNewTextView;
     Unbinder unbinder;
+
+    private View emptyView;
 
     @Inject
     ISearchPresenter presenter;
@@ -112,8 +115,6 @@ public class SearchFragment extends BaseFragment implements
         }
     };
 
-    private boolean mRunDownloading;
-
     private void resetDialogDownloading() {
         mDialogDownloading = null;
         enableDialogButtons(true);
@@ -132,9 +133,6 @@ public class SearchFragment extends BaseFragment implements
                 .inject(this);
 
         mRequestsList = new ArrayList<>();
-        mRunDownloading = getArguments() != null
-                ? getArguments().getBoolean(ARGS_RUN_SEARCHING)
-                : false;
     }
 
     @Override
@@ -142,13 +140,13 @@ public class SearchFragment extends BaseFragment implements
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_search, container, false);
+        return view;
+    }
 
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         unbinder = ButterKnife.bind(this, view);
-
-        mAdapter = new SearchAdapter(mRequestsList);
-        mAdapter.setAdapterListener(this);
-        mRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
-        mRecyclerView.setAdapter(mAdapter);
 
         createToolbarMenu();
 
@@ -156,36 +154,9 @@ public class SearchFragment extends BaseFragment implements
         if (savedInstanceState != null) {
             mDialogStackLevel = savedInstanceState.getInt(KEY_DIALOG_STACK_LEVEL);
         }
-        return view;
-    }
 
-    private void createToolbarMenu() {
-        final PopupMenu popupMenu = new PopupMenu(getContext(), mSettingsImageView);
-        try {
-            Field field = popupMenu.getClass().getDeclaredField("mPopup");
-            field.setAccessible(true);
-            Object menuPopupHelper = field.get(popupMenu);
-            Method setForceIcons = menuPopupHelper.getClass().getDeclaredMethod("setForceShowIcon", Boolean.TYPE);
-            setForceIcons.invoke(menuPopupHelper, true);
-        } catch (Exception e) {
-            Timber.e(e);
-        }
-
-        popupMenu.getMenuInflater().inflate(R.menu.search_toolbar, popupMenu.getMenu());
-        mSettingsImageView.setOnClickListener(view -> popupMenu.show());
-
-        popupMenu.setOnMenuItemClickListener(view -> {
-            switch (view.getItemId()) {
-                case R.id.menu_clear_requests:
-                    mDialogDelete = DialogDelete.getInstance(
-                            getString(R.string.search_toolbar_remove_all_requests),
-                            DialogDelete.REMOVE_ALL_REQUESTS);
-                    mDialogDelete.setCallback(this);
-                    mDialogDelete.show(getFragmentManager(), TAG_DIALOG_DELETE);
-                    break;
-            }
-            return true;
-        });
+        emptyView = view.findViewById(R.id.emptyView);
+        instantiateRecyclerView();
     }
 
     @Override
@@ -229,6 +200,7 @@ public class SearchFragment extends BaseFragment implements
     @Override
     public void onDetach() {
         super.onDetach();
+        Log.e(getClass().getSimpleName(), "onDetach()");
         mListener = null;
         presenter.unbindView();
     }
@@ -252,6 +224,43 @@ public class SearchFragment extends BaseFragment implements
                 showDialogDownloading();
                 break;
         }
+    }
+
+    private void instantiateRecyclerView() {
+        mRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
+        mRecyclerView.setEmptyView(emptyView);
+        mAdapter = new SearchAdapter(mRequestsList);
+        mAdapter.setAdapterListener(this);
+        mRecyclerView.setAdapter(mAdapter);
+    }
+
+    private void createToolbarMenu() {
+        final PopupMenu popupMenu = new PopupMenu(getContext(), mSettingsImageView);
+        try {
+            Field field = popupMenu.getClass().getDeclaredField("mPopup");
+            field.setAccessible(true);
+            Object menuPopupHelper = field.get(popupMenu);
+            Method setForceIcons = menuPopupHelper.getClass().getDeclaredMethod("setForceShowIcon", Boolean.TYPE);
+            setForceIcons.invoke(menuPopupHelper, true);
+        } catch (Exception e) {
+            Timber.e(e);
+        }
+
+        popupMenu.getMenuInflater().inflate(R.menu.search_toolbar, popupMenu.getMenu());
+        mSettingsImageView.setOnClickListener(view -> popupMenu.show());
+
+        popupMenu.setOnMenuItemClickListener(view -> {
+            switch (view.getItemId()) {
+                case R.id.menu_clear_requests:
+                    mDialogDelete = DialogDelete.getInstance(
+                            getString(R.string.search_toolbar_remove_all_requests),
+                            DialogDelete.REMOVE_ALL_REQUESTS);
+                    mDialogDelete.setCallback(this);
+                    mDialogDelete.show(getFragmentManager(), TAG_DIALOG_DELETE);
+                    break;
+            }
+            return true;
+        });
     }
 
     private void showDialogRequest(@Nullable String request) {
@@ -308,8 +317,10 @@ public class SearchFragment extends BaseFragment implements
     @Override
     public void updateData(ArrayList<RequestModel> data) {
         Timber.d(" updateData(ArrayList<RequestModel> data)");
+
         mRequestsList.clear();
         mRequestsList.addAll(data);
+
         mAdapter.notifyDataSetChanged();
     }
 
@@ -442,23 +453,6 @@ public class SearchFragment extends BaseFragment implements
             case DialogDelete.REMOVE_ONE_REQUEST:
                 presenter.removeRequest(sItemClickedRequest);
                 break;
-        }
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Timber.i("onActivityResult. requestCode=" + requestCode);
-        Log.e("SearchFragment", "onActivityResult. requestCode=" + requestCode);
-        if (requestCode == REQUEST_CODE_VACANCY_ACTIVITY) {
-            switch (resultCode) {
-                case RESULT_OK:
-                    // update request table (now all 'new' vacancies become 'recent')
-                    presenter.getFreshRequests();
-                    break;
-                case RESULT_CANCELED:
-
-                    break;
-            }
         }
     }
 

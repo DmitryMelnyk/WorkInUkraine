@@ -7,10 +7,11 @@
     >
 
     <LinearLayout
+        android:id="@+id/item_container"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:orientation="horizontal"
-        android:background="@drawable/stroke_button"
+        android:background="@drawable/stroke_button_white"
         android:paddingLeft="@dimen/dimen_8dp"
         >
         <TextView

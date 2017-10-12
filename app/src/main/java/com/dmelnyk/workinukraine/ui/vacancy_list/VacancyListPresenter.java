@@ -1,6 +1,7 @@
 package com.dmelnyk.workinukraine.ui.vacancy_list;
 
 import android.util.Log;
+import android.util.Pair;
 
 import com.dmelnyk.workinukraine.ui.vacancy_list.business.IVacancyListInteractor;
 import com.dmelnyk.workinukraine.models.VacancyModel;
@@ -10,6 +11,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
@@ -70,6 +72,17 @@ public class VacancyListPresenter implements Contract.IVacancyPresenter {
         } else {
             updateFavorite();
         }
+    }
+
+    @Override
+    public Pair<Boolean, Set<String>> getFilterData() {
+        return interactor.getFilterData();
+    }
+
+    @Override
+    public void filterUpdated(Pair<Boolean, Set<String>> data) {
+        interactor.updateFilter(data);
+        getAllVacancies(mRequest);
     }
 
     private void displayData(Map<String, List<VacancyModel>> vacanciesMap) {

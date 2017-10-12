@@ -7,6 +7,8 @@ import com.dmelnyk.workinukraine.db.Db;
 import com.dmelnyk.workinukraine.db.DbContract;
 import com.google.auto.value.AutoValue;
 
+import java.util.List;
+
 import io.reactivex.functions.Function;
 
 /**

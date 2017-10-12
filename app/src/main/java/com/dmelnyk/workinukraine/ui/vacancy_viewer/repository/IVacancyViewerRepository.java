@@ -3,6 +3,7 @@ package com.dmelnyk.workinukraine.ui.vacancy_viewer.repository;
 import com.dmelnyk.workinukraine.models.VacancyModel;
 
 import java.util.List;
+import java.util.Set;
 
 import io.reactivex.Single;
 
@@ -28,4 +29,8 @@ public interface IVacancyViewerRepository {
     Single<List<VacancyModel>> getNewVacancies(String request);
 
     Single<List<VacancyModel>> getRecentVacancies(String request);
+
+    boolean isFilterEnable(String request);
+
+    Set<String> getFilterWords(String request);
 }

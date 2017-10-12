@@ -2,6 +2,7 @@ package com.dmelnyk.workinukraine.ui.search;
 
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.Gravity;
@@ -23,6 +24,7 @@ import java.util.ArrayList;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.Optional;
 import timber.log.Timber;
 
 /**
@@ -108,7 +110,6 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.MyViewHold
     public int getItemCount() {
         return mRequestModels.size();
     }
-
 
     class MyViewHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.item_layout) RelativeLayout mItemLayout;

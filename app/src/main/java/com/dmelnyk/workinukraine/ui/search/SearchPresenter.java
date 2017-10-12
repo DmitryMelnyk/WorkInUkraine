@@ -1,5 +1,7 @@
 package com.dmelnyk.workinukraine.ui.search;
 
+import android.util.Log;
+
 import com.dmelnyk.workinukraine.ui.search.business.ISearchInteractor;
 import com.dmelnyk.workinukraine.models.RequestModel;
 import com.dmelnyk.workinukraine.ui.search.Contract.ISearchView;
@@ -23,21 +25,15 @@ public class SearchPresenter implements Contract.ISearchPresenter {
     private final ISearchInteractor interactor;
     private ISearchView view;
     private Disposable disposableRequests;
-    private static List<RequestModel> sCache;
 
     public SearchPresenter(ISearchInteractor interactor) {
         this.interactor = interactor;
-        getRequests();
     }
 
     @Override
     public void bindView(ISearchView view) {
         this.view = view;
-
-//         If you already receive data from interactor
-        if (sCache != null) {
-            displayData(sCache);
-        }
+        getRequests();
     }
 
     @Override
@@ -55,9 +51,6 @@ public class SearchPresenter implements Contract.ISearchPresenter {
                         () -> { /* NOP */},
                         throwable -> view.showErrorMessage(null)
                 );
-
-
-        ;
     }
 
     @Override
@@ -76,11 +69,6 @@ public class SearchPresenter implements Contract.ISearchPresenter {
     }
 
     @Override
-    public void getFreshRequests() {
-        getRequests();
-    }
-
-    @Override
     public void removeRequest(String request) {
         interactor.removeRequest(request);
     }
@@ -94,7 +82,6 @@ public class SearchPresenter implements Contract.ISearchPresenter {
         disposableRequests = interactor.getRequests()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(requestsList -> {
-                    sCache = requestsList;
                     if (view != null) {
                         displayData(requestsList);
                     }

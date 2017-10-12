@@ -1,20 +1,26 @@
 package com.dmelnyk.workinukraine.ui.vacancy_list.repository;
 
+import android.content.ContentValues;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.util.Log;
 
 import com.dmelnyk.workinukraine.R;
+import com.dmelnyk.workinukraine.db.Db;
 import com.dmelnyk.workinukraine.db.DbContract;
-import com.dmelnyk.workinukraine.ui.vacancy_list.business.IVacancyListInteractor;
+import com.dmelnyk.workinukraine.db.DbItems;
 import com.dmelnyk.workinukraine.models.VacancyModel;
+import com.dmelnyk.workinukraine.ui.vacancy_list.business.IVacancyListInteractor;
+import com.dmelnyk.workinukraine.utils.SharedPrefFilterUtil;
 import com.dmelnyk.workinukraine.utils.SharedPrefUtil;
 import com.squareup.sqlbrite2.BriteDatabase;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import io.reactivex.Completable;
 import io.reactivex.Observable;
@@ -31,11 +37,16 @@ public class VacancyListRepository implements IVacancyListRepository {
     private final BriteDatabase db;
     private final Context context;
     private final SharedPrefUtil sharedPrefUtil;
+    private final SharedPrefFilterUtil filterUtil;
+    private final String request;
 
-    public VacancyListRepository(BriteDatabase db, Context context, SharedPrefUtil util) {
+    public VacancyListRepository(BriteDatabase db, Context context, SharedPrefUtil util,
+                                 SharedPrefFilterUtil filterUtil, String request) {
         this.db = db;
         this.context = context;
+        this.request = request;
         this.sharedPrefUtil = util;
+        this.filterUtil = filterUtil;
     }
 
     @Override
@@ -45,12 +56,14 @@ public class VacancyListRepository implements IVacancyListRepository {
         if (shouldBeUpdated(request)) {
             updateTimeStatusVacancies(request);
         }
+
         // All vacancies
         Observable<List<VacancyModel>> allObservable =
                 db.createQuery(TABLE, "SELECT * FROM "
                         + DbContract.SearchSites.TABLE_ALL_SITES + " WHERE "
                         + DbContract.SearchSites.Columns.REQUEST + " ='" + request + "'")
-                        .mapToList(VacancyModel.MAPPER);
+                        .mapToList(VacancyModel.MAPPER)
+                        .map(list -> filterVacancies(list, request));
 
         // New vacancies
         Observable<List<VacancyModel>> newObservable =
@@ -58,7 +71,8 @@ public class VacancyListRepository implements IVacancyListRepository {
                         + DbContract.SearchSites.TABLE_ALL_SITES + " WHERE "
                         + DbContract.SearchSites.Columns.REQUEST + " ='" + request
                         + "' AND " + DbContract.SearchSites.Columns.TIME_STATUS + " =1") // 1 - new vacancy
-                        .mapToList(VacancyModel.MAPPER);
+                        .mapToList(VacancyModel.MAPPER)
+                        .map(list -> filterVacancies(list, request));
 
         // Recent vacancies
         Observable<List<VacancyModel>> recentObservable =
@@ -66,7 +80,8 @@ public class VacancyListRepository implements IVacancyListRepository {
                         + DbContract.SearchSites.TABLE_ALL_SITES + " WHERE "
                         + DbContract.SearchSites.Columns.REQUEST + " ='" + request
                         + "' AND " + DbContract.SearchSites.Columns.TIME_STATUS + " =0") // -1 - recent vacancy
-                        .mapToList(VacancyModel.MAPPER);
+                        .mapToList(VacancyModel.MAPPER)
+                        .map(list -> filterVacancies(list, request));
 
         // Favorite vacancies
         Observable<List<VacancyModel>> favoriteObservable =
@@ -74,7 +89,8 @@ public class VacancyListRepository implements IVacancyListRepository {
                         + DbContract.SearchSites.TABLE_ALL_SITES + " WHERE " +
                         DbContract.SearchSites.Columns.REQUEST + " ='" + request
                         + "' AND " + DbContract.SearchSites.Columns.IS_FAVORITE + " =1") // 1 - favorite vacancy
-                        .mapToList(VacancyModel.MAPPER);
+                        .mapToList(VacancyModel.MAPPER)
+                        .map(list -> filterVacancies(list, request));
 
         return Observable.zip(allObservable, newObservable, recentObservable, favoriteObservable,
                 (all, newest, recent, favorite) -> {
@@ -92,9 +108,8 @@ public class VacancyListRepository implements IVacancyListRepository {
                     }
 
                     close();
-                    close();
                     return result;
-        });
+                });
     }
 
     @Override
@@ -191,6 +206,26 @@ public class VacancyListRepository implements IVacancyListRepository {
         db.close();
     }
 
+    @Override
+    public void setIsFilterEnable(boolean isFilterEnable) {
+        filterUtil.setFilterEnable(request, isFilterEnable);
+    }
+
+    @Override
+    public Set<String> getFilterWords() {
+        return filterUtil.getFilterWords(request);
+    }
+
+    @Override
+    public void saveFilterWords(Set<String> words) {
+        filterUtil.saveFilterWords(request, words);
+    }
+
+    @Override
+    public boolean isFilterEnable() {
+        return filterUtil.isFilterEnable(request);
+    }
+
     private void convertRecentToOldVacancies(String request) {
         db.execute("UPDATE " + DbContract.SearchSites.TABLE_ALL_SITES
                 + " SET " + DbContract.SearchSites.Columns.TIME_STATUS + "=-1"
@@ -210,10 +245,21 @@ public class VacancyListRepository implements IVacancyListRepository {
     private void updateRequestTableData(String request) {
         // updating Request's table
         Log.e("VLR", "updating request table");
-        db.execute("UPDATE " + DbContract.SearchRequest.TABLE_REQUEST
-                + " SET " + DbContract.SearchRequest.Columns.NEW_VACANCIES
-                + "=0 WHERE " + DbContract.SearchRequest.Columns.REQUEST
-                + "='" + request + "'");
+
+        Cursor cursorRequest = db.query("SELECT * FROM " +  DbContract.SearchRequest.TABLE_REQUEST
+                + " WHERE " + DbContract.SearchRequest.Columns.REQUEST + " ='" + request + "'");
+
+        if (cursorRequest != null && cursorRequest.moveToFirst()) {
+            int vacanciesCount = Db.getInt(cursorRequest, DbContract.SearchRequest.Columns.VACANCIES);
+
+            ContentValues updatedRequestItem = DbItems.createRequestItem(
+                    request, vacanciesCount, 0, System.currentTimeMillis());
+
+            db.update(DbContract.SearchRequest.TABLE_REQUEST, updatedRequestItem,
+                    DbContract.SearchRequest.Columns.REQUEST +" = ?", request);
+        }
+
+        cursorRequest.close();
     }
 
     private boolean shouldBeUpdated(String request) {
@@ -222,5 +268,31 @@ public class VacancyListRepository implements IVacancyListRepository {
 
     private void saveUpdatingTask(String request, boolean shouldBeUpdated) {
         sharedPrefUtil.saveUpdatingTask(request, shouldBeUpdated);
+    }
+
+    private List<VacancyModel> filterVacancies(List<VacancyModel> list, String request) {
+        boolean isFilterEnable = filterUtil.isFilterEnable(request);
+        if (!isFilterEnable) return list;
+
+        Set<String> filters = filterUtil.getFilterWords(request);
+        if (!list.isEmpty() && !filters.isEmpty()) {
+            List<VacancyModel> filteredVacancies = new ArrayList<>(list);
+
+            for (VacancyModel vacancy : list) {
+                for (String filter : filters) {
+                    boolean vacancyContainsForbiddenWord =
+                            vacancy.title().toLowerCase().contains(filter.toLowerCase());
+
+                    if (vacancyContainsForbiddenWord) {
+                        filteredVacancies.remove(vacancy);
+                        break;
+                    }
+                }
+            }
+
+            return filteredVacancies;
+        } else {
+            return list;
+        }
     }
 }

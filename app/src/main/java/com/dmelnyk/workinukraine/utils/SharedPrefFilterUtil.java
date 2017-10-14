@@ -69,4 +69,20 @@ public class SharedPrefFilterUtil {
                 .putBoolean(FILTER_IS_ENABLE + request, enable)
                 .commit();
     }
+
+    public void clearFiltersForRequest(String request) {
+        Timber.i("clearFiltersForRequest, request=%s", request);
+        context.get().getSharedPreferences(FILTER_PREF, 0)
+                .edit()
+                .remove(request)
+                .commit();
+    }
+
+    public void clearAllFilters() {
+        Timber.i("clearAllFilters");
+        context.get().getSharedPreferences(FILTER_PREF, 0)
+                .edit()
+                .clear()
+                .commit();
+    }
 }

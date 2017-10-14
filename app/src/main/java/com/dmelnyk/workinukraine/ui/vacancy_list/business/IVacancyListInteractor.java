@@ -30,7 +30,7 @@ public interface IVacancyListInteractor {
     String TITLE_RECENT = "recent_titles";
     String TITLE_NEW_AND_RECENT = "new_and_recent";
 
-    void updateFilter(Pair<Boolean, Set<String>> data);
+    Completable updateFilter(Pair<Boolean, Set<String>> data);
 
     @StringDef({ TITLE_NEW, TITLE_NEW_AND_RECENT, TITLE_RECENT })
     @Retention(RetentionPolicy.CLASS)

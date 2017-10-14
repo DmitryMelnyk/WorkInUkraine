@@ -20,7 +20,6 @@ public class DbContract {
     public static final class SearchSites {
         // Two tables
         public static final String TABLE_ALL_SITES = "all_sites";
-//        public static final String TABLE_FAV_NEW_REC = "favorite_new_recent";
 
         // Values of SITE column:
         public static final String[] SITES = {

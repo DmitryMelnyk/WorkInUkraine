@@ -8,7 +8,7 @@
     android:padding="16dp"
     android:gravity="center_horizontal"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:showIn="@layout/activity_vacancy"
+    tools:showIn="@layout/activity_vacancy_list"
     >
 
     <!-- TODO: change img to proper placeholder in the future -->

@@ -23,6 +23,7 @@ public class DbItems {
         return values;
     }
 
+    // TODO: remove
     public static ContentValues createVacancyNewItem(boolean isNew, VacancyModel vacancy) {
         final ContentValues values = new ContentValues();
         values.put(DbContract.SearchSites.Columns.DATE, vacancy.date());
@@ -43,6 +44,19 @@ public class DbItems {
         values.put(DbContract.SearchRequest.Columns.VACANCIES, vacanciesCount);
         values.put(DbContract.SearchRequest.Columns.NEW_VACANCIES, newVacanciesCount);
         values.put(DbContract.SearchRequest.Columns.UPDATED, updated);
+
+        return values;
+    }
+
+    public static ContentValues createVacancyItem(VacancyModel vacancy) {
+        final ContentValues values = new ContentValues();
+        values.put(DbContract.SearchSites.Columns.DATE, vacancy.date());
+        values.put(DbContract.SearchSites.Columns.IS_FAVORITE, vacancy.isFavorite());
+        values.put(DbContract.SearchSites.Columns.TIME_STATUS, vacancy.timeStatus());
+        values.put(DbContract.SearchSites.Columns.REQUEST, vacancy.request());
+        values.put(DbContract.SearchSites.Columns.TITLE, vacancy.title());
+        values.put(DbContract.SearchSites.Columns.SITE, vacancy.site());
+        values.put(DbContract.SearchSites.Columns.URL, vacancy.url());
 
         return values;
     }

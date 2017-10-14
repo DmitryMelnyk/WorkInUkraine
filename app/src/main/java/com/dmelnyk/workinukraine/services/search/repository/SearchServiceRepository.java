@@ -9,6 +9,7 @@ import com.dmelnyk.workinukraine.db.DbContract;
 import com.dmelnyk.workinukraine.db.DbItems;
 import com.dmelnyk.workinukraine.models.RequestModel;
 import com.dmelnyk.workinukraine.models.VacancyModel;
+import com.dmelnyk.workinukraine.utils.SharedPrefFilterUtil;
 import com.dmelnyk.workinukraine.utils.SharedPrefUtil;
 import com.squareup.sqlbrite2.BriteDatabase;
 
@@ -29,19 +30,23 @@ import static com.dmelnyk.workinukraine.ui.vacancy_list.repository.VacancyListRe
 public class SearchServiceRepository implements ISearchServiceRepository {
 
     private static final String REQUEST_TABLE = DbContract.SearchRequest.TABLE_REQUEST;
+    private static final String VACANCY_TABLE = DbContract.SearchSites.TABLE_ALL_SITES;
     private static final String SELECT_ALL_FROM = "SELECT * FROM ";
     public static final String TABLE = DbContract.SearchSites.TABLE_ALL_SITES;
     private static final String WHERE_ = " WHERE " + DbContract.SearchSites.Columns.REQUEST + " = ";
 
     private final BriteDatabase db;
-    private final Context context;
     private final SharedPrefUtil sharedPrefUtil;
+    private final SharedPrefFilterUtil filterUtil;
 
 
-    public SearchServiceRepository(BriteDatabase db, Context context, SharedPrefUtil sharedPrefUtil) {
+    public SearchServiceRepository(
+            BriteDatabase db,
+            SharedPrefUtil sharedPrefUtil,
+            SharedPrefFilterUtil filterUtil) {
         this.db = db;
-        this.context = context;
         this.sharedPrefUtil = sharedPrefUtil;
+        this.filterUtil = filterUtil;
     }
 
     @Override
@@ -72,13 +77,36 @@ public class SearchServiceRepository implements ISearchServiceRepository {
         // Getting previous vacancies
         List<VacancyModel> oldVacancies = getPreviousVacancies(request);
 
-        // finding and writing new vacancies to db
-        List<VacancyModel> newVacancies = extractNewVacancy(oldVacancies, allVacancies);
-        Timber.d("new vacancies =", newVacancies);
-        writeVacanciesToSitesTable(true, newVacancies);
+        List<VacancyModel> updatedVacancies = new ArrayList<>();
+        for (VacancyModel vacancy : allVacancies) {
+            VacancyModel.Builder vacancyBuilder = VacancyModel.builder()
+                    .setDate(vacancy.date())
+                    .setRequest(vacancy.request())
+                    .setSite(vacancy.site())
+                    .setTitle(vacancy.title())
+                    .setUrl(vacancy.url());
 
-        // updating date in previous vacancies
-        updateVacanciesDate(request, allVacancies);
+            if (oldVacancies.contains(vacancy)) {
+                // finding Vacancy to get isFavorite's and time's info
+                int recentVacancyIndex = oldVacancies.indexOf(vacancy);
+                VacancyModel recentVacancy = oldVacancies.get(recentVacancyIndex);
+
+                vacancyBuilder
+                        .setTimeStatus(recentVacancy.timeStatus())
+                        .setIsFavorite(recentVacancy.isFavorite());
+            } else {
+                vacancyBuilder
+                        .setTimeStatus(1) // new vacancy
+                        .setIsFavorite(false);
+            }
+
+            updatedVacancies.add(vacancyBuilder.build());
+        }
+
+        // remove all vacancies with request
+        db.delete(VACANCY_TABLE, DbContract.SearchRequest.Columns.REQUEST + " = '" + request + "'");
+        // writing vacancies to db
+        writeVacanciesToDb(updatedVacancies);
 
         // updating request table
         int newVacanciesCount = getNewVacanciesCount(request);
@@ -105,45 +133,30 @@ public class SearchServiceRepository implements ISearchServiceRepository {
         return oldVacancies;
     }
 
-    private void updateVacanciesDate(String request, List<VacancyModel> downloadedVacancies) throws Exception {
-        Timber.d("updateVacanciesDate");
-        // finding the types we have in downloadedVacancies.
-        // In case we didn't receive response from proper server
-        // we don't need to remove that vacancies (because next time
-        // those vacancy will be new. We don't want to notify user
-        // about this "old" new vacancies)
-        Set<String> siteTypes = new HashSet<>();
-        for (VacancyModel vacancy : downloadedVacancies) {
-            siteTypes.add(vacancy.site());
-        }
-        Timber.d("siteTypes=" + siteTypes);
-
-        for (String site : siteTypes) {
-            List<VacancyModel> oldVacancies = getVacancies(request, site);
-            for (VacancyModel vacancy : oldVacancies) {
-                if (downloadedVacancies.contains(vacancy)) {
-                    // update only date in vacancy
-                    VacancyModel newVacancies = downloadedVacancies.get(downloadedVacancies.indexOf(vacancy));
-                    updateVacancyWithDate(vacancy, newVacancies.date());
-                } else {
-                    // remove old vacancy
-                    // TODO: in test mode. Don't remove old vacancies
-//                    deleteVacancy(vacancy);
-                }
-            }
-        }
-    }
-
-    private int getNewVacanciesCount(String request) {
-        Cursor newVacanciesCursor = db.query(
+    private int getNewVacanciesCount(String request) throws Exception {
+        Cursor cursor = db.query(
                 SELECT_ALL_FROM + DbContract.SearchSites.TABLE_ALL_SITES
                         + WHERE_ + "'" + request + "' AND "
                         + DbContract.SearchSites.Columns.TIME_STATUS + "=1");
 
-        int newVacancies = newVacanciesCursor.getCount();
-        newVacanciesCursor.close();
-        Timber.d("New vacancies count=" + newVacancies);
+        int newVacancies = cursor.getCount();
+        boolean isFilterEnable = filterUtil.isFilterEnable(request);
+        Set<String> filterWords = filterUtil.getFilterWords(request);
 
+        if (isFilterEnable && !filterWords.isEmpty()) {
+            for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
+                VacancyModel vacancy = VacancyModel.MAPPER.apply(cursor);
+                for (String filter : filterWords) {
+                    if (vacancy.title().contains(filter)) {
+                        newVacancies--;
+                        break;
+                    }
+                }
+            }
+        }
+        cursor.close();
+
+        Timber.d("New vacancies count=" + newVacancies);
         return newVacancies;
     }
 
@@ -192,37 +205,6 @@ public class SearchServiceRepository implements ISearchServiceRepository {
                 + "='" + request + "'");
     }
 
-    private void updateVacancyWithDate(VacancyModel vacancy, String date) {
-        db.execute("UPDATE " + DbContract.SearchSites.TABLE_ALL_SITES
-                + " SET " + DbContract.SearchSites.Columns.DATE
-                + " ='" + date + "' WHERE " + DbContract.SearchSites.Columns.URL
-                + " ='" + vacancy.url() + "'");
-    }
-
-    private void deleteVacancy(VacancyModel vacancy) {
-        Timber.d("Removing old vacancy=", vacancy);
-        db.delete(DbContract.SearchSites.TABLE_ALL_SITES, DbContract.SearchSites.Columns.URL
-                + " ='" + vacancy.url() + "'");
-    }
-
-    private List<VacancyModel> getVacancies(String request, String site) throws Exception {
-        Cursor cursor = db.query("SELECT * FROM " + DbContract.SearchSites.TABLE_ALL_SITES
-                + " WHERE " + DbContract.SearchSites.Columns.REQUEST + " ='"
-                + request + "' AND " + DbContract.SearchSites.Columns.SITE + " ='"
-                + site + "'");
-
-        List<VacancyModel> oldVacancies = new ArrayList<>();
-        if (cursor.moveToFirst()) {
-            do {
-                VacancyModel vacancy = VacancyModel.MAPPER.apply(cursor);
-                oldVacancies.add(vacancy);
-            } while (cursor.moveToNext());
-        }
-        cursor.close();
-
-        return oldVacancies;
-    }
-
     public void updateRequestTable(
             String request, int vacancyCount, int newVacanciesCount, long lastUpdateTime) {
         Timber.d("\nUpdating request info. Request=%s, vacancyCount=%d, newVacanciesCount=%d, lastUpdateTime=%d",
@@ -234,25 +216,13 @@ public class SearchServiceRepository implements ISearchServiceRepository {
                 + request + "'");
     }
 
-    private List<VacancyModel> extractNewVacancy(List<VacancyModel> oldVacancies,
-                                                      List<VacancyModel> newVacancies) {
-        List<VacancyModel> copy = new ArrayList<>(newVacancies);
-        for (VacancyModel oldVacancy : oldVacancies) {
-            copy.remove(oldVacancy);
-        }
-
-        return copy;
-    }
-
-    private void writeVacanciesToSitesTable(boolean isNew, List<VacancyModel> list) {
-        Timber.d("\nWriting into All table %d vacancies", list.size());
-
-        if (list.isEmpty()) return;
+    private void writeVacanciesToDb(@NonNull List<VacancyModel> vacancies) {
+        Timber.d("\nWriting into All table %d vacancies", vacancies.size());
         BriteDatabase.Transaction transaction = db.newTransaction();
-        try {
-            for (VacancyModel vacancy : list) {
-                db.insert(DbContract.SearchSites.TABLE_ALL_SITES,
-                        DbItems.createVacancyNewItem(isNew, vacancy));
+
+        try{
+            for (VacancyModel vacancy : vacancies) {
+                db.insert(VACANCY_TABLE, DbItems.createVacancyItem(vacancy));
             }
             transaction.markSuccessful();
         } finally {

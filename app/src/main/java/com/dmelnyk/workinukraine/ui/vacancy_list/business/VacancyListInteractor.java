@@ -9,6 +9,7 @@ import com.dmelnyk.workinukraine.ui.vacancy_list.core.VacancyCardViewAdapter;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Callable;
 
 import io.reactivex.Completable;
 import io.reactivex.Observable;
@@ -78,9 +79,12 @@ public class VacancyListInteractor implements IVacancyListInteractor {
     }
 
     @Override
-    public void updateFilter(Pair<Boolean, Set<String>> data) {
-        repository.setIsFilterEnable(data.first);
-        repository.saveFilterWords(data.second);
+    public Completable updateFilter(Pair<Boolean, Set<String>> data) {
+        return Completable.fromCallable(() -> {
+            repository.setIsFilterEnable(data.first);
+            repository.saveFilterWords(data.second);
+            return null;
+        });
     }
 
     private void saveFilterWords(Set<String> words) {

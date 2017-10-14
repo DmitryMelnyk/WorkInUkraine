@@ -5,6 +5,7 @@ import android.database.sqlite.SQLiteConstraintException;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.dmelnyk.workinukraine.utils.SharedPrefFilterUtil;
 import com.dmelnyk.workinukraine.utils.SharedPrefUtil;
 import com.dmelnyk.workinukraine.db.DbContract;
 import com.dmelnyk.workinukraine.models.RequestModel;
@@ -28,10 +29,12 @@ public class SearchRepository implements ISearchRepository {
     private final BriteDatabase db;
 
     private final SharedPrefUtil sharedPrefUtil;
+    private final SharedPrefFilterUtil filterUtil;
 
-    public SearchRepository(BriteDatabase db, SharedPrefUtil sharedPrefUtil) {
+    public SearchRepository(BriteDatabase db, SharedPrefUtil sharedPrefUtil, SharedPrefFilterUtil filterUtil) {
         this.db = db;
         this.sharedPrefUtil = sharedPrefUtil;
+        this.filterUtil = filterUtil;
     }
 
     @Override
@@ -50,6 +53,7 @@ public class SearchRepository implements ISearchRepository {
     @Override
     public void clearAllSharedPrefData() {
         sharedPrefUtil.clearData();
+        filterUtil.clearAllFilters();
     }
 
     @Override
@@ -64,6 +68,7 @@ public class SearchRepository implements ISearchRepository {
         Timber.d("\nremoveRequest: " + request);
         db.delete(REQUEST_TABLE, where(request));
         db.delete(VACANCY_TABLE, where(request));
+        clearRequestRelatedData(request);
     }
 
     @Override
@@ -74,23 +79,28 @@ public class SearchRepository implements ISearchRepository {
     }
 
     @Override
-    public Completable updateRequest(@NonNull String oldRequest, String newRequest) {
+    public Completable updateRequest(@NonNull String previousRequest, String newRequest) {
         Timber.d("\nupdateRequest");
 
         // edits  request
         ContentValues newItem = DbItems.createRequestItem(newRequest, 0, 0, -1l);
         try {
             db.update(DbContract.SearchRequest.TABLE_REQUEST, newItem,
-                    DbContract.SearchRequest.Columns.REQUEST + " ='" + oldRequest + "'");
+                    DbContract.SearchRequest.Columns.REQUEST + " ='" + previousRequest + "'");
 
-            // removes previous request's vacancy
-            db.delete(VACANCY_TABLE, DbContract.SearchSites.Columns.REQUEST + "='"+ oldRequest + "'");
+            clearRequestRelatedData(previousRequest);
             return Completable.complete();
-
             // if request already exist in db throws exception
         } catch (SQLiteConstraintException exception) {
             return Completable.error(new Throwable("Error"));
         }
+    }
+
+    private void clearRequestRelatedData(@NonNull String request) {
+        // removes previous request's vacancy
+        db.delete(VACANCY_TABLE, DbContract.SearchSites.Columns.REQUEST + "='"+ request + "'");
+        // removes filter words
+        filterUtil.clearFiltersForRequest(request);
     }
 
     private String where(String request) {

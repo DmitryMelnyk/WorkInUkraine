@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Set;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
@@ -27,15 +28,12 @@ public class VacancyListPresenter implements Contract.IVacancyPresenter {
     private final IVacancyListInteractor interactor;
     private Contract.IVacancyView view;
 
-    private Disposable saveOrRemoveDisposable;
-    private Disposable vacanciesDisposable;
-    private Disposable disposableFavorites;
+    CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     private static Map<String, List<VacancyModel>> sDataCache;
     private static String sError;
     private static boolean sIsDisplayed;
     private static String mRequest;
-    private static List<VacancyModel> sFavoriteVacanciesCache;
 
     public VacancyListPresenter(IVacancyListInteractor interactor, String request) {
         this.interactor = interactor;
@@ -67,11 +65,7 @@ public class VacancyListPresenter implements Contract.IVacancyPresenter {
     @Override
     public void bindJustView(Contract.IVacancyView view) {
         this.view = view;
-        if (disposableFavorites != null) {
-            updateFavorite();
-        } else {
-            updateFavorite();
-        }
+        updateFavorite();
     }
 
     @Override
@@ -81,7 +75,10 @@ public class VacancyListPresenter implements Contract.IVacancyPresenter {
 
     @Override
     public void filterUpdated(Pair<Boolean, Set<String>> data) {
-        interactor.updateFilter(data);
+        compositeDisposable.add(
+                interactor.updateFilter(data)
+                .subscribe(() -> {/* NOP */}));
+
         getAllVacancies(mRequest);
     }
 
@@ -132,8 +129,9 @@ public class VacancyListPresenter implements Contract.IVacancyPresenter {
     }
 
     private void getAllVacancies(String request) {
-        interactor.getAllVacancies(request)
-                .subscribeOn(Schedulers.io())
+        compositeDisposable.add(
+                interactor.getAllVacancies(request)
+//                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(vacanciesMap -> {
                     sDataCache = new HashMap<>(vacanciesMap);
@@ -149,7 +147,7 @@ public class VacancyListPresenter implements Contract.IVacancyPresenter {
                         // if view hasn't been initialized yet save error msg to cache
                         sError = throwable.getMessage();
                     }
-                });
+                }));
     }
 
     @Override
@@ -157,11 +155,8 @@ public class VacancyListPresenter implements Contract.IVacancyPresenter {
         view = null;
         sIsDisplayed = false;
         // TODO: in bindView restore listeners
-        if (saveOrRemoveDisposable != null) {
-            saveOrRemoveDisposable.dispose();
-        }
-        if (vacanciesDisposable != null) {
-            vacanciesDisposable.dispose();
+        if (compositeDisposable != null) {
+            compositeDisposable.dispose();
         }
     }
 
@@ -176,34 +171,35 @@ public class VacancyListPresenter implements Contract.IVacancyPresenter {
         if (type == VacancyCardViewAdapter.MENU_SHARE) {
             view.createShareIntent(vacancy);
         } else {
-            saveOrRemoveDisposable = interactor.onPopupMenuClicked(vacancy, type)
+            compositeDisposable.add(
+                    interactor.onPopupMenuClicked(vacancy, type)
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(() -> {
                         updateFavorite();
                         view.showResultingMessage(type);
                     }, throwable -> {
                         view.showErrorMessage(throwable.getMessage());
-                    });
+                    }));
         }
     }
 
     // This method will update favorites after adding/removing vacancies in proper db automatically
     private void updateFavorite() {
-        disposableFavorites = interactor.getFavoriteVacancies(mRequest)
+        compositeDisposable.add(
+                interactor.getFavoriteVacancies(mRequest)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(vacancies -> {
                     Log.e("VacancyListPres", "updateFavorites is called");
                     view.updateFavoriteTab(vacancies);
-                    sFavoriteVacanciesCache = new ArrayList<VacancyModel>(vacancies);
-                }, throwable -> view.showErrorMessage(throwable.getMessage()));
+                }, throwable -> view.showErrorMessage(throwable.getMessage())));
     }
 
     @Override
     public void clear() {
         sDataCache = null;
-        sFavoriteVacanciesCache = null;
         sError = null;
+        compositeDisposable.clear();
         sIsDisplayed = false;
         interactor.clear();
     }

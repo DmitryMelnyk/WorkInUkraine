@@ -65,8 +65,9 @@ public class DbModule {
     }
 
     @Provides @Singleton
-    ISearchServiceRepository provideSearchRepository(BriteDatabase database, Context context,
-                                                     SharedPrefUtil sharedPrefUtil) {
-        return new SearchServiceRepository(database, context, sharedPrefUtil);
+    ISearchServiceRepository provideSearchRepository(BriteDatabase database,
+                                                     SharedPrefUtil sharedPrefUtil,
+                                                     SharedPrefFilterUtil filterUtil) {
+        return new SearchServiceRepository(database, sharedPrefUtil, filterUtil);
     }
 }

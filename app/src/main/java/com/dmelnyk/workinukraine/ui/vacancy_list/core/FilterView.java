@@ -2,13 +2,13 @@ package com.dmelnyk.workinukraine.ui.vacancy_list.core;
 
 import android.content.Context;
 import android.support.constraint.ConstraintLayout;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.util.Pair;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Switch;
@@ -38,6 +38,8 @@ public class FilterView extends ConstraintLayout implements
 
     private CallbackListener mCallback;
     private List<String> wordsList;
+    private Set<String> originalData;
+    private boolean originalCheckedState;
 
     public FilterView(Context context) {
         super(context);
@@ -55,10 +57,12 @@ public class FilterView extends ConstraintLayout implements
     }
 
     public void setData(Pair<Boolean, Set<String>> data, CallbackListener callbackListener) {
+        originalCheckedState = data.first;
+        originalData = data.second;
+
         isEnable = data.first;
         wordsList = new ArrayList<>(data.second);
         mCallback = callbackListener;
-        // TODO: sort words
         initData();
     }
 
@@ -77,13 +81,22 @@ public class FilterView extends ConstraintLayout implements
                 if (keyEvent.getKeyCode() == KeyEvent.KEYCODE_ENTER
                         && mEditText.getText().length() >= 3) {
                     addWord(mEditText.getText().toString());
-                    mEditText.getText().clear();
                 }
                 return false;
             }
         });
+        mEditText.setOnFocusChangeListener(new OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+                if (view.getId() == R.id.et_item) {
+                    InputMethodManager imm = (InputMethodManager) getContext().getSystemService(
+                            Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                }
+            }
+        });
         constraintLayout.findViewById(R.id.button_add).setOnClickListener(this);
-        constraintLayout.findViewById(R.id.button_clear).setOnClickListener(this);
+        constraintLayout.findViewById(R.id.button_cancel).setOnClickListener(this);
         constraintLayout.findViewById(R.id.button_ok).setOnClickListener(this);
 
         addView(constraintLayout);
@@ -101,16 +114,24 @@ public class FilterView extends ConstraintLayout implements
         switch (view.getId()) {
             case R.id.button_add:
                 addWord(mEditText.getText().toString());
-                mEditText.getText().clear();
                 break;
-            case R.id.button_clear:
-                clearData();
-                callback();
+            case R.id.button_cancel:
+                restoreState();
                 break;
             case R.id.button_ok:
                 callback();
                 break;
         }
+    }
+
+    private void restoreState() {
+        wordsList.clear();
+        wordsList.addAll(originalData);
+        mAdapter.notifyDataSetChanged();
+
+        mSwitcher.setChecked(originalCheckedState);
+        mEditText.getText().clear();
+        mEditText.clearFocus();
     }
 
     @Override
@@ -128,6 +149,8 @@ public class FilterView extends ConstraintLayout implements
         if (!wordsList.contains(word)) {
             wordsList.add(word);
             mAdapter.notifyDataSetChanged();
+            mEditText.getText().clear();
+            mSwitcher.setChecked(true);
         } else {
             Toast.makeText(getContext(),
                     getContext().getString(R.string.msg_item_already_exists_in_filter),

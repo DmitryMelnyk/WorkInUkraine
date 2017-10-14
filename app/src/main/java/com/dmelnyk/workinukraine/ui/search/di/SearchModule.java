@@ -9,6 +9,7 @@ import com.dmelnyk.workinukraine.ui.search.repository.ISearchRepository;
 import com.dmelnyk.workinukraine.ui.search.repository.SearchRepository;
 import com.dmelnyk.workinukraine.ui.search.Contract;
 import com.dmelnyk.workinukraine.ui.search.SearchPresenter;
+import com.dmelnyk.workinukraine.utils.SharedPrefFilterUtil;
 import com.dmelnyk.workinukraine.utils.SharedPrefUtil;
 import com.squareup.sqlbrite2.BriteDatabase;
 
@@ -24,8 +25,9 @@ public class SearchModule {
 
     @Provides
     @SearchScope
-    ISearchRepository providesISearchRepository(BriteDatabase bd, SharedPrefUtil sharedPrefUtil) {
-        return new SearchRepository(bd, sharedPrefUtil);
+    ISearchRepository providesISearchRepository(
+            BriteDatabase bd, SharedPrefUtil sharedPrefUtil, SharedPrefFilterUtil filterUtil) {
+        return new SearchRepository(bd, sharedPrefUtil, filterUtil);
     }
 
     @Provides

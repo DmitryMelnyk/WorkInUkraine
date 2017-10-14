@@ -9,6 +9,7 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
@@ -56,10 +57,11 @@ import timber.log.Timber;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class VacancyListActivity extends BaseAnimationActivity implements
+        Contract.IVacancyView,
         BaseTabFragment.OnFragmentInteractionListener,
         SitesTabFragment.OnFragmentInteractionListener,
         FilterAdapter.CallbackListener,
-        Contract.IVacancyView, FilterView.CallbackListener {
+        FilterView.CallbackListener {
 
     private static final String KEY_CURRENT_POSITION = "KEY_CURRENT_POSITION";
     private static final String KEY_TAB_TITLES = "KEY_TAB_TITLES";
@@ -96,7 +98,7 @@ public class VacancyListActivity extends BaseAnimationActivity implements
     private Animation rotateRightAnim;
     private Animation rotateLeftAnim;
     private boolean flag = true;
-    private int mHeight;
+    private int mExpandedFilterHeight;
     private int toolbarHeight;
     private int revealX;
     private int revealY;
@@ -117,7 +119,7 @@ public class VacancyListActivity extends BaseAnimationActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_vacancy);
+        setContentView(R.layout.activity_vacancy_list);
         ButterKnife.bind(this);
 
         // sets result to update
@@ -186,10 +188,10 @@ public class VacancyListActivity extends BaseAnimationActivity implements
                 new ViewTreeObserver.OnGlobalLayoutListener() {
                     @Override
                     public void onGlobalLayout() {
-                        mHeight = animationLayout.getHeight();
+                        mExpandedFilterHeight = animationLayout.getHeight();
                         animationLayout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                        if (mHeight < toolbarHeight) {
-                            mHeight = toolbarHeight;
+                        if (mExpandedFilterHeight < toolbarHeight) {
+                            mExpandedFilterHeight = toolbarHeight;
                         }
 
                         if (flag) {
@@ -459,7 +461,7 @@ public class VacancyListActivity extends BaseAnimationActivity implements
                     animationLayout.setVisibility(View.VISIBLE);
                     animationLayout.startAnimation(alphaAnim);
 
-                    createExpandingHeightAnimation(toolbarHeight, mHeight);
+                    createExpandingHeightAnimation(toolbarHeight, mExpandedFilterHeight);
                     expandingHeightAnimator.start();
                     mSettingsImageButton.startAnimation(rotateRightAnim);
                 }
@@ -470,10 +472,10 @@ public class VacancyListActivity extends BaseAnimationActivity implements
         } else {
             // reduce to 200 dp
             revealX = (int) (mSettingsImageButton.getX() + mSettingsImageButton.getWidth() / 2);
-            revealY = mHeight;
+            revealY = mExpandedFilterHeight;
             mSettingsImageButton.startAnimation(rotateLeftAnim);
 
-            createExpandingHeightAnimation(mHeight, toolbarHeight);
+            createExpandingHeightAnimation(mExpandedFilterHeight, toolbarHeight);
             expandingHeightAnimator.start();
             expandingHeightAnimator.addListener(new AnimatorListenerAdapter() {
                 @Override
@@ -511,13 +513,23 @@ public class VacancyListActivity extends BaseAnimationActivity implements
                 animationContainer.setLayoutParams(layoutParams);
             }
         });
+        expandingHeightAnimator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                super.onAnimationEnd(animation);
+                // Setting height to WRAP_CONTENT to enable changing size of filter view.
+                if (flag) {
+                    CollapsingToolbarLayout.LayoutParams params = new CollapsingToolbarLayout.LayoutParams(
+                            ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                    animationContainer.setLayoutParams(params);
+                }
+            }
+        });
     }
 
     @Override
     public void updateFilter(Pair<Boolean, Set<String>> data) {
-        Toast.makeText(this, "filterUpdated TODO! " + data.second + " isEnable=" + data.first,
-                Toast.LENGTH_SHORT).show();
-        presenter.filterUpdated(data);
         launchFilterAnimation(mSettingsImageButton);
+        mTitleTextView.postDelayed(() -> presenter.filterUpdated(data), 500);
     }
 }

@@ -63,9 +63,6 @@ dependencies {
     // Calligraphy library for fonts
     compile 'uk.co.chrisjenx:calligraphy:2.2.0'
 
-//    // Preference Settings library
-//    compile 'com.takisoft.fix:preference-v7:25.3.1.0'
-
     // Library for parsing web
     compile 'com.squareup.moshi:moshi:1.4.0'
     compile 'org.jsoup:jsoup:1.10.2'
@@ -111,4 +108,10 @@ dependencies {
     // Glide for image downloading
     compile 'com.github.bumptech.glide:glide:4.1.1'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.1.1'
+
+    // JobScheduler for periodic tasks in bg
+    compile 'com.evernote:android-job:1.2.0'
+
+    // Material Dialogs
+    compile 'com.afollestad.material-dialogs:core:0.9.4.7'
 }

@@ -252,21 +252,6 @@ public class ButtonTabs extends View {
             }
         }
 
-//        // setting image size
-//        if (mHeight == DEFAULT_HEIGHT) {
-//            mHeight = getLayoutParams().height;
-//            mInitialHeight = mHeight;
-//            mInitialWidth = mHeight * resource.length;
-//        }
-//
-//        mWidth = mHeight * resource.length;
-//        mRadius = mHeight / 2;
-//
-//        CoordinatorLayout.LayoutParams lp = (CoordinatorLayout.LayoutParams) getLayoutParams();
-//        lp.width = (int) mWidth;
-//        lp.setBehavior(new ButtonTabBehavior());
-//        setLayoutParams(lp);
-
         setBackground(mBackgroundDrawable);
     }
 
@@ -312,6 +297,18 @@ public class ButtonTabs extends View {
                 mButtonsStates[i] = false;
             }
         }
+    }
+
+    public int getCurrentTab() {
+        int activeTab = 0;
+        for (int i = 0; i < mButtonsStates.length; i++) {
+            if (mButtonsStates[i]) {
+                activeTab = i;
+                break;
+            }
+        }
+
+        return activeTab;
     }
 
     private class TapListener extends GestureDetector.SimpleOnGestureListener {

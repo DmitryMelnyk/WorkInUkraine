@@ -1,4 +1,4 @@
-package com.dmelnyk.workinukraine.services.alarm.repo;
+package com.dmelnyk.workinukraine.services.periodic_search.repo;
 
 import android.database.Cursor;
 
@@ -11,8 +11,6 @@ import com.squareup.sqlbrite2.BriteDatabase;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-
-import javax.inject.Inject;
 
 import io.reactivex.Observable;
 import io.reactivex.Single;
@@ -28,13 +26,12 @@ public class RepeatingSearchRepository implements IRepeatingSearchRepository {
 
     private final BriteDatabase db;
     private final SettingsRepository settingsRepository;
+    private final SharedPrefUtil sharedPrefUtil;
 
-    @Inject
-    SharedPrefUtil sharedPrefUtil;
-
-    public RepeatingSearchRepository(BriteDatabase db, SettingsRepository settingsRepo) {
+    public RepeatingSearchRepository(BriteDatabase db, SettingsRepository settingsRepo, SharedPrefUtil sharedPrefUtil) {
         this.db = db;
-        settingsRepository = settingsRepo;
+        this.settingsRepository = settingsRepo;
+        this.sharedPrefUtil = sharedPrefUtil;
     }
 
     @Override

@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -53,7 +54,6 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import timber.log.Timber;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class VacancyListActivity extends BaseAnimationActivity implements
@@ -72,7 +72,6 @@ public class VacancyListActivity extends BaseAnimationActivity implements
     private static final String TAG = "TAG";
     private static final String KEY_REVEAL_X = "KEY_REVEAL_X";
     private static final String KEY_REVEAL_Y = "KEY_REVEAL_Y";
-    private static final int WEBVIEW_REQUEST_CODE = 1002;
 
     @Inject
     Contract.IVacancyPresenter presenter;
@@ -149,6 +148,58 @@ public class VacancyListActivity extends BaseAnimationActivity implements
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.d(getClass().getSimpleName(), "onResume()");
+        presenter.onResume(this);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        presenter.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        presenter.clear();
+        presenter.updateVacanciesTimeStatus();
+        Log.d(getClass().getSimpleName(), "onDestroy()");
+    }
+
+    @Override
+    public void onBackPressed() {
+        finish();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(KEY_CURRENT_POSITION, mViewPager.getCurrentItem());
+        outState.putStringArray(KEY_TAB_TITLES, mTabTitles);
+        outState.putIntArray(KEY_TAB_VACANCY_COUNT, mTabVacancyCount);
+        outState.putBoolean(KEY_ORIENTATION_CHANGED, true);
+        outState.putBoolean(KEY_SETTINGS_FLAG, flag);
+        outState.putInt(KEY_TOOLBAR_DEFAULT_HEIGHT, toolbarHeight);
+        outState.putInt(KEY_REVEAL_X, revealX);
+        outState.putInt(KEY_REVEAL_Y, revealY);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        // restoring ButtonTab position
+        if (savedInstanceState != null) {
+            int currentPosition = savedInstanceState.getInt(KEY_CURRENT_POSITION);
+            mTabTitles = savedInstanceState.getStringArray(KEY_TAB_TITLES);
+            mTabVacancyCount = savedInstanceState.getIntArray(KEY_TAB_VACANCY_COUNT);
+            orientationHasChanged = savedInstanceState.getBoolean(KEY_ORIENTATION_CHANGED);
+            updateTitleView(currentPosition);
+        }
+    }
+
     private void initializeViews() {
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
 
@@ -203,68 +254,24 @@ public class VacancyListActivity extends BaseAnimationActivity implements
         );
     }
 
+    // Handles adding/removing/sharing item to/from Favorites operations.
     @Override
-    protected void onResume() {
-        super.onResume();
-        presenter.bindJustView(this);
+    public void onFragmentInteractionPopupMenuClicked(VacancyModel vacancy,
+                                                      @VacancyCardViewAdapter.VacancyPopupMenuType int type) {
+        presenter.onItemPopupMenuClicked(vacancy, type);
     }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-        presenter.unbindView();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        presenter.clear();
-        presenter.updateVacanciesTimeStatus();
-        Log.e("VLA", "onDestroy()");
-    }
-
-    @Override
-    public void onBackPressed() {
-        finish();
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putInt(KEY_CURRENT_POSITION, mViewPager.getCurrentItem());
-        outState.putStringArray(KEY_TAB_TITLES, mTabTitles);
-        outState.putIntArray(KEY_TAB_VACANCY_COUNT, mTabVacancyCount);
-        outState.putBoolean(KEY_ORIENTATION_CHANGED, true);
-        outState.putBoolean(KEY_SETTINGS_FLAG, flag);
-        outState.putInt(KEY_TOOLBAR_DEFAULT_HEIGHT, toolbarHeight);
-        outState.putInt(KEY_REVEAL_X, revealX);
-        outState.putInt(KEY_REVEAL_Y, revealY);
-    }
-
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-        // restoring ButtonTab position
-        if (savedInstanceState != null) {
-            int currentPosition = savedInstanceState.getInt(KEY_CURRENT_POSITION);
-            mTabTitles = savedInstanceState.getStringArray(KEY_TAB_TITLES);
-            mTabVacancyCount = savedInstanceState.getIntArray(KEY_TAB_VACANCY_COUNT);
-            orientationHasChanged = savedInstanceState.getBoolean(KEY_ORIENTATION_CHANGED);
-            updateTitleView(currentPosition);
-        }
-    }
-
+    // Opens VacancyViewer activity to display vacancy
     @Override
     public void onFragmentInteractionItemClicked(VacancyModel vacancyModel) {
         // Activity with multiple vacancy
         String type = getCurrentTabType();
         Intent vacancyContainerIntent = VacancyViewerActivity.getIntent(this, vacancyModel, type);
-        startActivityForResult(vacancyContainerIntent, WEBVIEW_REQUEST_CODE);
+        startActivity(vacancyContainerIntent);
     }
 
     /**
      * Types: DATA_SITE, DATA_NEW, DATA_RECENT, DATA_FAVORITE
-     *
      * @return The type of active tab in viewPager
      */
     private String getCurrentTabType() {
@@ -295,12 +302,7 @@ public class VacancyListActivity extends BaseAnimationActivity implements
         return type;
     }
 
-    @Override
-    public void onFragmentInteractionPopupMenuClicked(VacancyModel vacancy,
-                                                      @VacancyCardViewAdapter.VacancyPopupMenuType int type) {
-        presenter.onItemPopupMenuClicked(vacancy, type);
-    }
-
+    // Shares vacancy
     @Override
     public void createShareIntent(VacancyModel vacancy) {
         Intent intent = new Intent();
@@ -314,20 +316,18 @@ public class VacancyListActivity extends BaseAnimationActivity implements
     public void showResultingMessage(@VacancyCardViewAdapter.VacancyPopupMenuType int type) {
         switch (type) {
             case VacancyCardViewAdapter.MENU_SAVE:
-                Toast.makeText(this, R.string.msg_item_saved_to_favorite, Toast.LENGTH_SHORT).show();
+                Snackbar.make(mSettingsImageButton, R.string.msg_item_saved_to_favorite, 2000).show();
                 mSlideAdapter.notifyDataSetChanged();
                 break;
             case VacancyCardViewAdapter.MENU_REMOVE:
+                Snackbar.make(mSettingsImageButton, R.string.msg_item_removed_from_favorite, 2000).show();
                 mSlideAdapter.notifyDataSetChanged();
-                Toast.makeText(this, R.string.msg_item_removed_from_favorite, Toast.LENGTH_SHORT).show();
         }
     }
 
     @Override
-    public void showErrorMessage(String message) {
-        Timber.e("error msg = %s", message);
-        Log.e("!!!", message);
-        message = getString(R.string.errors_db_favorite_vacancy_already_exists);
+    public void showAddToFavoriteErrorMessage() {
+        String message = getString(R.string.errors_db_favorite_vacancy_already_exists);
         Toast.makeText(this, message, Toast.LENGTH_LONG).show();
     }
 
@@ -400,7 +400,6 @@ public class VacancyListActivity extends BaseAnimationActivity implements
 
     private void updateTitleView(int tabPosition) {
         mTitleTextView.setText(mTabTitles[tabPosition]);
-        // TODO: edit this!!!
         mTitleVacanciesCountTextView.setText("" + mTabVacancyCount[tabPosition]);
         mButtonTabs.selectTab(tabPosition);
     }
@@ -415,15 +414,8 @@ public class VacancyListActivity extends BaseAnimationActivity implements
             if (mViewPager.getCurrentItem() == 2) {
                 updateTitleView(2);
             }
-        }
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == WEBVIEW_REQUEST_CODE) {
-            // call to load fresh list of favorites vacancies
-            presenter.bindJustView(this);
+        } else {
+            Log.e(getClass().getSimpleName(), "Can't update favorites. mSlideAdapter=null.");
         }
     }
 
@@ -530,6 +522,9 @@ public class VacancyListActivity extends BaseAnimationActivity implements
     @Override
     public void updateFilter(Pair<Boolean, Set<String>> data) {
         launchFilterAnimation(mSettingsImageButton);
-        mTitleTextView.postDelayed(() -> presenter.filterUpdated(data), 500);
+        mTitleTextView.postDelayed(() -> {
+            presenter.filterUpdated(data);
+            mButtonTabs.selectTab(mButtonTabs.getCurrentTab());
+        }, 500);
     }
 }

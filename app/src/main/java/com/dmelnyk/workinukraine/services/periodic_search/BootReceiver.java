@@ -1,4 +1,4 @@
-package com.dmelnyk.workinukraine.services.alarm;
+package com.dmelnyk.workinukraine.services.periodic_search;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;

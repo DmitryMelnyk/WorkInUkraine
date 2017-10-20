@@ -14,6 +14,7 @@ import java.util.Set;
 
 import io.reactivex.Completable;
 import io.reactivex.Observable;
+import io.reactivex.Single;
 
 /**
  * Created by d264 on 7/28/17.
@@ -47,7 +48,7 @@ public interface IVacancyListInteractor {
      * @param request Vacancy request in format "request / city"
      * @return
      */
-    Observable<Map<String, List<VacancyModel>>> getAllVacancies(String request);
+    Single<Map<String, List<VacancyModel>>> getAllVacancies(String request);
 
     /**
      * Returns a list of vacancies

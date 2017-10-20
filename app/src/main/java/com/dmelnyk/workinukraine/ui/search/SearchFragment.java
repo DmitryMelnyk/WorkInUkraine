@@ -12,8 +12,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -48,8 +46,6 @@ import butterknife.OnClick;
 import butterknife.Unbinder;
 import timber.log.Timber;
 
-import static android.app.Activity.RESULT_CANCELED;
-import static android.app.Activity.RESULT_OK;
 import static com.dmelnyk.workinukraine.ui.search.SearchAdapter.MENU_EDIT;
 import static com.dmelnyk.workinukraine.ui.search.SearchAdapter.MENU_REMOVE;
 
@@ -109,6 +105,8 @@ public class SearchFragment extends BaseFragment implements
             switch (intent.getAction()) {
                 case SearchVacanciesService.ACTION_FINISHED:
                     // updating data after searching vacancies
+                    int count = intent.getIntExtra(SearchVacanciesService.KEY_TOTAL_VACANCIES_COUNT, 0);
+                    Toast.makeText(context, "Founded vacancies=" + count, Toast.LENGTH_SHORT).show();
                     presenter.updateData();
                     break;
             }
@@ -200,7 +198,6 @@ public class SearchFragment extends BaseFragment implements
     @Override
     public void onDetach() {
         super.onDetach();
-        Log.e(getClass().getSimpleName(), "onDetach()");
         mListener = null;
         presenter.unbindView();
     }

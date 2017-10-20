@@ -13,13 +13,11 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.dmelnyk.workinukraine.R;
 import com.dmelnyk.workinukraine.application.WorkInUaApplication;
-import com.dmelnyk.workinukraine.services.alarm.AlarmClockUtil;
 import com.dmelnyk.workinukraine.ui.navigation.Contract.INavigationPresenter;
 import com.dmelnyk.workinukraine.ui.navigation.di.NavigationModule;
 import com.dmelnyk.workinukraine.ui.navigation.menu.DrawerAdapter;
@@ -54,10 +52,11 @@ public class NavigationActivity extends BaseAnimationActivity implements
     FrameLayout container;
 
     private TextView mVacanciesCountTextView;
+    private static final String FRAGMENT_SEARCH = SearchFragment.class.getName();
 
     @Inject INavigationPresenter presenter;
     @Inject NavUtil navUtil;
-    @Inject AlarmClockUtil alarmUtil;
+//    @Inject AlarmClockUtil alarmUtil;
 
     private static final int NAV_SEARCH_POSITION = 0;
     private static final int NAV_REFRESH_POSITION = 1;
@@ -112,10 +111,32 @@ public class NavigationActivity extends BaseAnimationActivity implements
     @Override
     protected void onResume() {
         super.onResume();
-        alarmUtil.stopAlarmClock();
+//        alarmUtil.stopAlarmClock();
     }
 
-    private static final String FRAGMENT_SEARCH = SearchFragment.class.getName();
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+//        alarmUtil.startAlarmClock();
+    }
+
+    @Override
+    protected void onDestroy() {
+        presenter.unbindView();
+        super.onDestroy();
+    }    @Override
+    public void onBackPressed() {
+        if (navigator.isMenuHidden()) {
+            navigator.openMenu(true);
+        } else {
+            finish();
+        }
+    }
 
     @Override
     public void onItemSelected(int position) {
@@ -188,37 +209,6 @@ public class NavigationActivity extends BaseAnimationActivity implements
     @ColorInt
     private int color(@ColorRes int res) {
         return ContextCompat.getColor(this, res);
-    }
-
-    @Override
-    protected void attachBaseContext(Context newBase) {
-        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        alarmUtil.startAlarmClock();
-    }
-
-    @Override
-    protected void onDestroy() {
-        presenter.unbindView();
-        super.onDestroy();
-    }
-
-    @Override
-    public void restoreSavedState(String time) {
-        // TODO
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (navigator.isMenuHidden()) {
-            navigator.openMenu(true);
-        } else {
-            finish();
-        }
     }
 
     @Override

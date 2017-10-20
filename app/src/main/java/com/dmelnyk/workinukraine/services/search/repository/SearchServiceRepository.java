@@ -1,7 +1,5 @@
 package com.dmelnyk.workinukraine.services.search.repository;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
 
@@ -14,14 +12,11 @@ import com.dmelnyk.workinukraine.utils.SharedPrefUtil;
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import io.reactivex.Observable;
+import io.reactivex.Single;
 import timber.log.Timber;
-
-import static com.dmelnyk.workinukraine.ui.vacancy_list.repository.VacancyListRepository.SHARED_PREF;
 
 /**
  * Created by d264 on 7/25/17.
@@ -32,7 +27,7 @@ public class SearchServiceRepository implements ISearchServiceRepository {
     private static final String REQUEST_TABLE = DbContract.SearchRequest.TABLE_REQUEST;
     private static final String VACANCY_TABLE = DbContract.SearchSites.TABLE_ALL_SITES;
     private static final String SELECT_ALL_FROM = "SELECT * FROM ";
-    public static final String TABLE = DbContract.SearchSites.TABLE_ALL_SITES;
+    private static final String TABLE = DbContract.SearchSites.TABLE_ALL_SITES;
     private static final String WHERE_ = " WHERE " + DbContract.SearchSites.Columns.REQUEST + " = ";
 
     private final BriteDatabase db;
@@ -56,17 +51,18 @@ public class SearchServiceRepository implements ISearchServiceRepository {
     }
 
     @Override
-    public Observable<List<RequestModel>> getRequests() {
+    public Single<List<RequestModel>> getRequests() {
         Timber.d("\nloadRequestList()");
         return db.createQuery(REQUEST_TABLE, "SELECT * FROM " + REQUEST_TABLE)
-                .mapToList(RequestModel.MAPPER);
+                .mapToList(RequestModel.MAPPER)
+                .firstOrError();
     }
 
     @Override
     public void saveVacancies(List<VacancyModel> allVacancies) throws Exception {
         Timber.d("Found %d vacancies", allVacancies.size());
 
-        if (allVacancies.isEmpty()) return; // TODO update data in request table
+        if (allVacancies.isEmpty()) return;
 
         String request = allVacancies.get(0).request();
 
@@ -103,7 +99,7 @@ public class SearchServiceRepository implements ISearchServiceRepository {
             updatedVacancies.add(vacancyBuilder.build());
         }
 
-        // remove all vacancies with request
+        // remove all previous vacancies with current request
         db.delete(VACANCY_TABLE, DbContract.SearchRequest.Columns.REQUEST + " = '" + request + "'");
         // writing vacancies to db
         writeVacanciesToDb(updatedVacancies);

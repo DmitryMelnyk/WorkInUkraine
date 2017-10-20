@@ -30,7 +30,5 @@ public interface ApplicationComponent {
     /* ------------------------------------- */
     NavigationComponent add(NavigationModule module);
 
-//    SearchComponent add(SearchModule module);
-
     SettingsComponent add(SettingsModule module);
 }

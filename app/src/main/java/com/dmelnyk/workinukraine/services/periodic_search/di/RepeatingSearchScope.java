@@ -1,4 +1,4 @@
-package com.dmelnyk.workinukraine.services.alarm.di;
+package com.dmelnyk.workinukraine.services.periodic_search.di;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

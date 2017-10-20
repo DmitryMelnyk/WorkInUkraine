@@ -19,7 +19,7 @@ public class Contract {
 
         void showResultingMessage(@VacancyCardViewAdapter.VacancyPopupMenuType int type);
 
-        void showErrorMessage(String message);
+        void showAddToFavoriteErrorMessage();
 
         void updateFavoriteTab(List<VacancyModel> vacancies);
 
@@ -35,9 +35,9 @@ public class Contract {
     public interface IVacancyPresenter {
         void bindView(IVacancyView view, String request);
 
-        void bindJustView(IVacancyView view);
+        void onResume(IVacancyView view);
 
-        void unbindView();
+        void onStop();
 
         void onItemPopupMenuClicked(
                 VacancyModel vacancy, @VacancyCardViewAdapter.VacancyPopupMenuType int type);

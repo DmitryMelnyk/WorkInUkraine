@@ -24,8 +24,6 @@ public class Contract {
 
         void onSwitcherChecked(int position, boolean checked);
 
-        void onItemClicked(int position);
-
         void onPeriodChose(int checkedItemPosition);
 
         void onPeriodItemClicked();

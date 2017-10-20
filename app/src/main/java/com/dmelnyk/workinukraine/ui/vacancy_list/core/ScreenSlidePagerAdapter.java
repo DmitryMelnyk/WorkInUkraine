@@ -117,7 +117,7 @@ public class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {
 
     public void updateFavoriteData(List<VacancyModel> vacancies) {
         if (ScreenSlidePagerAdapter.this == null) {
-            Log.d("!!!", "adapter isn't created");
+            Log.e(getClass().getSimpleName(), "adapter isn't created");
             return;
         }
         mFavoriteFragmentData = vacancies;

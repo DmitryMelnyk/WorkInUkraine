@@ -8,6 +8,7 @@ import java.util.Set;
 
 import io.reactivex.Completable;
 import io.reactivex.Observable;
+import io.reactivex.Single;
 
 /**
  * Created by d264 on 7/28/17.
@@ -33,7 +34,7 @@ public interface IVacancyListRepository {
 
     Completable addToFavorite(VacancyModel vacancy);
 
-    Observable<Map<String, List<VacancyModel>>> getAllVacancies(String request);
+    Single<Map<String, List<VacancyModel>>> getAllVacancies(String request);
 
     /**
      * @return The array of Strings titles from resources with New tab

@@ -92,35 +92,19 @@ public class SearchVacanciesService extends Service {
     private void startSearchingProcess(Intent intent) {
         sIsDownloadingFinished = false;
 
-        mMode = intent.getIntExtra(EXTRA_MODE, MODE_REPEATING_SEARCH);
+        if (intent == null) {
+            mMode = MODE_REPEATING_SEARCH;
+        } else {
+            mMode = intent.getIntExtra(EXTRA_MODE, MODE_REPEATING_SEARCH);
+        }
 
         // Gets request list and starts searching
         repository.getRequests()
                 .subscribe(requests -> {
+                    Log.e(getClass().getSimpleName(), "repository.getRequests()=" + requests);
                     startSearching(requests);
                 });
     }
-
-
-//    @Override
-//    protected void onHandleIntent(Intent intent) {
-//        Timber.d("\nSearching vacancies started!");
-//
-//        DaggerDbComponent.builder()
-//                .dbModule(new DbModule(getApplicationContext()))
-//                .build()
-//                .inject(this);
-//
-//        sIsDownloadingFinished = false;
-//
-//        mMode = intent.getIntExtra(EXTRA_MODE, MODE_REPEATING_SEARCH);
-//
-//        // Gets request list and starts searching
-//        repository.getRequests()
-//                .subscribe(requests -> {
-//                    startSearching(requests);
-//                });
-//    }
 
     @Nullable
     @Override
@@ -142,6 +126,7 @@ public class SearchVacanciesService extends Service {
     }
 
     private void startSearching(List<RequestModel> requests) {
+        Log.d(getClass().getSimpleName(), "startSearching. Requests=" + requests);
         pool = Executors.newCachedThreadPool();
         // Creating parallel search tasks for each search request
         long startTime = System.nanoTime();
@@ -150,14 +135,14 @@ public class SearchVacanciesService extends Service {
         for (RequestModel requestModel : requests) {
             SearchVacanciesTask[] callables = new SearchVacanciesTask[5];
 
-            // Creates 5 task for each request search
+            // Creates and starts 5 task for each request search
             for (int i = 0; i < 5; ++i) {
                 callables[i] = new SearchVacanciesTask(i, requestModel.request());
                 futures.add(pool.submit(callables[i]));
             }
         }
 
-        // Starts searching
+        // Waiting for result
         for (Future future : futures) {
             try {
                 future.get();
@@ -168,7 +153,8 @@ public class SearchVacanciesService extends Service {
 
         sendBroadcastMessage(ACTION_FINISHED, null /* request no need */, totalVacanciesCount);
         long endTime = System.nanoTime();
-        Timber.d("\nSearch completed at %d seconds", (endTime - startTime) / 1000000);
+        Timber.d("\nSearch completed at %d seconds", (endTime - startTime) / 1000000000);
+//        stopSelf();
     }
 
     private void sendBroadcastMessage(String action, String request, int vacanciesCount) {
@@ -179,7 +165,6 @@ public class SearchVacanciesService extends Service {
             case ACTION_FINISHED:
                 sIsDownloadingFinished = true;
                 switch (mMode) {
-
                     // Searching when the app is running
                     case MODE_SEARCH:
                         broadcast = new Intent(ACTION_FINISHED);

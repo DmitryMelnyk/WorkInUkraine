@@ -5,7 +5,7 @@ import com.dmelnyk.workinukraine.models.VacancyModel;
 
 import java.util.List;
 
-import io.reactivex.Observable;
+import io.reactivex.Single;
 
 /**
  * Created by d264 on 7/25/17.
@@ -29,5 +29,5 @@ public interface ISearchServiceRepository {
      * Request format in single string: "request / city"
      * @return The Observable that emits list of search requests
      */
-    Observable<List<RequestModel>> getRequests();
+    Single<List<RequestModel>> getRequests();
 }

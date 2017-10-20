@@ -24,6 +24,7 @@ import java.util.Set;
 
 import io.reactivex.Completable;
 import io.reactivex.Observable;
+import io.reactivex.Single;
 import timber.log.Timber;
 
 /**
@@ -50,7 +51,7 @@ public class VacancyListRepository implements IVacancyListRepository {
     }
 
     @Override
-    public Observable<Map<String, List<VacancyModel>>> getAllVacancies(String request) {
+    public Single<Map<String, List<VacancyModel>>> getAllVacancies(String request) {
         Timber.d("\ngetAllVacancies, request =%s", request);
 
         if (shouldBeUpdated(request)) {
@@ -109,7 +110,7 @@ public class VacancyListRepository implements IVacancyListRepository {
 
                     close();
                     return result;
-                });
+                }).firstOrError();
     }
 
     @Override
@@ -130,9 +131,7 @@ public class VacancyListRepository implements IVacancyListRepository {
 
     @Override
     public Observable<List<VacancyModel>> getFavoriteVacancies(String request) {
-        Timber.d("\ngetFavoriteVacancies() request=%s", request);
-
-        String TABLE = DbContract.SearchSites.TABLE_ALL_SITES;
+        Log.d(getClass().getSimpleName(), "getFavoriteVacancies");
 
         return db.createQuery(TABLE, "SELECT * FROM " +
                 TABLE + " WHERE " + DbContract.SearchSites.Columns.REQUEST + " ='" + request
@@ -145,12 +144,9 @@ public class VacancyListRepository implements IVacancyListRepository {
         Timber.d("\nremoveFromFavorites: %s", vacancy);
 
         return Completable.fromCallable(() -> {
-            // updating vacancy in DbContract.SearchSites.TABLE_ALL_SITES
-            db.execute("UPDATE " + DbContract.SearchSites.TABLE_ALL_SITES
-                    + " SET " + DbContract.SearchSites.Columns.IS_FAVORITE
-                    + " =0 WHERE " + DbContract.SearchSites.Columns.URL
+            ContentValues updatedVacancy = DbItems.createVacancyFavoriteItem(false, vacancy);
+            db.update(TABLE, updatedVacancy, DbContract.SearchSites.Columns.URL
                     + " ='" + vacancy.url() + "'");
-
             return true;
         });
     }
@@ -170,17 +166,13 @@ public class VacancyListRepository implements IVacancyListRepository {
             cursor.close();
             return Completable.fromCallable(() -> {
                 // updating vacancy in DbContract.SearchSites.TABLE_ALL_SITES
-                db.execute("UPDATE " + DbContract.SearchSites.TABLE_ALL_SITES
-                        + " SET " + DbContract.SearchSites.Columns.IS_FAVORITE
-                        + " =1 WHERE " + DbContract.SearchSites.Columns.URL
+                ContentValues updatedVacancy = DbItems.createVacancyFavoriteItem(true, vacancy);
+                db.update(TABLE, updatedVacancy, DbContract.SearchSites.Columns.URL
                         + " ='" + vacancy.url() + "'");
                 return true;
             });
         } else {
-            String url = cursor.getString(
-                    cursor.getColumnIndex(DbContract.SearchSites.Columns.URL));
 
-            Log.e("!!!", "url=" + url);
             cursor.close();
             return Completable.error(new Exception("Vacancy already exist in list!"));
         }

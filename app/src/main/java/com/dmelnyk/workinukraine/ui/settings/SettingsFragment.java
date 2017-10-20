@@ -6,7 +6,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,11 +13,11 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.dmelnyk.workinukraine.R;
 import com.dmelnyk.workinukraine.application.WorkInUaApplication;
-import com.dmelnyk.workinukraine.ui.dialogs.period_chooser.DialogPeriodChooser;
+import com.dmelnyk.workinukraine.job.SearchVacanciesJob;
 import com.dmelnyk.workinukraine.ui.dialogs.time_picker.DialogTimePicker;
 import com.dmelnyk.workinukraine.ui.settings.Contract.ISettingsPresenter;
 import com.dmelnyk.workinukraine.ui.settings.di.SettingsModule;
@@ -30,6 +29,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
+import timber.log.Timber;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -39,7 +39,7 @@ import butterknife.Unbinder;
  */
 public class SettingsFragment extends BaseFragment implements
         Contract.ISettingsView,
-        DialogPeriodChooser.OnDialogPeriodInteractionListener,
+
         DialogTimePicker.OnDialogTimePickerInteractionListener {
 
     private static final String DIALOG_PERIOD_TAG = "dialog period tag";
@@ -168,8 +168,11 @@ public class SettingsFragment extends BaseFragment implements
                 presenter.onDontDisturbTimeModeChose(SettingsPresenter.TIME_TO);
                 break;
             case R.id.sendFeedback:
+                // TODO
                 break;
             case R.id.about:
+                // TODO
+                SearchVacanciesJob.scheduleSearchTask();
                 break;
             case R.id.thumbUp:
                 Intent openInWebStore = new Intent(Intent.ACTION_VIEW, Uri.parse(WEBSTORE_APP_ADDRESS));
@@ -201,23 +204,21 @@ public class SettingsFragment extends BaseFragment implements
     }
 
     @Override
-    public void showDialogPeriodChooser(int repeatingPosition) {
-        Fragment previous = getFragmentManager().findFragmentByTag(DIALOG_PERIOD_TAG);
-        FragmentTransaction ft = getFragmentManager().beginTransaction();
-        if (previous != null) {
-            ft.remove(previous);
-        }
-        ft.addToBackStack(null);
-
-        DialogPeriodChooser dialog = DialogPeriodChooser.getNewInstance(repeatingPosition);
-        dialog.setInteractionListener(this);
-        dialog.show(ft, DIALOG_PERIOD_TAG);
-    }
-
-    @Override
-    public void onRadioItemChecked(int checkedItemPosition) {
-        presenter.onPeriodChose(checkedItemPosition);
-        Toast.makeText(getContext(), "Clicked " + checkedItemPosition, Toast.LENGTH_SHORT).show();
+    public void showDialogPeriodChooser(int currentPeriod) {
+        new MaterialDialog.Builder(getContext())
+                .title(R.string.settings_item_period)
+                .items(R.array.settings_period_summary)
+                .itemsCallbackSingleChoice(currentPeriod, new MaterialDialog.ListCallbackSingleChoice() {
+                    @Override
+                    public boolean onSelection(MaterialDialog dialog, View itemView, int which, CharSequence text) {
+                        Timber.d("Updating time item selected=" + which);
+                        presenter.onPeriodChose(which);
+                        return false;
+                    }
+                })
+                .autoDismiss(true)
+                .build()
+                .show();
     }
 
     @Override

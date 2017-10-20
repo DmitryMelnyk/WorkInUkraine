@@ -41,10 +41,9 @@ public class VacancyViewInteractor implements IVacancyViewInteractor {
                 return repository.getRecentVacancies(request).map(list -> filterVacancies(list, request));
             case VacancyViewerActivity.DATA_SITE:
                 return repository.getSiteVacancies(request, site).map(list -> filterVacancies(list, request));
+            default:
+                return null;
         }
-
-        // never happen
-        return null;
     }
 
     @Override

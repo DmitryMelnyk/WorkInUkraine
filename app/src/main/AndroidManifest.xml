@@ -24,7 +24,9 @@
             <!-- <category android:name="android.intent.category.LAUNCHER"/> -->
             <!-- </intent-filter> -->
         </activity>
-        <activity android:name=".ui.navigation.NavigationActivity">
+        <activity
+            android:name=".ui.navigation.NavigationActivity"
+            android:launchMode="singleInstance">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -42,15 +44,14 @@
         <activity
             android:name=".ui.vacancy_viewer.WebViewActivity"
             android:configChanges="orientation|screenSize" />
-
-
         <activity
-        android:name=".ui.vacancy_viewer.VacancyViewerActivity"
-        android:configChanges="orientation|screenSize" />
-        <activity android:name=".ui.filter.FilterActivity"></activity>
+            android:name=".ui.vacancy_viewer.VacancyViewerActivity"
+            android:configChanges="orientation|screenSize" />
+        <activity android:name=".ui.filter.FilterActivity" />
 
-        <receiver android:name=".services.alarm.AlarmReceiver" />
-        <receiver android:name=".services.alarm.BootReceiver" />
+        <receiver android:name=".services.periodic_search.AlarmReceiver" />
+        <receiver android:name=".services.periodic_search.BootReceiver" />
+
     </application>
 
 </manifest>

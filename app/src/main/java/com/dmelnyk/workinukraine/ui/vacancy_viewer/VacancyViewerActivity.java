@@ -3,6 +3,7 @@ package com.dmelnyk.workinukraine.ui.vacancy_viewer;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.ViewGroup;
@@ -76,10 +77,6 @@ public class VacancyViewerActivity extends BaseAnimationActivity
 
         presenter.bindView(this);
         presenter.getData(mRequest, mType, mSite);
-
-        // callback result used by VacancyListActivity to get fresh favorite vacancies
-        // because they can be changed by adding/removing in this activity
-        setResult(RESULT_OK);
     }
 
     @Override
@@ -144,13 +141,13 @@ public class VacancyViewerActivity extends BaseAnimationActivity
                 ? getString(R.string.msg_item_saved_to_favorite)
                 : getString(R.string.msg_item_removed_from_favorite);
 
-        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+        Snackbar.make(mVacancyContainer, msg, 2000).show();
     }
 
     @Override
     public void showUpdatingVacancyError() {
         // TODO: move to strings
-        Toast.makeText(this, "Ошибка обновления избранной вакансии!", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, R.string.msg_vacancy_update_error, Toast.LENGTH_SHORT).show();
     }
 
     @Override

@@ -49,11 +49,6 @@ public class SettingsPresenter implements Contract.ISettingsPresenter {
     }
 
     @Override
-    public void onItemClicked(int position) {
-
-    }
-
-    @Override
     public void onPeriodItemClicked() {
         view.showDialogPeriodChooser(interactor.getPeriodPosition());
     }

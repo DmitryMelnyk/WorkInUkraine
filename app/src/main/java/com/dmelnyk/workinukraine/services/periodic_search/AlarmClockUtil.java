@@ -1,4 +1,4 @@
-package com.dmelnyk.workinukraine.services.alarm;
+package com.dmelnyk.workinukraine.services.periodic_search;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
@@ -8,9 +8,9 @@ import android.icu.text.SimpleDateFormat;
 import android.os.SystemClock;
 import android.util.Log;
 
-import com.dmelnyk.workinukraine.services.alarm.repo.IRepeatingSearchRepository;
+import com.dmelnyk.workinukraine.services.periodic_search.repo.IRepeatingSearchRepository;
 import com.dmelnyk.workinukraine.db.di.DbModule;
-import com.dmelnyk.workinukraine.services.alarm.di.DaggerRepeatingSearchComponent;
+import com.dmelnyk.workinukraine.services.periodic_search.di.DaggerRepeatingSearchComponent;
 
 import java.util.Date;
 

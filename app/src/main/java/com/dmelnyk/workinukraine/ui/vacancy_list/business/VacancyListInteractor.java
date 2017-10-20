@@ -13,6 +13,7 @@ import java.util.concurrent.Callable;
 
 import io.reactivex.Completable;
 import io.reactivex.Observable;
+import io.reactivex.Single;
 
 /**
  * Created by d264 on 7/28/17.
@@ -32,7 +33,7 @@ public class VacancyListInteractor implements IVacancyListInteractor {
     }
 
     @Override
-    public Observable<Map<String, List<VacancyModel>>> getAllVacancies(String request) {
+    public Single<Map<String, List<VacancyModel>>> getAllVacancies(String request) {
         return repository.getAllVacancies(request);
     }
 

@@ -7,7 +7,6 @@ import com.dmelnyk.workinukraine.ui.vacancy_list.business.IVacancyListInteractor
 import com.dmelnyk.workinukraine.models.VacancyModel;
 import com.dmelnyk.workinukraine.ui.vacancy_list.core.VacancyCardViewAdapter;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,8 +15,8 @@ import java.util.Set;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
-import timber.log.Timber;
+
+import static com.dmelnyk.workinukraine.ui.vacancy_list.business.IVacancyListInteractor.DATA_FAVORITE;
 
 /**
  * Created by d264 on 7/28/17.
@@ -31,9 +30,9 @@ public class VacancyListPresenter implements Contract.IVacancyPresenter {
     CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     private static Map<String, List<VacancyModel>> sDataCache;
-    private static String sError;
     private static boolean sIsDisplayed;
     private static String mRequest;
+    private Disposable favoritesDisposable;
 
     public VacancyListPresenter(IVacancyListInteractor interactor, String request) {
         this.interactor = interactor;
@@ -55,19 +54,30 @@ public class VacancyListPresenter implements Contract.IVacancyPresenter {
         if (sDataCache != null) {
             // successful result
             displayData(sDataCache);
-        } else if (sError != null) {
-            // error result
-            view.showErrorMessage(sError);
-            sError = null;
         }
     }
 
     @Override
-    public void bindJustView(Contract.IVacancyView view) {
+    public void onResume(Contract.IVacancyView view) {
         this.view = view;
-        updateFavorite();
+        if (compositeDisposable.isDisposed()) {
+            compositeDisposable = new CompositeDisposable();
+        }
+        updateFavorites();
     }
 
+    @Override
+    public void onStop() {
+        view = null;
+        sIsDisplayed = false;
+        if (compositeDisposable != null) {
+            compositeDisposable.dispose();
+        }
+
+        if (favoritesDisposable != null) {
+            favoritesDisposable.dispose();
+        }
+    }
     @Override
     public Pair<Boolean, Set<String>> getFilterData() {
         return interactor.getFilterData();
@@ -87,7 +97,7 @@ public class VacancyListPresenter implements Contract.IVacancyPresenter {
         int siteTabsCount = vacanciesMap.get(IVacancyListInteractor.DATA_ALL).size();
         int newVacanciesCount = vacanciesMap.get(IVacancyListInteractor.DATA_NEW).size();
         int recentVacanciesCount = vacanciesMap.get(IVacancyListInteractor.DATA_RECENT).size();
-        int favoriteVacanciesCount = vacanciesMap.get(IVacancyListInteractor.DATA_FAVORITE).size();
+        int favoriteVacanciesCount = vacanciesMap.get(DATA_FAVORITE).size();
 
         // Exit from activity if no vacancies found
         if (siteTabsCount == 0) {
@@ -131,7 +141,6 @@ public class VacancyListPresenter implements Contract.IVacancyPresenter {
     private void getAllVacancies(String request) {
         compositeDisposable.add(
                 interactor.getAllVacancies(request)
-//                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(vacanciesMap -> {
                     sDataCache = new HashMap<>(vacanciesMap);
@@ -139,25 +148,7 @@ public class VacancyListPresenter implements Contract.IVacancyPresenter {
                         sIsDisplayed = true;
                         displayData(sDataCache);
                     }
-                }, throwable -> {
-                    Timber.e(throwable.getStackTrace().toString());
-                    if (view != null) {
-                        view.showErrorMessage(throwable.getMessage());
-                    } else {
-                        // if view hasn't been initialized yet save error msg to cache
-                        sError = throwable.getMessage();
-                    }
                 }));
-    }
-
-    @Override
-    public void unbindView() {
-        view = null;
-        sIsDisplayed = false;
-        // TODO: in bindView restore listeners
-        if (compositeDisposable != null) {
-            compositeDisposable.dispose();
-        }
     }
 
     @Override
@@ -175,30 +166,44 @@ public class VacancyListPresenter implements Contract.IVacancyPresenter {
                     interactor.onPopupMenuClicked(vacancy, type)
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(() -> {
-                        updateFavorite();
                         view.showResultingMessage(type);
                     }, throwable -> {
-                        view.showErrorMessage(throwable.getMessage());
+                        view.showAddToFavoriteErrorMessage();
                     }));
         }
     }
 
     // This method will update favorites after adding/removing vacancies in proper db automatically
-    private void updateFavorite() {
-        compositeDisposable.add(
-                interactor.getFavoriteVacancies(mRequest)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(vacancies -> {
-                    Log.e("VacancyListPres", "updateFavorites is called");
-                    view.updateFavoriteTab(vacancies);
-                }, throwable -> view.showErrorMessage(throwable.getMessage())));
+    private void updateFavorites() {
+        Log.d(getClass().getSimpleName(), "updateFavorites is called. Request = " + mRequest);
+
+        if (favoritesDisposable != null) {
+            favoritesDisposable.dispose();
+        } else {
+            favoritesDisposable = interactor.getFavoriteVacancies(mRequest)
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(favorites -> {
+                        Log.d(getClass().getSimpleName(), "updateFavorites is called. Favorites=" + favorites);
+                        // updates cached data
+                        if (sDataCache != null) {
+                            sDataCache.put(DATA_FAVORITE, favorites);
+                        } else {
+                            Log.e(getClass().getSimpleName(), "sDataCache=null");
+                        }
+                        view.updateFavoriteTab(favorites);
+                    }, throwable -> {
+                        Log.e(getClass().getSimpleName(), throwable.getMessage());
+                        view.showAddToFavoriteErrorMessage();
+                    });
+
+            boolean addResult = compositeDisposable.add(favoritesDisposable);
+            Log.e(getClass().getSimpleName(), "adding disposable result=" + addResult);
+        }
     }
 
     @Override
     public void clear() {
         sDataCache = null;
-        sError = null;
         compositeDisposable.clear();
         sIsDisplayed = false;
         interactor.clear();

@@ -7,7 +7,7 @@ package com.dmelnyk.workinukraine.ui.navigation;
 public class Contract {
 
     public interface INavigationView {
-        void restoreSavedState(String time);
+//        void restoreSavedState(String time);
     }
 
     public interface INavigationPresenter {

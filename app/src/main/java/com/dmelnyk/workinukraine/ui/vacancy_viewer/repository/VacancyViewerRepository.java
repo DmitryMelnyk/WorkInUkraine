@@ -1,8 +1,10 @@
 package com.dmelnyk.workinukraine.ui.vacancy_viewer.repository;
 
 import android.content.ContentValues;
+import android.database.Cursor;
 import android.util.Log;
 
+import com.dmelnyk.workinukraine.db.Db;
 import com.dmelnyk.workinukraine.db.DbContract;
 import com.dmelnyk.workinukraine.db.DbItems;
 import com.dmelnyk.workinukraine.models.VacancyModel;
@@ -81,13 +83,23 @@ public class VacancyViewerRepository implements IVacancyViewerRepository {
 
     @Override
     public Single<Boolean> updateFavorite(VacancyModel vacancy) {
-        Timber.d("updateFavorite. isFavorite=" + !vacancy.isFavorite());
-
+        Log.d(getClass().getSimpleName(), "updateFavorite");
         return Single.fromCallable(() -> {
-            ContentValues updatedVacancy = DbItems.createVacancyFavoriteItem(!vacancy.isFavorite(), vacancy);
+            // getting current 'isFavorite' property
+            Cursor cursor = db.query("SELECT * FROM " + TABLE
+                    + " WHERE " + DbContract.SearchSites.Columns.URL
+                    + " ='" + vacancy.url() + "'");
+            cursor.moveToFirst();
+            boolean isFavorite = Db.getBoolean(cursor, DbContract.SearchSites.Columns.IS_FAVORITE);
+            cursor.close();
+
+            Log.d(getClass().getSimpleName(), "Vacancy isFavorite=" + isFavorite);
+
+            ContentValues updatedVacancy =
+                    DbItems.createVacancyFavoriteItem(!isFavorite, vacancy);
             db.update(DbContract.SearchSites.TABLE_ALL_SITES, updatedVacancy,
                     DbContract.SearchSites.Columns.URL + " ='" + vacancy.url() + "'");
-            return !vacancy.isFavorite();
+            return !isFavorite;
         });
     }
 

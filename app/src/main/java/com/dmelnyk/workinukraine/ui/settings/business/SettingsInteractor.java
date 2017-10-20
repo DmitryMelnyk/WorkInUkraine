@@ -1,5 +1,6 @@
 package com.dmelnyk.workinukraine.ui.settings.business;
 
+import com.dmelnyk.workinukraine.job.RepeatingSearchJob;
 import com.dmelnyk.workinukraine.ui.settings.repository.ISettingsRepository;
 
 /**
@@ -54,8 +55,11 @@ public class SettingsInteractor implements ISettingsInteractor {
 
     @Override
     public void savePeriodPosition(int checkedNumPosition) {
-        repository.savePeriodPosition(checkedNumPosition);
-        updateRepeatingAlarm(checkedNumPosition);
+        int previousPosition = repository.getPeriodPosition();
+        if (previousPosition != checkedNumPosition) {
+            repository.savePeriodPosition(checkedNumPosition);
+            updateRepeatingJob(checkedNumPosition);
+        }
     }
 
     @Override
@@ -83,11 +87,9 @@ public class SettingsInteractor implements ISettingsInteractor {
         repository.saveSleepModeToTime(to);
     }
 
-    private void updateRepeatingAlarm(int periodIndex) {
-        if (repository.getPeriodPosition() != periodIndex) {
-            int periodInMillis = repository.getPeriodInMillis(periodIndex);
-            // TODO: update alarm
-        }
+    private void updateRepeatingJob(int periodIndex) {
+        long intervalInMillis = repository.getPeriodInMillis(periodIndex);
+        RepeatingSearchJob.scheduleRepeatingSearch(intervalInMillis);
     }
 
     // TODO: turn off notification

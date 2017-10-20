@@ -19,4 +19,5 @@
 
     <!-- Transitions -->
     <string name="fab_transition">fab transition reveal</string>
+    <string name="title_activity_focus">FocusActivity</string>
 </resources>

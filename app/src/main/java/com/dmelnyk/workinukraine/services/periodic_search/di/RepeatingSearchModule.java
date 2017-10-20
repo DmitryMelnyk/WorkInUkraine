@@ -1,11 +1,12 @@
-package com.dmelnyk.workinukraine.services.alarm.di;
+package com.dmelnyk.workinukraine.services.periodic_search.di;
 
 import android.content.Context;
 
-import com.dmelnyk.workinukraine.services.alarm.repo.IRepeatingSearchRepository;
-import com.dmelnyk.workinukraine.services.alarm.repo.RepeatingSearchRepository;
+import com.dmelnyk.workinukraine.services.periodic_search.repo.IRepeatingSearchRepository;
+import com.dmelnyk.workinukraine.services.periodic_search.repo.RepeatingSearchRepository;
 import com.dmelnyk.workinukraine.ui.settings.repository.SettingsRepository;
-import com.dmelnyk.workinukraine.services.alarm.AlarmClockUtil;
+import com.dmelnyk.workinukraine.services.periodic_search.AlarmClockUtil;
+import com.dmelnyk.workinukraine.utils.SharedPrefUtil;
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import dagger.Module;
@@ -27,7 +28,7 @@ public class RepeatingSearchModule {
     @Provides
     @RepeatingSearchScope
     IRepeatingSearchRepository providesIRepeatingSearchRepository(
-            BriteDatabase db, SettingsRepository settingsRepo) {
-        return new RepeatingSearchRepository(db, settingsRepo);
+            BriteDatabase db, SettingsRepository settingsRepo, SharedPrefUtil sharedPrefUtil) {
+        return new RepeatingSearchRepository(db, settingsRepo, sharedPrefUtil);
     }
 }

@@ -18,7 +18,6 @@
 
     <!-- Sound period preferences -->
     <string-array name="settings_message_period">
-        <!--<item>30 минут</item>-->
         <item>1 час</item>
         <item>3 часа</item>
         <item>6 часов</item>
@@ -27,7 +26,6 @@
     </string-array>
 
     <string-array name="settings_period_summary">
-        <!--<item>Каждые 30 минут</item>-->
         <item>Каждый час</item>
         <item>Каждые 3 часа</item>
         <item>Каждые 6 часов</item>
@@ -36,7 +34,6 @@
     </string-array>
 
     <integer-array name="settings_period_number">
-        <!--<item>30</item>-->
         <item>1</item>
         <item>3</item>
         <item>6</item>
@@ -45,7 +42,6 @@
     </integer-array>
 
     <integer-array name="settings_period_number_milliseconds">
-       <!-- <item>1800000</item>-->
         <item>3600000</item>
         <item>10800000</item>
         <item>21600000</item>

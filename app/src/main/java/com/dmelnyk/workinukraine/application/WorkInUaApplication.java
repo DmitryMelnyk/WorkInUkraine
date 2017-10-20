@@ -3,6 +3,11 @@ package com.dmelnyk.workinukraine.application;
 import android.app.Application;
 import android.content.Context;
 
+import com.dmelnyk.workinukraine.job.RepeatingSearchJob;
+import com.dmelnyk.workinukraine.job.AppJobCreator;
+import com.dmelnyk.workinukraine.ui.settings.repository.SettingsRepository;
+import com.evernote.android.job.JobManager;
+
 import timber.log.Timber;
 
 /**
@@ -33,6 +38,12 @@ public class WorkInUaApplication extends Application {
                 return element.getLineNumber() + ": " + element;
             }
         });
+
+        JobManager.create(this).addJobCreator(new AppJobCreator());
+
+        // getting periodic search time
+        SettingsRepository repository = new SettingsRepository(this);
+        RepeatingSearchJob.scheduleRepeatingSearch(repository.getPeriodInMillis());
     }
 
     public ApplicationComponent getAppComponent() {

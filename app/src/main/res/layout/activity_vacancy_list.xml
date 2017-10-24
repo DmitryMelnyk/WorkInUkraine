@@ -18,8 +18,6 @@
             android:id="@+id/toolbar_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:titleEnabled="true"
-            app:title="Title"
             app:contentScrim="@color/blue_dark"
             app:layout_scrollFlags="scroll|exitUntilCollapsed"
             >
@@ -137,7 +135,6 @@
         android:src="@mipmap/ic_settings_white"
         android:elevation="12dp"
         android:padding="8dp"
-        android:transitionName="@string/fab_transition"
         app:layout_anchor="@id/app_bar"
         app:layout_anchorGravity="bottom|right|end"
         />

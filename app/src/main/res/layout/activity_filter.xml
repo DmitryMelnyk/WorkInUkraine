@@ -33,7 +33,6 @@
         android:id="@+id/fab"
         android:layout_width="45dp"
         android:layout_height="45dp"
-        android:transitionName="@string/fab_transition"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
         app:fabSize="normal"

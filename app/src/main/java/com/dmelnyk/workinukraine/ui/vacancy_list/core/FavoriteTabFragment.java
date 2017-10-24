@@ -4,12 +4,14 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.dmelnyk.workinukraine.R;
 import com.dmelnyk.workinukraine.models.VacancyModel;
+import com.dmelnyk.workinukraine.ui.vacancy_list.VacancyListActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,19 +29,17 @@ public class FavoriteTabFragment extends BaseTabFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        createProperAdapter();
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_base_rv, container, false);
-
         return view;
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        Log.e(getClass().getSimpleName(), "onViewCreated()");
         super.onViewCreated(view, savedInstanceState);
         mRecyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
-        mRecyclerView.setAdapter(mAdapter);
     }
 
     @Override
@@ -48,10 +48,21 @@ public class FavoriteTabFragment extends BaseTabFragment {
         updateAdapter();
     }
 
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        Log.e(getClass().getSimpleName(), "onActivityCreated()");
+        super.onActivityCreated(savedInstanceState);
+        sCache = ((VacancyListActivity) getActivity()).getFavoritesData();
+    }
+
     private void updateAdapter() {
+        Log.e(getClass().getSimpleName(), "updateAdapter()");
+        if (sCache == null) sCache = new ArrayList<>();
         if (sCache.isEmpty()) {
+            Log.e(getClass().getSimpleName(), "Creating empty adapter");
             mAdapter = new EmptyFavoriteViewAdapter(null, VacancyCardViewAdapter.TYPE_FAVORITE);
         } else {
+            Log.e(getClass().getSimpleName(), "Creating non empty adapter");
             mAdapter = new VacancyCardViewAdapter(
                     (ArrayList<VacancyModel>) sCache, VacancyCardViewAdapter.TYPE_FAVORITE);
             mAdapter.setOnAdapterInteractionListener(this);
@@ -59,6 +70,8 @@ public class FavoriteTabFragment extends BaseTabFragment {
 
         if (mRecyclerView != null) {
             mRecyclerView.setAdapter(mAdapter);
+        } else {
+            Log.e(getClass().getSimpleName(), "RecyclerView = null");
         }
     }
 

@@ -42,6 +42,7 @@ import com.dmelnyk.workinukraine.ui.vacancy_list.di.DaggerVacancyComponent;
 import com.dmelnyk.workinukraine.ui.vacancy_list.di.VacancyModule;
 import com.dmelnyk.workinukraine.ui.vacancy_viewer.VacancyViewerActivity;
 import com.dmelnyk.workinukraine.utils.BaseAnimationActivity;
+import com.dmelnyk.workinukraine.utils.ButtonTabUtil;
 import com.dmelnyk.workinukraine.utils.buttontab.ButtonTabs;
 import com.dmelnyk.workinukraine.utils.buttontab.ImageButtonBehavior;
 
@@ -102,6 +103,7 @@ public class VacancyListActivity extends BaseAnimationActivity implements
     private int revealX;
     private int revealY;
     private ValueAnimator expandingHeightAnimator;
+    private List<VacancyModel> mFavoritesVacanciesCache;
 
     @OnClick(R.id.favorite_image_view)
     public void onViewClicked() {
@@ -117,10 +119,10 @@ public class VacancyListActivity extends BaseAnimationActivity implements
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.e(getClass().getSimpleName(), "onCreate()");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_vacancy_list);
         ButterKnife.bind(this);
-
         // sets result to update
         setResult(RESULT_OK);
         // Makes status bar transparent
@@ -149,24 +151,43 @@ public class VacancyListActivity extends BaseAnimationActivity implements
     }
 
     @Override
+    protected void onStart() {
+        Log.e(getClass().getSimpleName(), "onStart()");
+        super.onStart();
+    }
+
+    @Override
     protected void onResume() {
+        Log.e(getClass().getSimpleName(), "onResume()");
         super.onResume();
-        Log.d(getClass().getSimpleName(), "onResume()");
         presenter.onResume(this);
     }
 
     @Override
+    protected void onPause() {
+        Log.e(getClass().getSimpleName(), "onPause()");
+        super.onPause();
+    }
+
+    @Override
     protected void onStop() {
+        Log.e(getClass().getSimpleName(), "onStop()");
         super.onStop();
         presenter.onStop();
     }
 
     @Override
+    protected void onRestart() {
+        Log.e(getClass().getSimpleName(), "onRestart()");
+        super.onRestart();
+    }
+
+    @Override
     protected void onDestroy() {
+        Log.e(getClass().getSimpleName(), "onDestroy()");
         super.onDestroy();
         presenter.clear();
         presenter.updateVacanciesTimeStatus();
-        Log.d(getClass().getSimpleName(), "onDestroy()");
     }
 
     @Override
@@ -176,6 +197,7 @@ public class VacancyListActivity extends BaseAnimationActivity implements
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
+        Log.e(getClass().getSimpleName(), "onSaveInstanceState()");
         super.onSaveInstanceState(outState);
         outState.putInt(KEY_CURRENT_POSITION, mViewPager.getCurrentItem());
         outState.putStringArray(KEY_TAB_TITLES, mTabTitles);
@@ -189,6 +211,7 @@ public class VacancyListActivity extends BaseAnimationActivity implements
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        Log.d(getClass().getSimpleName(), "onRestoreInstanceState()");
         super.onRestoreInstanceState(savedInstanceState);
         // restoring ButtonTab position
         if (savedInstanceState != null) {
@@ -361,39 +384,7 @@ public class VacancyListActivity extends BaseAnimationActivity implements
     }
 
     public void initializeButtonTabs(int buttonTabType) {
-        int[][] resource;
-        if (buttonTabType == 2) {
-            resource = new int[4][2]; // 4 buttons (all, new, recent, favorite)
-        } else {
-            resource = new int[3][2]; // 3 buttons (all, new / recent, favorite)
-        }
-
-        resource[0][0] = R.mipmap.ic_tab_vacancy_light;
-        resource[0][1] = R.mipmap.ic_tab_vacancy_dark;
-
-        switch (buttonTabType) {
-            case 1: // all, new, favorite
-                resource[1][0] = R.mipmap.ic_tab_new_light;
-                resource[1][1] = R.mipmap.ic_tab_new_dark;
-                resource[2][0] = R.mipmap.ic_tab_favorite_light;
-                resource[2][1] = R.mipmap.ic_tab_favorite_dark;
-                break;
-            case 2: // all, new, recent, favorite
-                resource[1][0] = R.mipmap.ic_tab_new_light;
-                resource[1][1] = R.mipmap.ic_tab_new_dark;
-                resource[2][0] = R.mipmap.ic_tab_recent_light;
-                resource[2][1] = R.mipmap.ic_tab_recent_dark;
-                resource[3][0] = R.mipmap.ic_tab_favorite_light;
-                resource[3][1] = R.mipmap.ic_tab_favorite_dark;
-                break;
-            case 3: // all, recent, favorite
-                resource[1][0] = R.mipmap.ic_tab_recent_light;
-                resource[1][1] = R.mipmap.ic_tab_recent_dark;
-                resource[2][0] = R.mipmap.ic_tab_favorite_light;
-                resource[2][1] = R.mipmap.ic_tab_favorite_dark;
-                break;
-        }
-
+        int[][] resource = ButtonTabUtil.getResources(buttonTabType);
         mButtonTabs.setData(resource);
         mButtonTabs.setVisibility(View.VISIBLE);
     }
@@ -406,6 +397,7 @@ public class VacancyListActivity extends BaseAnimationActivity implements
 
     @Override
     public void updateFavoriteTab(List<VacancyModel> vacancies) {
+        mFavoritesVacanciesCache = vacancies;
         // updating data in adapters
         if (mSlideAdapter != null) {
             mSlideAdapter.updateFavoriteData(vacancies);
@@ -426,6 +418,9 @@ public class VacancyListActivity extends BaseAnimationActivity implements
 
     // triggered by clicking imageButton
     public void launchFilterAnimation(View view) {
+        // updates filter height (It may changes after adding / removing filter items)
+        mExpandedFilterHeight = animationLayout.getHeight();
+
         if (flag) {
             // start and end positions of image button (reveal starting point) are the same
             revealX = (int) (mSettingsImageButton.getX() + mSettingsImageButton.getWidth() / 2);
@@ -455,12 +450,25 @@ public class VacancyListActivity extends BaseAnimationActivity implements
 
                     createExpandingHeightAnimation(toolbarHeight, mExpandedFilterHeight);
                     expandingHeightAnimator.start();
+                    expandingHeightAnimator.addListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            super.onAnimationEnd(animation);
+                            // Setting height to WRAP_CONTENT to enable changing size of filter view
+                            // after adding/removing items from filter.
+                            CollapsingToolbarLayout.LayoutParams params_ = new CollapsingToolbarLayout.LayoutParams(
+                                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                            animationContainer.setLayoutParams(params_);
+                            animationContainer.requestLayout();
+                        }
+                    });
                     mSettingsImageButton.startAnimation(rotateRightAnim);
                 }
             });
 
             revealAnim.start();
             flag = false;
+
         } else {
             // reduce to 200 dp
             revealX = (int) (mSettingsImageButton.getX() + mSettingsImageButton.getWidth() / 2);
@@ -505,18 +513,6 @@ public class VacancyListActivity extends BaseAnimationActivity implements
                 animationContainer.setLayoutParams(layoutParams);
             }
         });
-        expandingHeightAnimator.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                super.onAnimationEnd(animation);
-                // Setting height to WRAP_CONTENT to enable changing size of filter view.
-                if (flag) {
-                    CollapsingToolbarLayout.LayoutParams params = new CollapsingToolbarLayout.LayoutParams(
-                            ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                    animationContainer.setLayoutParams(params);
-                }
-            }
-        });
     }
 
     @Override
@@ -526,5 +522,9 @@ public class VacancyListActivity extends BaseAnimationActivity implements
             presenter.filterUpdated(data);
             mButtonTabs.selectTab(mButtonTabs.getCurrentTab());
         }, 500);
+    }
+
+    public List<VacancyModel> getFavoritesData() {
+        return mFavoritesVacanciesCache;
     }
 }

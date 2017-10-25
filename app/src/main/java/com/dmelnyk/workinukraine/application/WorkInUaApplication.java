@@ -42,8 +42,8 @@ public class WorkInUaApplication extends Application {
         JobManager.create(this).addJobCreator(new AppJobCreator());
 
         // getting periodic search time
-        SettingsRepository repository = new SettingsRepository(this);
-        RepeatingSearchJob.scheduleRepeatingSearch(repository.getPeriodInMillis());
+//        SettingsRepository repository = new SettingsRepository(this);
+//        RepeatingSearchJob.scheduleRepeatingSearch(repository.getPeriodInMillis());
     }
 
     public ApplicationComponent getAppComponent() {

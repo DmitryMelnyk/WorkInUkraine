@@ -74,9 +74,9 @@ public class VacancyListPresenter implements Contract.IVacancyPresenter {
             compositeDisposable.dispose();
         }
 
-        if (favoritesDisposable != null) {
-            favoritesDisposable.dispose();
-        }
+//        if (favoritesDisposable != null) {
+//            favoritesDisposable.dispose();
+//        }
     }
     @Override
     public Pair<Boolean, Set<String>> getFilterData() {
@@ -175,30 +175,30 @@ public class VacancyListPresenter implements Contract.IVacancyPresenter {
 
     // This method will update favorites after adding/removing vacancies in proper db automatically
     private void updateFavorites() {
-        Log.d(getClass().getSimpleName(), "updateFavorites is called. Request = " + mRequest);
+        Log.e(getClass().getSimpleName(), "updateFavorites is called. Request = " + mRequest);
 
         if (favoritesDisposable != null) {
             favoritesDisposable.dispose();
-        } else {
-            favoritesDisposable = interactor.getFavoriteVacancies(mRequest)
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(favorites -> {
-                        Log.d(getClass().getSimpleName(), "updateFavorites is called. Favorites=" + favorites);
-                        // updates cached data
-                        if (sDataCache != null) {
-                            sDataCache.put(DATA_FAVORITE, favorites);
-                        } else {
-                            Log.e(getClass().getSimpleName(), "sDataCache=null");
-                        }
-                        view.updateFavoriteTab(favorites);
-                    }, throwable -> {
-                        Log.e(getClass().getSimpleName(), throwable.getMessage());
-                        view.showAddToFavoriteErrorMessage();
-                    });
-
-            boolean addResult = compositeDisposable.add(favoritesDisposable);
-            Log.e(getClass().getSimpleName(), "adding disposable result=" + addResult);
         }
+
+        favoritesDisposable = interactor.getFavoriteVacancies(mRequest)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(favorites -> {
+                    Log.e(getClass().getSimpleName(), "updateFavorites is called. Favorites=" + favorites);
+                    // updates cached data
+                    if (sDataCache != null) {
+                        sDataCache.put(DATA_FAVORITE, favorites);
+                    } else {
+                        Log.e(getClass().getSimpleName(), "sDataCache=null");
+                    }
+                    view.updateFavoriteTab(favorites);
+                }, throwable -> {
+                    Log.e(getClass().getSimpleName(), throwable.getMessage());
+                    view.showAddToFavoriteErrorMessage();
+                });
+
+        boolean addResult = compositeDisposable.add(favoritesDisposable);
+        Log.e(getClass().getSimpleName(), "adding disposable result=" + addResult);
     }
 
     @Override

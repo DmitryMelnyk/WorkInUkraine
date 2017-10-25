@@ -418,6 +418,9 @@ public class VacancyListActivity extends BaseAnimationActivity implements
 
     // triggered by clicking imageButton
     public void launchFilterAnimation(View view) {
+        // updates filter height (It may changes after adding / removing filter items)
+        mExpandedFilterHeight = animationLayout.getHeight();
+
         if (flag) {
             // start and end positions of image button (reveal starting point) are the same
             revealX = (int) (mSettingsImageButton.getX() + mSettingsImageButton.getWidth() / 2);
@@ -447,12 +450,25 @@ public class VacancyListActivity extends BaseAnimationActivity implements
 
                     createExpandingHeightAnimation(toolbarHeight, mExpandedFilterHeight);
                     expandingHeightAnimator.start();
+                    expandingHeightAnimator.addListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            super.onAnimationEnd(animation);
+                            // Setting height to WRAP_CONTENT to enable changing size of filter view
+                            // after adding/removing items from filter.
+                            CollapsingToolbarLayout.LayoutParams params_ = new CollapsingToolbarLayout.LayoutParams(
+                                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                            animationContainer.setLayoutParams(params_);
+                            animationContainer.requestLayout();
+                        }
+                    });
                     mSettingsImageButton.startAnimation(rotateRightAnim);
                 }
             });
 
             revealAnim.start();
             flag = false;
+
         } else {
             // reduce to 200 dp
             revealX = (int) (mSettingsImageButton.getX() + mSettingsImageButton.getWidth() / 2);
@@ -495,18 +511,6 @@ public class VacancyListActivity extends BaseAnimationActivity implements
                 ViewGroup.LayoutParams layoutParams = animationContainer.getLayoutParams();
                 layoutParams.height = val;
                 animationContainer.setLayoutParams(layoutParams);
-            }
-        });
-        expandingHeightAnimator.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                super.onAnimationEnd(animation);
-                // Setting height to WRAP_CONTENT to enable changing size of filter view.
-                if (flag) {
-                    CollapsingToolbarLayout.LayoutParams params = new CollapsingToolbarLayout.LayoutParams(
-                            ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                    animationContainer.setLayoutParams(params);
-                }
             }
         });
     }

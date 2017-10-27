@@ -73,23 +73,19 @@ public class VacancyListPresenter implements Contract.IVacancyPresenter {
         if (compositeDisposable != null) {
             compositeDisposable.dispose();
         }
-
-//        if (favoritesDisposable != null) {
-//            favoritesDisposable.dispose();
-//        }
     }
     @Override
-    public Pair<Boolean, Set<String>> getFilterData() {
-        return interactor.getFilterData();
+    public Pair<Boolean, Set<String>> getFilterItems() {
+        return interactor.getFilterItems();
     }
 
     @Override
-    public void filterUpdated(Pair<Boolean, Set<String>> data) {
+    public void filterUpdated(Pair<Boolean, Set<String>> filters) {
         compositeDisposable.add(
-                interactor.updateFilter(data)
-                .subscribe(() -> {/* NOP */}));
-
-        getAllVacancies(mRequest);
+                interactor.updateFilter(filters)
+                .subscribe(() -> {
+                    getAllVacancies(mRequest);
+                }));
     }
 
     private void displayData(Map<String, List<VacancyModel>> vacanciesMap) {

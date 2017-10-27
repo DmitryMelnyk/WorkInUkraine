@@ -114,6 +114,126 @@ public class ButtonTabs extends View {
                 mButtonsStates[i] = false;
             }
         }
+
+        // Updates icon's bitmap.
+        if (icons != null) {
+            initializeBitmapIcons();
+        }
+        invalidate();
+    }
+
+    float mInitialHeight;
+    float mInitialWidth;
+    @Override
+    protected void onDraw(Canvas canvas) {
+        super.onDraw(canvas);
+        if (!mSizeIsInitialized) initializeNewWidth();
+
+        int itemCount = resource.length;
+        // Draw images
+        if (icons != null) {
+            for (int i = 0; i < itemCount; i++) {
+                Bitmap image;
+                float shift = i * 2 * mRadius;
+                boolean isSelected = mButtonsStates[i];
+                // activated state
+                if (isSelected) {
+                    image = icons[i][0];
+                    if (mAnimatedRadius != 0f) {
+                        canvas.drawCircle(shift + mRadius, mRadius, mAnimatedRadius, mCircleAnimationPaint);
+                    } else {
+                        canvas.drawCircle(shift + mRadius, mRadius, mRadius, mCircleLightPaint);
+                    }
+                    // default state
+                } else {
+                    image = icons[i][1];
+                }
+                canvas.drawBitmap(image, shift, 0, mCircleLightPaint);
+            }
+        }
+
+    }
+
+    @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            setOutlineProvider(new ButtonTabOutline(w, h));
+        }
+
+        // saving Bitmap to array icons[][]
+        initializeBitmapIcons();
+
+        setBackground(mBackgroundDrawable);
+    }
+
+    private void initializeBitmapIcons() {
+        int height = getHeight();
+        icons = new Bitmap[resource.length][2];
+        for (int i = 0; i < 2; i++) {
+            for (int j = 0; j < resource.length; j++) {
+                Bitmap image = BitmapFactory.decodeResource(getResources(), resource[j][i]);
+                Bitmap icon = scaleImage(image, height, true);
+                icons[j][i] = icon;
+            }
+        }
+    }
+
+    private void initializeNewWidth() {
+        if (mHeight == DEFAULT_HEIGHT) {
+            mHeight = getLayoutParams().height;
+            mInitialHeight = mHeight;
+            mInitialWidth = mHeight * resource.length;
+        }
+
+        mWidth = mHeight * resource.length;
+        mRadius = mHeight / 2;
+
+        CoordinatorLayout.LayoutParams lp = (CoordinatorLayout.LayoutParams) getLayoutParams();
+        lp.width = (int) mWidth;
+        lp.setBehavior(new ButtonTabBehavior());
+        setLayoutParams(lp);
+        mSizeIsInitialized = true;
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        boolean result = mDetector.onTouchEvent(event);
+        if (result) {
+            Timber.d("Action code = " + event.getAction());
+            if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                float tapX = event.getX();
+                int buttonPosition = (int) (tapX / mHeight);
+
+                setButtonSelected(buttonPosition);
+                onAnimate();
+            }
+        }
+        return super.onTouchEvent(event);
+    }
+
+    private void setButtonSelected(int buttonPosition) {
+        for (int i = 0; i < mButtonsStates.length; i++) {
+            if (i == buttonPosition) {
+                mButtonsStates[i] = true;
+                mCallback.tabSelected(i);
+            } else {
+                mButtonsStates[i] = false;
+            }
+        }
+    }
+
+    public int getCurrentTab() {
+        int activeTab = 0;
+        for (int i = 0; i < mButtonsStates.length; i++) {
+            if (mButtonsStates[i]) {
+                activeTab = i;
+                break;
+            }
+        }
+
+        return activeTab;
     }
 
     public void setAnimating(boolean isOn) {
@@ -198,116 +318,6 @@ public class ButtonTabs extends View {
         });
 
         animatorShow.start();
-    }
-
-    float mInitialHeight;
-    float mInitialWidth;
-    @Override
-    protected void onDraw(Canvas canvas) {
-        super.onDraw(canvas);
-        if (!mSizeIsInitialized) initializeNewWidth();
-
-        int itemCount = resource.length;
-        // Draw images
-        if (icons != null) {
-            for (int i = 0; i < itemCount; i++) {
-                Bitmap image;
-                float shift = i * 2 * mRadius;
-                boolean isSelected = mButtonsStates[i];
-                // activated state
-                if (isSelected) {
-                    image = icons[i][0];
-                    if (mAnimatedRadius != 0f) {
-                        canvas.drawCircle(shift + mRadius, mRadius, mAnimatedRadius, mCircleAnimationPaint);
-                    } else {
-                        canvas.drawCircle(shift + mRadius, mRadius, mRadius, mCircleLightPaint);
-                    }
-                    // default state
-                } else {
-                    image = icons[i][1];
-                }
-                canvas.drawBitmap(image, shift, 0, mCircleLightPaint);
-            }
-        }
-
-    }
-
-    @Override
-    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-        super.onSizeChanged(w, h, oldw, oldh);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            setOutlineProvider(new ButtonTabOutline(w, h));
-        }
-
-        // saving Bitmap to array icons[][]
-        int height = getHeight();
-        icons = new Bitmap[resource.length][2];
-        for (int i = 0; i < 2; i++) {
-            for (int j = 0; j < resource.length; j++) {
-                Bitmap image = BitmapFactory.decodeResource(getResources(), resource[j][i]);
-                Bitmap icon = scaleImage(image, height, true);
-                icons[j][i] = icon;
-            }
-        }
-
-        setBackground(mBackgroundDrawable);
-    }
-
-    private void initializeNewWidth() {
-        if (mHeight == DEFAULT_HEIGHT) {
-            mHeight = getLayoutParams().height;
-            mInitialHeight = mHeight;
-            mInitialWidth = mHeight * resource.length;
-        }
-
-        mWidth = mHeight * resource.length;
-        mRadius = mHeight / 2;
-
-        CoordinatorLayout.LayoutParams lp = (CoordinatorLayout.LayoutParams) getLayoutParams();
-        lp.width = (int) mWidth;
-        lp.setBehavior(new ButtonTabBehavior());
-        setLayoutParams(lp);
-        mSizeIsInitialized = true;
-    }
-
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        boolean result = mDetector.onTouchEvent(event);
-        if (result) {
-            Timber.d("Action code = " + event.getAction());
-            if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                float tapX = event.getX();
-                int buttonPosition = (int) (tapX / mHeight);
-
-                setButtonSelected(buttonPosition);
-                onAnimate();
-            }
-        }
-        return super.onTouchEvent(event);
-    }
-
-    private void setButtonSelected(int buttonPosition) {
-        for (int i = 0; i < mButtonsStates.length; i++) {
-            if (i == buttonPosition) {
-                mButtonsStates[i] = true;
-                mCallback.tabSelected(i);
-            } else {
-                mButtonsStates[i] = false;
-            }
-        }
-    }
-
-    public int getCurrentTab() {
-        int activeTab = 0;
-        for (int i = 0; i < mButtonsStates.length; i++) {
-            if (mButtonsStates[i]) {
-                activeTab = i;
-                break;
-            }
-        }
-
-        return activeTab;
     }
 
     private class TapListener extends GestureDetector.SimpleOnGestureListener {

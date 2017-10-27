@@ -75,7 +75,7 @@ public class VacancyListInteractor implements IVacancyListInteractor {
     }
 
     @Override
-    public Pair<Boolean, Set<String>> getFilterData() {
+    public Pair<Boolean, Set<String>> getFilterItems() {
         return new Pair<>(isFilterEnable(), getFilterWords());
     }
 

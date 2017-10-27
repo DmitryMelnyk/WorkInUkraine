@@ -79,5 +79,5 @@ public interface IVacancyListInteractor {
     /**
      * @return Data to initialize FilterView
      */
-    Pair<Boolean,Set<String>> getFilterData();
+    Pair<Boolean,Set<String>> getFilterItems();
 }

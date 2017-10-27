@@ -26,6 +26,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -55,7 +56,10 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.Unbinder;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
+
+import static android.view.View.GONE;
 
 public class VacancyListActivity extends BaseAnimationActivity implements
         Contract.IVacancyView,
@@ -84,6 +88,8 @@ public class VacancyListActivity extends BaseAnimationActivity implements
     @BindView(R.id.settings_image_button) ImageButton mSettingsImageButton;
     @BindView(R.id.animationContainer) FrameLayout animationContainer;
     @BindView(R.id.app_bar) AppBarLayout appBar;
+    @BindView(R.id.progress_bar) ProgressBar progressBar;
+    Unbinder unbinder;
 
     private ScreenSlidePagerAdapter mSlideAdapter;
     private String mRequest;
@@ -122,7 +128,7 @@ public class VacancyListActivity extends BaseAnimationActivity implements
         Log.e(getClass().getSimpleName(), "onCreate()");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_vacancy_list);
-        ButterKnife.bind(this);
+        unbinder = ButterKnife.bind(this);
         // sets result to update
         setResult(RESULT_OK);
         // Makes status bar transparent
@@ -185,9 +191,10 @@ public class VacancyListActivity extends BaseAnimationActivity implements
     @Override
     protected void onDestroy() {
         Log.e(getClass().getSimpleName(), "onDestroy()");
-        super.onDestroy();
+        unbinder.unbind();
         presenter.clear();
         presenter.updateVacanciesTimeStatus();
+        super.onDestroy();
     }
 
     @Override
@@ -243,7 +250,7 @@ public class VacancyListActivity extends BaseAnimationActivity implements
 
     private void initializeFilterView(Bundle savedInstanceState) {
         animationLayout = (FilterView) findViewById(R.id.filter_view);
-        animationLayout.setData(presenter.getFilterData(), this);
+        animationLayout.setData(presenter.getFilterItems(), this);
 
         alphaAnim = AnimationUtils.loadAnimation(this, R.anim.alpha);
         rotateRightAnim = AnimationUtils.loadAnimation(this, R.anim.rotate_right);
@@ -270,7 +277,7 @@ public class VacancyListActivity extends BaseAnimationActivity implements
 
                         if (flag) {
                             animationLayout.setVisibility(View.INVISIBLE);
-                            animationContainer.setVisibility(View.GONE);
+                            animationContainer.setVisibility(GONE);
                         }
                     }
                 }
@@ -361,11 +368,12 @@ public class VacancyListActivity extends BaseAnimationActivity implements
             int buttonTabType,
             Map<String, List<VacancyModel>> allVacancies) {
 
+        progressBar.setVisibility(View.GONE);
+        mViewPager.setVisibility(View.VISIBLE);
+        mSettingsImageButton.setVisibility(View.VISIBLE);
         // Initialize tab titles
         mTabTitles = tabTitles;
         mTabVacancyCount = tabVacancyCount;
-        Log.e("ATTA", "mTabVacancyCount=" + mTabVacancyCount.toString());
-
         mButtonTabType = buttonTabType;
         // initialize ButtonTubs
         initializeButtonTabs(buttonTabType);
@@ -486,7 +494,7 @@ public class VacancyListActivity extends BaseAnimationActivity implements
                     revealAnim.addListener(new AnimatorListenerAdapter() {
                         @Override
                         public void onAnimationEnd(Animator animation) {
-                            animationContainer.setVisibility(View.GONE);
+                            animationContainer.setVisibility(GONE);
                             animationLayout.setVisibility(View.INVISIBLE);
 
 //                            mSettingsImageButton.setBackgroundResource(R.drawable.rounded_button);
@@ -518,10 +526,15 @@ public class VacancyListActivity extends BaseAnimationActivity implements
     @Override
     public void updateFilter(Pair<Boolean, Set<String>> data) {
         launchFilterAnimation(mSettingsImageButton);
+        // showing updating progress bar
+        mViewPager.setVisibility(View.INVISIBLE);
+        progressBar.setVisibility(View.VISIBLE);
+        progressBar.animate();
+
         mTitleTextView.postDelayed(() -> {
             presenter.filterUpdated(data);
-            mButtonTabs.selectTab(mButtonTabs.getCurrentTab());
-        }, 500);
+//            mButtonTabs.selectTab(mButtonTabs.getCurrentTab());
+        }, 600);
     }
 
     public List<VacancyModel> getFavoritesData() {

@@ -46,7 +46,7 @@ public class Contract {
 
         void updateVacanciesTimeStatus();
 
-        Pair<Boolean,Set<String>> getFilterData();
+        Pair<Boolean,Set<String>> getFilterItems();
 
         void filterUpdated(Pair<Boolean, Set<String>> data);
     }

@@ -15,6 +15,7 @@ import java.util.Set;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
 import static com.dmelnyk.workinukraine.ui.vacancy_list.business.IVacancyListInteractor.DATA_FAVORITE;
 
@@ -84,7 +85,16 @@ public class VacancyListPresenter implements Contract.IVacancyPresenter {
         compositeDisposable.add(
                 interactor.updateFilter(filters)
                 .subscribe(() -> {
-                    getAllVacancies(mRequest);
+                    interactor.getFilteredVacancies()
+                            .subscribeOn(Schedulers.computation())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(vacanciesMap -> {
+                                sDataCache = new HashMap<>(vacanciesMap);
+                                if (view != null) {
+                                    sIsDisplayed = true;
+                                    displayData(sDataCache);
+                                }
+                            });
                 }));
     }
 

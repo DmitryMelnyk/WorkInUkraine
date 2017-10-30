@@ -31,8 +31,6 @@ public interface IVacancyListInteractor {
     String TITLE_RECENT = "recent_titles";
     String TITLE_NEW_AND_RECENT = "new_and_recent";
 
-    Completable updateFilter(Pair<Boolean, Set<String>> data);
-
     @StringDef({ TITLE_NEW, TITLE_NEW_AND_RECENT, TITLE_RECENT })
     @Retention(RetentionPolicy.CLASS)
     public @interface TitleResource {}
@@ -49,6 +47,15 @@ public interface IVacancyListInteractor {
      * @return
      */
     Single<Map<String, List<VacancyModel>>> getAllVacancies(String request);
+
+    Completable updateFilter(Pair<Boolean, Set<String>> data);
+
+    /**
+     * Returns filtered vacancies
+     * @return HasMap of key-values with 4 types of vacancies:
+     * all, new, recent, favorite
+     */
+    Single<Map<String, List<VacancyModel>>> getFilteredVacancies();
 
     /**
      * Returns a list of vacancies

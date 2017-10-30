@@ -2,10 +2,13 @@ package com.dmelnyk.workinukraine.application;
 
 import android.app.Application;
 import android.content.Context;
+import android.util.Log;
 
 import com.dmelnyk.workinukraine.job.RepeatingSearchJob;
 import com.dmelnyk.workinukraine.job.AppJobCreator;
 import com.dmelnyk.workinukraine.ui.settings.repository.SettingsRepository;
+import com.dmelnyk.workinukraine.utils.SharedPrefUtil;
+import com.dmelnyk.workinukraine.utils.Tags;
 import com.evernote.android.job.JobManager;
 
 import timber.log.Timber;
@@ -41,9 +44,19 @@ public class WorkInUaApplication extends Application {
 
         JobManager.create(this).addJobCreator(new AppJobCreator());
 
-        // getting periodic search time
-//        SettingsRepository repository = new SettingsRepository(this);
-//        RepeatingSearchJob.scheduleRepeatingSearch(repository.getPeriodInMillis());
+        // starts periodic search only once
+        runRepeatingSearch();
+    }
+
+    private void runRepeatingSearch() {
+        if (!SharedPrefUtil.isRepeatingSearchRunning(this)) {
+            Log.d(getClass().getSimpleName(), "Creating repeating search Scheduler task");
+            Log.e(Tags.REPEATING_SEARCH, "Creating repeating search Scheduler task");
+            // getting periodic search time
+            SettingsRepository repository = new SettingsRepository(this);
+            RepeatingSearchJob.scheduleRepeatingSearch(repository.getPeriodInMillis());
+            SharedPrefUtil.setRepeatingSearchStarted(this);
+        }
     }
 
     public ApplicationComponent getAppComponent() {

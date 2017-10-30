@@ -88,6 +88,11 @@ public class VacancyListInteractor implements IVacancyListInteractor {
         });
     }
 
+    @Override
+    public Single<Map<String, List<VacancyModel>>> getFilteredVacancies() {
+        return repository.getFilteredVacancies();
+    }
+
     private void saveFilterWords(Set<String> words) {
         repository.saveFilterWords(words);
     }

@@ -1,6 +1,7 @@
 package com.dmelnyk.workinukraine.ui.navigation;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.ColorInt;
@@ -18,6 +19,7 @@ import android.widget.TextView;
 
 import com.dmelnyk.workinukraine.R;
 import com.dmelnyk.workinukraine.application.WorkInUaApplication;
+import com.dmelnyk.workinukraine.ui.splash.SplashActivity;
 import com.dmelnyk.workinukraine.ui.navigation.Contract.INavigationPresenter;
 import com.dmelnyk.workinukraine.ui.navigation.di.NavigationModule;
 import com.dmelnyk.workinukraine.ui.navigation.menu.DrawerAdapter;
@@ -106,6 +108,9 @@ public class NavigationActivity extends BaseAnimationActivity implements
         adapter.setSelected(NAV_SEARCH_POSITION);
 
         presenter.bindView(this);
+
+        Intent splash = new Intent(this, SplashActivity.class);
+        startActivity(splash);
     }
 
     @Override

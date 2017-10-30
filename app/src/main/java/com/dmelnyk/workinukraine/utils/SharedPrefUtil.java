@@ -3,6 +3,8 @@ package com.dmelnyk.workinukraine.utils;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.dmelnyk.workinukraine.application.WorkInUaApplication;
+
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -15,7 +17,8 @@ import timber.log.Timber;
 @Singleton
 public class SharedPrefUtil {
     private static final String PREF_FILE = "saved_vacancies_count";
-    private static final String KEY_PREVIOUS_NEW_VACANCIES_COUNT = "previous_new_vacancies";
+    private static final String KEY_PREVIOUS_NEW_VACANCIES_COUNT = "KEY_PREVIOUS_NEW_VACANCIES_COUNT";
+    private static final String KEY_IS_SEARCHING_RUNNING = "KEY_IS_SEARCHING_RUNNING";
 
     private final Context context;
 
@@ -37,6 +40,8 @@ public class SharedPrefUtil {
                 .commit();
     }
 
+
+
     public void clearData() {
         Timber.i("clearData");
         context.getSharedPreferences(PREF_FILE, Context.MODE_PRIVATE).edit()
@@ -54,5 +59,18 @@ public class SharedPrefUtil {
         Timber.i("saveUpdatingTask, request=%s, shouldBeUpdated=%s", request, "" + shouldBeUpdated);
         SharedPreferences preferences = context.getSharedPreferences(PREF_FILE, 0);
         preferences.edit().putBoolean(request, shouldBeUpdated).commit();
+    }
+
+    public static boolean isRepeatingSearchRunning(Context context) {
+        SharedPreferences preferences = context.getSharedPreferences(PREF_FILE, 0);
+        boolean isRunning = preferences.getBoolean(KEY_IS_SEARCHING_RUNNING, false);
+        Timber.i("isRepeatingSearchRunning=" + isRunning);
+        return isRunning;
+    }
+
+    public static void setRepeatingSearchStarted(Context context) {
+        Timber.i("setRepeatingSearchStarted");
+        SharedPreferences preferences = context.getSharedPreferences(PREF_FILE, 0);
+        preferences.edit().putBoolean(KEY_IS_SEARCHING_RUNNING, true).commit();
     }
 }

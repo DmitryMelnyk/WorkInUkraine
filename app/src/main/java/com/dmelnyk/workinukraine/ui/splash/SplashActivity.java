@@ -1,4 +1,4 @@
-package com.dmelnyk.workinukraine.ui.activity_splash;
+package com.dmelnyk.workinukraine.ui.splash;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -10,13 +10,10 @@ import com.hanks.htextview.HTextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class SplashActivity extends AppCompatActivity
-    implements Contract.View {
+public class SplashActivity extends AppCompatActivity {
 
     @BindView(R.id.htex_view)
     HTextView hTextView;
-
-    SplashActivityPresenter presenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,30 +25,9 @@ public class SplashActivity extends AppCompatActivity
 
         ButterKnife.bind(this);
 
-        initializePresenter();
-        presenter.onTakeView(this);
-
         hTextView.postDelayed(() -> hTextView.animateText("Work In Ukraine"), 500);
         hTextView.postDelayed(() -> {
-            // run new Activity
-            // presenter will be equal null after pressing back-button
-            // before ending splash screen
-            if (presenter != null) {
-                presenter.onSplashClosed();
-            }
+            finish();
         }, 2500);
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        presenter.onTakeView(null);
-        presenter = null;
-    }
-
-    private void initializePresenter() {
-        if (presenter == null) {
-            presenter = new SplashActivityPresenter(this);
-        }
     }
 }

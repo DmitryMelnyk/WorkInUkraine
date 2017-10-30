@@ -19,6 +19,7 @@
         android:layout_height="1000dp"
         android:gravity="center"
         android:textSize="20sp"
+        android:textColor="@color/white_soft"
         app:animateType="line"
         app:fontAsset="fonts/FranckerCYR-ExtraBold.otf"
         />

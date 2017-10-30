@@ -154,6 +154,9 @@ public class SearchFragment extends BaseFragment implements
         }
 
         emptyView = view.findViewById(R.id.emptyView);
+        emptyView.findViewById(R.id.btn_add).setOnClickListener(buttonAdd -> {
+            showDialogRequest(null);
+        });
         instantiateRecyclerView();
     }
 

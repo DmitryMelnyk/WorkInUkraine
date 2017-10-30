@@ -17,7 +17,6 @@ import com.squareup.sqlbrite2.BriteDatabase;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -34,12 +33,12 @@ import timber.log.Timber;
 public class VacancyListRepository implements IVacancyListRepository {
 
     public static final String TABLE = DbContract.SearchSites.TABLE_ALL_SITES;
-    public static final String SHARED_PREF = "shared_pref"; // for saving vacancy updating status
     private final BriteDatabase db;
     private final Context context;
     private final SharedPrefUtil sharedPrefUtil;
     private final SharedPrefFilterUtil filterUtil;
     private final String request;
+    private Map<String, List<VacancyModel>> rawCache = new HashMap<>();
 
     public VacancyListRepository(BriteDatabase db, Context context, SharedPrefUtil util,
                                  SharedPrefFilterUtil filterUtil, String request) {
@@ -58,13 +57,13 @@ public class VacancyListRepository implements IVacancyListRepository {
             updateTimeStatusVacancies(request);
         }
 
+        // TODO: get raw vacancies then save them to rawCache
         // All vacancies
         Observable<List<VacancyModel>> allObservable =
                 db.createQuery(TABLE, "SELECT * FROM "
                         + DbContract.SearchSites.TABLE_ALL_SITES + " WHERE "
                         + DbContract.SearchSites.Columns.REQUEST + " ='" + request + "'")
-                        .mapToList(VacancyModel.MAPPER)
-                        .map(list -> filterVacancies(list, request));
+                        .mapToList(VacancyModel.MAPPER);
 
         // New vacancies
         Observable<List<VacancyModel>> newObservable =
@@ -72,8 +71,7 @@ public class VacancyListRepository implements IVacancyListRepository {
                         + DbContract.SearchSites.TABLE_ALL_SITES + " WHERE "
                         + DbContract.SearchSites.Columns.REQUEST + " ='" + request
                         + "' AND " + DbContract.SearchSites.Columns.TIME_STATUS + " =1") // 1 - new vacancy
-                        .mapToList(VacancyModel.MAPPER)
-                        .map(list -> filterVacancies(list, request));
+                        .mapToList(VacancyModel.MAPPER);
 
         // Recent vacancies
         Observable<List<VacancyModel>> recentObservable =
@@ -81,8 +79,7 @@ public class VacancyListRepository implements IVacancyListRepository {
                         + DbContract.SearchSites.TABLE_ALL_SITES + " WHERE "
                         + DbContract.SearchSites.Columns.REQUEST + " ='" + request
                         + "' AND " + DbContract.SearchSites.Columns.TIME_STATUS + " =0") // -1 - recent vacancy
-                        .mapToList(VacancyModel.MAPPER)
-                        .map(list -> filterVacancies(list, request));
+                        .mapToList(VacancyModel.MAPPER);
 
         // Favorite vacancies
         Observable<List<VacancyModel>> favoriteObservable =
@@ -90,18 +87,21 @@ public class VacancyListRepository implements IVacancyListRepository {
                         + DbContract.SearchSites.TABLE_ALL_SITES + " WHERE " +
                         DbContract.SearchSites.Columns.REQUEST + " ='" + request
                         + "' AND " + DbContract.SearchSites.Columns.IS_FAVORITE + " =1") // 1 - favorite vacancy
-                        .mapToList(VacancyModel.MAPPER)
-                        .map(list -> filterVacancies(list, request));
+                        .mapToList(VacancyModel.MAPPER);
 
         return Observable.zip(allObservable, newObservable, recentObservable, favoriteObservable,
                 (all, newest, recent, favorite) -> {
                     Map<String, List<VacancyModel>> result = new HashMap<>();
 
-                    result.put(IVacancyListInteractor.DATA_ALL, all);
-                    result.put(IVacancyListInteractor.DATA_NEW, newest);
-                    result.put(IVacancyListInteractor.DATA_RECENT, recent);
-                    result.put(IVacancyListInteractor.DATA_FAVORITE, favorite);
+                    rawCache.put(IVacancyListInteractor.DATA_ALL, all);
+                    rawCache.put(IVacancyListInteractor.DATA_NEW, newest);
+                    rawCache.put(IVacancyListInteractor.DATA_RECENT, recent);
+                    rawCache.put(IVacancyListInteractor.DATA_FAVORITE, favorite);
 
+                    result.put(IVacancyListInteractor.DATA_ALL, filterVacancies(all, request));
+                    result.put(IVacancyListInteractor.DATA_NEW, filterVacancies(newest, request));
+                    result.put(IVacancyListInteractor.DATA_RECENT, filterVacancies(recent, request));
+                    result.put(IVacancyListInteractor.DATA_FAVORITE, filterVacancies(favorite, request));
 
                     if (!newest.isEmpty()) {
                         saveUpdatingTask(request, true);
@@ -111,6 +111,16 @@ public class VacancyListRepository implements IVacancyListRepository {
                     close();
                     return result;
                 }).firstOrError();
+    }
+
+    @Override
+    public Single<Map<String, List<VacancyModel>>> getFilteredVacancies() {
+        Map<String, List<VacancyModel>> filtered = new HashMap<>(rawCache);
+        for (String key : filtered.keySet()) {
+            filtered.put(key, filterVacancies(filtered.get(key), request));
+        }
+
+        return Single.fromCallable(() -> filtered);
     }
 
     @Override

@@ -20,16 +20,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 /**
  * Created by dmitry on 06.03.17.
  */
 
 public class ParserHeadHunters {
-    private final static String TAG = "TAG.ParserHeadHunters";
+    private final String TAG = this.getClass().getSimpleName();
 
-    @Inject
-    NetUtils netUtils;
+    NetUtils netUtils = NetUtils.getInstance();
 
     @Inject CityUtils cities;
 

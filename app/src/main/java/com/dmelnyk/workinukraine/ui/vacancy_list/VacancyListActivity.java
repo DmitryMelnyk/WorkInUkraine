@@ -537,6 +537,11 @@ public class VacancyListActivity extends BaseAnimationActivity implements
         }, 600);
     }
 
+    @Override
+    public void filterCancel() {
+        launchFilterAnimation(mSettingsImageButton);
+    }
+
     public List<VacancyModel> getFavoritesData() {
         return mFavoritesVacanciesCache;
     }

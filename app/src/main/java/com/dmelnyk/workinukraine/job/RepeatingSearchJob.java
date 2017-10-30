@@ -25,11 +25,13 @@ import com.dmelnyk.workinukraine.services.periodic_search.di.RepeatingSearchModu
 import com.dmelnyk.workinukraine.services.periodic_search.repo.IRepeatingSearchRepository;
 import com.dmelnyk.workinukraine.services.search.SearchVacanciesService;
 import com.dmelnyk.workinukraine.ui.navigation.NavigationActivity;
+import com.dmelnyk.workinukraine.utils.Tags;
 import com.evernote.android.job.Job;
 import com.evernote.android.job.JobManager;
 import com.evernote.android.job.JobRequest;
 
 import java.util.Calendar;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -98,24 +100,28 @@ public class RepeatingSearchJob extends Job {
     }
 
     public static void scheduleRepeatingSearch(long interval) {
-        Timber.d("Interval=" + interval);
 
         jobId = new JobRequest.Builder(TAG)
-                .setPeriodic(interval)
-                .setRequiredNetworkType(JobRequest.NetworkType.UNMETERED)
-                .setUpdateCurrent(true)
+//                .setPeriodic(interval)
+                .setExecutionWindow(interval, interval + 60 * 60 * 1000)
+                .setRequiredNetworkType(JobRequest.NetworkType.NOT_ROAMING)
+//                .setUpdateCurrent(true)
                 .build()
                 .schedule();
+        Log.e(Tags.REPEATING_SEARCH, "scheduleRepeatingSearch(). jobId=" + jobId);
     }
 
     // schedule task to run in the morning
     private void scheduleSearchAtTime(long wakeUpTime) {
-        new JobRequest.Builder(TAG)
-                .setPeriodic(wakeUpTime)
-                .setRequiredNetworkType(JobRequest.NetworkType.UNMETERED)
-                .setUpdateCurrent(true)
+        jobId = new JobRequest.Builder(TAG)
+                .setExecutionWindow(wakeUpTime, wakeUpTime + 60 * 60 * 1000)
+                .setRequiredNetworkType(JobRequest.NetworkType.NOT_ROAMING)
+//                .setUpdateCurrent(true)
                 .build()
                 .schedule();
+
+        Log.e(Tags.REPEATING_SEARCH, "scheduleSearchAtTime()... jobId=" + jobId);
+
     }
 
     // Check if wake time is in the past. Then add 1 day.

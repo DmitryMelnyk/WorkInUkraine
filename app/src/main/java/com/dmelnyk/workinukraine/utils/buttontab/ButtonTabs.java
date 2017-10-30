@@ -100,7 +100,6 @@ public class ButtonTabs extends View {
     public void setBackgroundColor(int color) {
         this.mBackgroundColor = color;
         invalidate();
-        requestLayout();
     }
 
     public void setData(int[][] resource) {
@@ -164,8 +163,6 @@ public class ButtonTabs extends View {
 
         // saving Bitmap to array icons[][]
         initializeBitmapIcons();
-
-        setBackground(mBackgroundDrawable);
     }
 
     private void initializeBitmapIcons() {
@@ -178,6 +175,9 @@ public class ButtonTabs extends View {
                 icons[j][i] = icon;
             }
         }
+
+        // setting background
+        setBackground(mBackgroundDrawable);
     }
 
     private void initializeNewWidth() {

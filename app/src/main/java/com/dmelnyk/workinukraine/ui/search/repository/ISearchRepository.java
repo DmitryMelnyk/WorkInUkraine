@@ -54,4 +54,9 @@ public interface ISearchRepository {
      */
     void clearAllSharedPrefData();
 
+    /**
+     * Removes filters for proper request
+     * @param request
+     */
+    void clearFiltersForRequest(String request);
 }

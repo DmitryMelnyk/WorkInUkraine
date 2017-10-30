@@ -57,6 +57,11 @@ public class SearchRepository implements ISearchRepository {
     }
 
     @Override
+    public void clearFiltersForRequest(String request) {
+        filterUtil.clearFiltersForRequest(request);
+    }
+
+    @Override
     public Observable<List<RequestModel>> loadRequestList() {
         Timber.d("\nloadRequestList()");
         return db.createQuery(REQUEST_TABLE, "SELECT * FROM " + REQUEST_TABLE)
@@ -68,7 +73,6 @@ public class SearchRepository implements ISearchRepository {
         Timber.d("\nremoveRequest: " + request);
         db.delete(REQUEST_TABLE, where(request));
         db.delete(VACANCY_TABLE, where(request));
-        clearRequestRelatedData(request);
     }
 
     @Override
@@ -100,7 +104,7 @@ public class SearchRepository implements ISearchRepository {
         // removes previous request's vacancy
         db.delete(VACANCY_TABLE, DbContract.SearchSites.Columns.REQUEST + "='"+ request + "'");
         // removes filter words
-        filterUtil.clearFiltersForRequest(request);
+//        filterUtil.clearFiltersForRequest(request);
     }
 
     private String where(String request) {

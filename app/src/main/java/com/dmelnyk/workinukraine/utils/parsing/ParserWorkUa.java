@@ -28,8 +28,8 @@ import javax.inject.Inject;
 public class ParserWorkUa {
 
     private static final String TAG = "TAG.ParserWorkUa";
-    @Inject
-    NetUtils netUtils;
+
+    NetUtils netUtils = NetUtils.getInstance();
 
     @Inject CityUtils cities;
 

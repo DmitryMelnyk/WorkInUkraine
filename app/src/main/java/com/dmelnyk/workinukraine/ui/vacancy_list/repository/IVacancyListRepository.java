@@ -16,6 +16,8 @@ import io.reactivex.Single;
 
 public interface IVacancyListRepository {
 
+    Single<Map<String, List<VacancyModel>>> getFilteredVacancies();
+
     /**
      * Converts 'new' vacancies to 'recent' and 'recent' to old
      * This method should be called after displaying new vacancies

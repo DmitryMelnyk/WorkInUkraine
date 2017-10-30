@@ -28,10 +28,8 @@ import javax.inject.Inject;
 
 public class ParserRabotaUa {
     private static final String TAG = "TAG.ParserRabotaUa";
-    final int year = Calendar.getInstance().get(Calendar.YEAR);
 
-    @Inject
-    NetUtils netUtils;
+    NetUtils netUtils = NetUtils.getInstance();
 
     @Inject
     CityUtils cities;

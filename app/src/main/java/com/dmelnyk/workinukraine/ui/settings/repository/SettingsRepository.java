@@ -13,7 +13,8 @@ import javax.inject.Inject;
 public class SettingsRepository implements ISettingsRepository {
 
     private static final String SETTINGS = "settings";
-    private static final int PERIOD_DEFAULT = 3; // 0 - 30 min, 1 - hour, 2 - 3 hours, 3 - 6 hours,..
+    // TODO: PERIOD_DEFAULT = 3;
+    private static final int PERIOD_DEFAULT = 1; //1 - hour, 2 - 3 hours, 3 - 6 hours,..
     private static final String PERIOD = "period";
     private static final boolean CHECKED_DEFAULT = true;
     private static final String SOUND = "sound";

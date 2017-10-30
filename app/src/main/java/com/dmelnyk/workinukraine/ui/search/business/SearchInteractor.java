@@ -33,7 +33,7 @@ public class SearchInteractor implements ISearchInteractor {
     @Override
     public void removeRequest(String request) {
         repository.removeRequest(request);
-        repository.clearAllSharedPrefData();
+        repository.clearFiltersForRequest(request);
     }
 
     @Override

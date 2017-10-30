@@ -4,6 +4,9 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
+
+import javax.inject.Singleton;
 
 import okhttp3.Call;
 import okhttp3.OkHttpClient;
@@ -16,6 +19,7 @@ import static android.content.Context.CONNECTIVITY_SERVICE;
  * Created by dmitry on 07.03.17.
  */
 
+@Singleton
 public class NetUtils {
 
     private static NetUtils singleton;
@@ -30,10 +34,9 @@ public class NetUtils {
     }
 
     private final OkHttpClient client = new OkHttpClient.Builder()
-            .retryOnConnectionFailure(true)
             .build();
 
-    public String getHtmlPage(String url) {
+    public synchronized String getHtmlPage(String url) {
         Request request = new Request.Builder()
                 .url(url)
                 .build();
@@ -50,7 +53,7 @@ public class NetUtils {
         return null;
     }
 
-    public String replaceSpacesWithPlus(String jobRequest) {
+    public synchronized String replaceSpacesWithPlus(String jobRequest) {
         String[] splitterString = jobRequest.split(" ");
         // if request contains only one word - return it
         if (splitterString.length == 1) return jobRequest;

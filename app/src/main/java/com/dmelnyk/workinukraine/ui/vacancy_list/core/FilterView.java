@@ -117,6 +117,7 @@ public class FilterView extends ConstraintLayout implements
                 break;
             case R.id.button_cancel:
                 restoreState();
+                mCallback.filterCancel();
                 break;
             case R.id.button_ok:
                 callback();
@@ -146,16 +147,18 @@ public class FilterView extends ConstraintLayout implements
     }
 
     private void addWord(String word) {
+        String toast;
         if (!wordsList.contains(word)) {
             wordsList.add(word);
             mAdapter.notifyDataSetChanged();
             mEditText.getText().clear();
             mSwitcher.setChecked(true);
+            toast = word + " " + getResources().getString(R.string.msg_item_added);
         } else {
-            Toast.makeText(getContext(),
-                    getContext().getString(R.string.msg_item_already_exists_in_filter),
-                    Toast.LENGTH_SHORT).show();
+            toast = getContext().getString(R.string.msg_item_already_exists_in_filter);
         }
+
+        Toast.makeText(getContext(), toast, Toast.LENGTH_SHORT).show();
     }
 
     private void clearData() {
@@ -168,10 +171,10 @@ public class FilterView extends ConstraintLayout implements
     public void onRemoveClicked(String item) {
         wordsList.remove(item);
         mAdapter.notifyDataSetChanged();
-        Toast.makeText(getContext(), "itemRemoved=" + item, Toast.LENGTH_SHORT).show();
     }
 
     public interface CallbackListener {
         void updateFilter(Pair<Boolean, Set<String>> data);
+        void filterCancel();
     }
 }

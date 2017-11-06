@@ -2,11 +2,19 @@ package com.dmelnyk.workinukraine.ui.vacancy_viewer;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
+import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebResourceResponse;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.dmelnyk.workinukraine.R;
@@ -21,6 +29,8 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
+import butterknife.Unbinder;
 import timber.log.Timber;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
@@ -36,6 +46,12 @@ public class VacancyViewerActivity extends BaseAnimationActivity
     private static final String EXTRA_VACANCY_TO_DISPLAY = "extra_display_vacancy";
 
     @BindView(R.id.vacancy_container) ViewPager mVacancyContainer;
+    @BindView(R.id.site_icon_image_view) ImageView mSiteIconImageView;
+    @BindView(R.id.favorite_image_view) ImageView mFavoriteImageView;
+    @BindView(R.id.title_text_view) TextView mTitleTextView;
+    @BindView(R.id.date_text_view) TextView mDateTextView;
+    @BindView(R.id.tv_no_inet_connection) TextView mNoConnectionTextView;
+    Unbinder unbinder;
 
     @Inject
     Contract.IVacancyViewerPresenter presenter;
@@ -62,7 +78,7 @@ public class VacancyViewerActivity extends BaseAnimationActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_vacancy_container);
-        ButterKnife.bind(this);
+        unbinder = ButterKnife.bind(this);
 
         // Inject dependency
         DaggerVacancyViewerComponent.builder()
@@ -75,6 +91,7 @@ public class VacancyViewerActivity extends BaseAnimationActivity
         mSite = mVacancyToDisplay.site();
         mType = getIntent().getStringExtra(EXTRA_TYPE);
 
+//        ((NestedScrollView) findViewById(R.id.nsv)).setFillViewport (true);
         presenter.bindView(this);
         presenter.getData(mRequest, mType, mSite);
     }
@@ -82,7 +99,6 @@ public class VacancyViewerActivity extends BaseAnimationActivity
     @Override
     protected void onResume() {
         super.onResume();
-
     }
 
     @Override
@@ -94,6 +110,7 @@ public class VacancyViewerActivity extends BaseAnimationActivity
     @Override
     protected void onDestroy() {
         presenter.onDestroy();
+        unbinder.unbind();
         super.onDestroy();
     }
 
@@ -103,6 +120,32 @@ public class VacancyViewerActivity extends BaseAnimationActivity
         mAdapter = new VacancyAdapter(getSupportFragmentManager(), mVacancies);
         mVacancyContainer.setAdapter(mAdapter);
         mVacancyContainer.setCurrentItem(findPosition(mVacancyToDisplay, mVacancies));
+        mVacancyContainer.addOnPageChangeListener(
+                new ViewPager.SimpleOnPageChangeListener() {
+                    @Override
+                    public void onPageSelected(int position) {
+                        super.onPageSelected(position);
+                        updateToolbar(position);
+                    }
+                });
+    }
+
+    private void updateToolbar(int position) {
+        VacancyFragment currentFragment = (VacancyFragment) mAdapter.getItem(position);
+        String title = currentFragment.getTitle();
+        Drawable icon = currentFragment.getIcon();
+        String date = mVacancies.get(position).date();
+
+        // setting data to views
+        mDateTextView.setText(date);
+        mTitleTextView.setText(title);
+
+        configFavoriteIcon();
+
+        if (icon != null) {
+            mSiteIconImageView.setVisibility(View.VISIBLE);
+            mSiteIconImageView.setImageDrawable(icon);
+        }
     }
 
     private int findPosition(VacancyModel vacancyToDisplay, List<VacancyModel> vacancies) {
@@ -153,5 +196,103 @@ public class VacancyViewerActivity extends BaseAnimationActivity
     @Override
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
+    }
+
+    @Override
+    public void updateTitle(VacancyModel vacancy, String title) {
+        if (mVacancies.get(mVacancyContainer.getCurrentItem()).equals(vacancy)) {
+            mTitleTextView.setText(title);
+        }
+    }
+
+    @Override
+    public void updateSiteIcon(VacancyModel vacancy, Drawable icon) {
+        if (mVacancies.get(mVacancyContainer.getCurrentItem()).equals(vacancy)) {
+            mSiteIconImageView.setVisibility(View.VISIBLE);
+            mSiteIconImageView.setImageDrawable(icon);
+        }
+    }
+
+    @OnClick({R.id.back_image_view, R.id.favorite_image_view, R.id.share_image_view})
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.back_image_view:
+                finish();
+                break;
+
+            case R.id.favorite_image_view:
+                updateFavoriteVacancy(mVacancies.get(mVacancyContainer.getCurrentItem()));
+//                mIsFavorite = !mIsFavorite;
+                configFavoriteIcon();
+                break;
+
+            case R.id.share_image_view:
+                createShareIntent(mVacancies.get(mVacancyContainer.getCurrentItem()));
+                break;
+        }
+    }
+
+    private void configFavoriteIcon() {
+        boolean isFavorite = mVacancies.get(mVacancyContainer.getCurrentItem()).isFavorite();
+        int imageResource = isFavorite
+                ? R.drawable.ic_favorite_green
+                : R.drawable.vacancy_favorite_blue;
+        mFavoriteImageView.setImageResource(imageResource);
+    }
+
+    public void createShareIntent(VacancyModel vacancy) {
+        Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_SEND);
+        intent.putExtra(Intent.EXTRA_TEXT, vacancy.title() + ": " + vacancy.url());
+        intent.setType("text/plain");
+        startActivity(intent);
+    }
+
+    private void showNoConnectionView(boolean show) {
+        if (show) {
+            mNoConnectionTextView.setVisibility(View.VISIBLE);
+        } else {
+            mNoConnectionTextView.setVisibility(View.GONE);
+        }
+    }
+
+    private void checkInetStatus(WebResourceResponse errorResponse) {
+        if (isConnected()) {
+            // display web content
+            showNoConnectionView(false);
+        } else {
+            final Snackbar snackBar = Snackbar.make(mTitleTextView, R.string.msg_no_inet_connection_short, Snackbar.LENGTH_INDEFINITE);
+            snackBar.setAction("Enable Data", new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    startActivityForResult(new Intent(Settings.ACTION_WIRELESS_SETTINGS), 0);
+                    // TODO
+//                    mWebView.loadUrl("javascript:window.location.reload(true)");
+                    snackBar.dismiss();
+                }
+            });
+            Toast.makeText(this, R.string.msg_no_inet_connection_long, Toast.LENGTH_SHORT).show();
+            snackBar.show();
+            showNoConnectionView(true);
+        }
+    }
+
+    /**
+     * Check if there is any connectivity
+     *
+     * @return is Device Connected
+     */
+    public boolean isConnected() {
+        boolean isConnected = false;
+        ConnectivityManager cm = (ConnectivityManager)
+                getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        if (null != cm) {
+            NetworkInfo info = cm.getActiveNetworkInfo();
+            isConnected = (info != null && info.isConnected() && info.isAvailable());
+        }
+
+        Log.d(getClass().getSimpleName(), "isConnected=" + isConnected);
+        return isConnected;
     }
 }

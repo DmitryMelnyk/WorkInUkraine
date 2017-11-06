@@ -109,8 +109,9 @@ public class NavigationActivity extends BaseAnimationActivity implements
 
         presenter.bindView(this);
 
-        Intent splash = new Intent(this, SplashActivity.class);
-        startActivity(splash);
+        // TODO
+//        Intent splash = new Intent(this, SplashActivity.class);
+//        startActivity(splash);
     }
 
     @Override

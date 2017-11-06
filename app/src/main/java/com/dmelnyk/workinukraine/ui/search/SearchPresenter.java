@@ -34,6 +34,9 @@ public class SearchPresenter implements Contract.ISearchPresenter {
     public void bindView(ISearchView view) {
         this.view = view;
         getRequests();
+        boolean isConnected = view.getInternetStatus();
+        // hide/show connection status
+        updateInternetStatusView(isConnected);
     }
 
     @Override
@@ -66,6 +69,19 @@ public class SearchPresenter implements Contract.ISearchPresenter {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(() -> {},
                         throwable -> view.showErrorMessage(throwable.getMessage()));
+    }
+
+    @Override
+    public void onInternetStatusChanged(boolean isConnected) {
+        updateInternetStatusView(isConnected);
+    }
+
+    private void updateInternetStatusView(boolean isConnected) {
+        if (isConnected) {
+            view.hideNoConnection();
+        } else {
+            view.showNoConnection();
+        }
     }
 
     @Override

@@ -78,4 +78,23 @@ public class NetUtils {
                 && ((current.getType() == cManager.TYPE_MOBILE
                 || current.getType() == cManager.TYPE_WIFI)));
     }
+
+    public static int getConnectionType(Context context) {
+        final ConnectivityManager cManager =
+                (ConnectivityManager) context.getApplicationContext().getSystemService(CONNECTIVITY_SERVICE);
+        NetworkInfo current = cManager.getActiveNetworkInfo();
+        if (current == null) {
+            return 0;
+        }
+
+        if (current.getType() == cManager.TYPE_WIFI) {
+                return NetworkChangeReceiver.TYPE_WIFI;
+        }
+
+        if (current.getType() == cManager.TYPE_MOBILE){
+            return NetworkChangeReceiver.TYPE_MOBILE;
+        } else {
+            return -1;
+        }
+    }
 }

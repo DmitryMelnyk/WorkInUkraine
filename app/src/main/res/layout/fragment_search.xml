@@ -161,6 +161,17 @@
         android:layout_weight="1"
         android:background="@color/white_soft"
         >
+        <TextView
+            android:id="@+id/tv_inet_connection"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/dimen_0dp"
+            android:background="@color/pink"
+            android:gravity="center_horizontal"
+            android:visibility="gone"
+            android:text="@string/msg_no_inet_connection_long"
+            android:textColor="@color/white"
+            />
 
         <com.dmelnyk.workinukraine.ui.search.RecyclerViewModified
             android:id="@+id/recyclerView"

@@ -3,27 +3,44 @@ package com.dmelnyk.workinukraine.ui.vacancy_viewer;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebChromeClient;
+import android.webkit.WebResourceError;
+import android.webkit.WebResourceRequest;
+import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.FutureTarget;
 import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.target.Target;
+import com.bumptech.glide.request.transition.Transition;
 import com.dmelnyk.workinukraine.R;
 import com.dmelnyk.workinukraine.models.VacancyModel;
+
+import java.util.concurrent.ExecutionException;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -35,30 +52,24 @@ import butterknife.Unbinder;
  */
 
 // TODO: error downloading page: see screenshot in mobile
-public class VacancyFragment extends Fragment {
+public class VacancyFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
 
-    interface CallbackListener {
+    public static final String ABOUT_BLANK = "about:blank";
+    private Drawable mIcon;
 
-        void onExit();
-        void updateFavoriteVacancy(VacancyModel vacancy);
-    }
+    private String mDownloadedTitle;
+
     private VacancyModel mVacancy;
 
     private static final String ARG_VACANCY = "arg_vacancy";
 
-    @BindView(R.id.site_icon_image_view) ImageView mSiteIconImageView;
-    @BindView(R.id.favorite_image_view) ImageView mFavoriteImageView;
-    @BindView(R.id.title_text_view) TextView mTitleTextView;
-    @BindView(R.id.date_text_view) TextView mDateTextView;
+    @BindView(R.id.swipe) SwipeRefreshLayout mSwipeRefreshLayout;
     @BindView(R.id.progress_bar) ProgressBar mBar;
     @BindView(R.id.web_view) WebView mWebView;
-
     Unbinder unbinder;
 
-    private String mDate;
     private String mTitle;
     private String mUrl;
-    private boolean mIsFavorite;
     private CallbackListener mCallback;
 
     public static VacancyFragment getNewInstance(VacancyModel vacancy) {
@@ -88,16 +99,14 @@ public class VacancyFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mVacancy = getArguments().getParcelable(ARG_VACANCY);
-        mDate = mVacancy.date();
         mTitle = mVacancy.title();
         mUrl = mVacancy.url();
-        mIsFavorite = mVacancy.isFavorite();
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_webview, container, false);
+        View view = inflater.inflate(R.layout.fragment_vacancy, container, false);
         unbinder = ButterKnife.bind(this, view);
 
         return view;
@@ -106,11 +115,8 @@ public class VacancyFragment extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        // Setting title and date
-        mTitleTextView.setText(mTitle);
-        mDateTextView.setText(mDate);
-        configFavoriteIcon();
         // Configuring progress bar / restoring state
+        mSwipeRefreshLayout.setOnRefreshListener(this);
         configProgressBar();
         configWebView();
     }
@@ -132,14 +138,6 @@ public class VacancyFragment extends Fragment {
 
     }
 
-    private void configFavoriteIcon() {
-        int imageResource = mIsFavorite
-                ? R.drawable.ic_favorite_green
-                : R.drawable.vacancy_favorite_blue;
-
-        mFavoriteImageView.setImageResource(imageResource);
-    }
-
     private void configWebView() {
         mWebView.getSettings().setJavaScriptEnabled(true);
         mWebView.getSettings().setBuiltInZoomControls(true);
@@ -150,31 +148,27 @@ public class VacancyFragment extends Fragment {
         mWebView.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
         mWebView.setWebChromeClient(getWebViewClient());
 
-        mWebView.setWebViewClient(new WebViewClient() {
-            @SuppressWarnings("deprecation")
-            @Override
-            public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                if (url.startsWith("http"))
-                    return false;
-                else {
-                    Intent i = new Intent(Intent.ACTION_VIEW);
-                    startActivity(i);
-                    return true;
-                }
-            }
-        });
-        mWebView.loadUrl(mUrl);
+
+        mWebView.setWebViewClient(new CustomWebViewClient());
+
+//        if (isConnected()) {
+            mWebView.loadUrl(mUrl);
+//        }
+//        checkInetStatus(null);
     }
 
-    public WebChromeClient getWebViewClient() {
+    private WebChromeClient getWebViewClient() {
         return new WebChromeClient() {
             @Override
             public void onProgressChanged(WebView view, int newProgress) {
                 if (mBar == null) return;
 
+                mBar.setVisibility(View.VISIBLE);
                 mBar.setProgress(newProgress);
                 if (newProgress == 100) {
                     mBar.setVisibility(View.GONE);
+                    // stop refreshing
+                    mSwipeRefreshLayout.setRefreshing(false);
                 }
             }
 
@@ -182,7 +176,11 @@ public class VacancyFragment extends Fragment {
             public void onReceivedTitle(WebView view, String title) {
                 super.onReceivedTitle(view, title);
                 if (isAdded()) {
-                    mTitleTextView.setText(title);
+                    if (mDownloadedTitle == null || !mDownloadedTitle.equals(ABOUT_BLANK)) {
+                        mDownloadedTitle = title;
+                        mTitle = mDownloadedTitle;
+                        updateParentTitle(mTitle);
+                    }
                 }
             }
 
@@ -190,49 +188,128 @@ public class VacancyFragment extends Fragment {
             public void onReceivedTouchIconUrl(WebView view, String url, boolean precomposed) {
                 super.onReceivedTouchIconUrl(view, url, precomposed);
                 if (isAdded()) {
-                    Glide.with(getContext()).load(url).listener(new RequestListener<Drawable>() {
-                        @Override
-                        public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                            return false;
-                        }
+                    Glide.with(getContext())
+                            .load(url)
+                            .into(new SimpleTarget<Drawable>() {
+                                @Override
+                                public void onResourceReady(Drawable resource, Transition<? super Drawable> transition) {
+                                    mIcon = resource;
+                                    updateParentIcon(resource);
+                                }
+                            });
 
-                        @Override
-                        public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                            if (isAdded()) {
-                                mSiteIconImageView.setVisibility(View.VISIBLE);
-                            }
-                            return false;
-                        }
-                    }).into(mSiteIconImageView);
                 }
             }
         };
     }
 
-    @OnClick({R.id.back_image_view, R.id.favorite_image_view, R.id.share_image_view})
-    public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.back_image_view:
-                mCallback.onExit();
-                break;
-
-            case R.id.favorite_image_view:
-                mCallback.updateFavoriteVacancy(mVacancy);
-                mIsFavorite = !mIsFavorite;
-                configFavoriteIcon();
-                break;
-
-            case R.id.share_image_view:
-                createShareIntent(mVacancy);
-                break;
+    private void updateParentTitle(String mTitle) {
+        if (mCallback != null) {
+            mCallback.updateTitle(mVacancy, mTitle);
         }
     }
 
-    public void createShareIntent(VacancyModel vacancy) {
-        Intent intent = new Intent();
-        intent.setAction(Intent.ACTION_SEND);
-        intent.putExtra(Intent.EXTRA_TEXT, vacancy.title() + ": " + vacancy.url());
-        intent.setType("text/plain");
-        startActivity(intent);
+    private void updateParentIcon(Drawable icon) {
+        if (mCallback != null) {
+            mCallback.updateSiteIcon(mVacancy, icon);
+        }
+    }
+
+    public String getTitle() {
+        return mTitle;
+    }
+
+    public Drawable getIcon() {
+        return mIcon;
+    }
+
+    /**
+     * WebViewClient subclass loads all hyperlinks in the existing WebView
+     */
+    private class CustomWebViewClient extends WebViewClient {
+
+        @SuppressWarnings("deprecation")
+        @Override
+        public boolean shouldOverrideUrlLoading(WebView view, String url) {
+            // When user clicks a hyperlink, load in the existing WebView
+            if (url.startsWith("http"))
+                return false;
+            else {
+                Intent i = new Intent(Intent.ACTION_VIEW);
+                startActivity(i);
+                return true;
+            }
+        }
+
+        @Override
+        public void onPageFinished(WebView view, String url) {
+            super.onPageFinished(view, url);
+            if (isAdded()) {
+                // TODO
+//                if (isConnected()) {
+//                    mNoConnectionTextView.setVisibility(View.VISIBLE);
+//                } else {
+//                    mNoConnectionTextView.setVisibility(View.GONE);
+//                }
+                Toast.makeText(getContext(), "Page downloaded", Toast.LENGTH_SHORT).show();
+            }
+
+            Log.d(VacancyFragment.this.getClass().getSimpleName(), "onPageFinished()");
+        }
+
+        @RequiresApi(api = Build.VERSION_CODES.M)
+        @Override
+        public void onReceivedError(WebView view, WebResourceRequest request,
+                                    WebResourceError error) {
+
+            Log.d(VacancyFragment.this.getClass().getSimpleName(), "onReceivedError=" + error.getErrorCode());
+            // TODO
+//            checkInetStatus(null);
+            super.onReceivedError(view, request, error);
+        }
+
+        @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+        @Override
+        public void onReceivedHttpError(WebView view,
+                                        WebResourceRequest request, WebResourceResponse errorResponse) {
+            Log.d(VacancyFragment.this.getClass().getSimpleName(), "onReceivedError=" + errorResponse.getStatusCode());
+            // TODO
+//            checkInetStatus(errorResponse);
+            super.onReceivedHttpError(view, request, errorResponse);
+        }
+    }
+
+
+
+    @Override
+    public void onRefresh() {
+        Log.d(getClass().getSimpleName(), "SwipeRefreshLayout.onRefresh()");
+
+        Toast.makeText(getContext(), "Swipe!!!!", Toast.LENGTH_SHORT).show();
+        if (isConnected()) {
+//            showNoConnectionView(false);
+            mWebView.loadUrl(ABOUT_BLANK);
+            mWebView.loadUrl(mUrl);
+        } else {
+            mSwipeRefreshLayout.setRefreshing(false);
+//            checkInetStatus(null);
+        }
+    }
+
+    private boolean isConnected() {
+        // todo
+        return true;
+//        return mCallback.isConnected();
+    }
+
+
+    interface CallbackListener {
+        void updateFavoriteVacancy(VacancyModel vacancy);
+
+        void updateTitle(VacancyModel vacancy, String mTitle);
+
+        void updateSiteIcon(VacancyModel vacancy, Drawable icon);
+
+        boolean isConnected();
     }
 }

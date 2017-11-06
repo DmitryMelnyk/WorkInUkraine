@@ -56,6 +56,8 @@ public class WorkInUaApplication extends Application {
             SettingsRepository repository = new SettingsRepository(this);
             RepeatingSearchJob.scheduleRepeatingSearch(repository.getPeriodInMillis());
             SharedPrefUtil.setRepeatingSearchStarted(this);
+        } else {
+            Log.d(Tags.REPEATING_SEARCH, "Repeating task is already started.");
         }
     }
 

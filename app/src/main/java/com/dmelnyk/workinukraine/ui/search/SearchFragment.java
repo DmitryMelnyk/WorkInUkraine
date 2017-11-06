@@ -10,12 +10,15 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.GridLayoutManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
@@ -33,6 +36,8 @@ import com.dmelnyk.workinukraine.ui.search.di.DaggerSearchComponent;
 import com.dmelnyk.workinukraine.ui.search.di.SearchModule;
 import com.dmelnyk.workinukraine.ui.vacancy_list.VacancyListActivity;
 import com.dmelnyk.workinukraine.utils.BaseFragment;
+import com.dmelnyk.workinukraine.utils.NetUtils;
+import com.dmelnyk.workinukraine.utils.NetworkChangeReceiver;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -80,6 +85,7 @@ public class SearchFragment extends BaseFragment implements
     @BindView(R.id.new_vacancies_text_view) TextView mNewVacanciesTextView;
     @BindView(R.id.refreshed_text_view) TextView mLastUpdateTimeTextView;
     @BindView(R.id.new_text_view) TextView mNewTextView;
+    @BindView(R.id.tv_inet_connection) TextView mInternetStatusTextView;
     Unbinder unbinder;
 
     private View emptyView;
@@ -110,6 +116,16 @@ public class SearchFragment extends BaseFragment implements
                     presenter.updateData();
                     break;
             }
+        }
+    };
+
+    private final BroadcastReceiver mConnectionChangingReseiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.d(getClass().getSimpleName(), "receved broadcast for internet connection changed!");
+
+            boolean isConnected = intent.getBooleanExtra(NetworkChangeReceiver.EXTRA_NETWORK_IS_AVAILABLE, false);
+            presenter.onInternetStatusChanged(isConnected);
         }
     };
 
@@ -182,6 +198,11 @@ public class SearchFragment extends BaseFragment implements
         filter.addAction(SearchVacanciesService.ACTION_DOWNLOADING_IN_PROGRESS);
         LocalBroadcastManager.getInstance(getContext())
                 .registerReceiver(mDownloadingBroadcastReceiver, filter);
+
+        IntentFilter connectionStatusFilter = new IntentFilter();
+        connectionStatusFilter.addAction(NetworkChangeReceiver.ACTION_NETWORK_STATE_CHANGED);
+        LocalBroadcastManager.getInstance(getContext())
+                .registerReceiver(mConnectionChangingReseiver, connectionStatusFilter);
     }
 
     @Override
@@ -196,6 +217,8 @@ public class SearchFragment extends BaseFragment implements
         unbindSearchService();
         LocalBroadcastManager.getInstance(getContext())
                 .unregisterReceiver(mDownloadingBroadcastReceiver);
+        LocalBroadcastManager.getInstance(getContext())
+                .unregisterReceiver(mConnectionChangingReseiver);
     }
 
     @Override
@@ -261,6 +284,11 @@ public class SearchFragment extends BaseFragment implements
             }
             return true;
         });
+    }
+
+    @Override
+    public boolean getInternetStatus() {
+        return NetUtils.isNetworkReachable(getContext().getApplicationContext());
     }
 
     private void showDialogRequest(@Nullable String request) {
@@ -358,6 +386,32 @@ public class SearchFragment extends BaseFragment implements
     @Override
     public void showErrorMessage(String message) {
         Toast.makeText(getContext(), getString(R.string.errors_db_request_already_exists), Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void hideNoConnection() {
+        Animation fadeOut = AnimationUtils.loadAnimation(getContext(), R.anim.fade_out_long);
+        mInternetStatusTextView.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.green));
+        mInternetStatusTextView.setText(R.string.msg_connection_established);
+        fadeOut.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) { /* NOP */ }
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                mInternetStatusTextView.setVisibility(View.GONE);
+            }
+            @Override
+            public void onAnimationRepeat(Animation animation) { /* NOP */ }
+        });
+        mInternetStatusTextView.startAnimation(fadeOut);
+    }
+
+    @Override
+    public void showNoConnection() {
+        mInternetStatusTextView.setAlpha(1f);
+        mInternetStatusTextView.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.pink));
+        mInternetStatusTextView.setText(R.string.msg_no_inet_connection_long);
+        mInternetStatusTextView.setVisibility(View.VISIBLE);
     }
 
     // SearchAdapter.AdapterCallback for open DialogDelete

@@ -67,33 +67,35 @@ public class RepeatingSearchJob extends Job {
                 .build()
                 .inject(this);
 
-        if (!repository.isSleepModeEnabled()) {
-            JobManager.instance().cancel(jobId);
-        }
-
         if (repository.getRequestCount() == 0) {
             // don't start repeating alarm if there is no request
             Timber.d("999", "repeating alarm doesn't start because of empty request list");
             return Result.SUCCESS;
         }
 
-        // check i is time to turn of service. In that case starts morning alarm
-        // Starts repeating service if it is enable in settings and there is time
-        // before sleep.
-        if (repository.getSleepFromTime().after(repository.getCurrentTime())) {
+        if (!repository.isSleepModeEnabled()) {
+//            JobManager.instance().cancel(jobId);
             // Starting searching service
             registerSearchBroadcastReceiver(mContext);
             startSearchVacanciesService(mContext);
-            scheduleRepeatingSearch(repository.getUpdateInterval());
         } else {
-            Timber.d("Vacancy service stopped! Time to sleep!");
-            Log.e("ALARM", "Vacancy service stopped! Time to sleep!");
-            // Starts wake alarm
-            long wakeUpTime = getMorningAlarm(
-                    repository.getCurrentTime(),
-                    repository.getWakeTime());
+            // check i is time to turn of service. In that case starts morning alarm
+            // Starts repeating service if it is enable in settings and there is time
+            // before sleep.
+            if (repository.getSleepFromTime().after(repository.getCurrentTime())) {
+                // Starting searching service
+                registerSearchBroadcastReceiver(mContext);
+                startSearchVacanciesService(mContext);
+            } else {
+                Timber.d("Vacancy service stopped! Time to sleep!");
+                Log.e("ALARM", "Vacancy service stopped! Time to sleep!");
+                // Starts wake alarm
+                long wakeUpTime = getMorningAlarm(
+                        repository.getCurrentTime(),
+                        repository.getWakeTime());
 
-            scheduleSearchAtTime(wakeUpTime);
+                scheduleSearchAtTime(wakeUpTime);
+            }
         }
 
         return Result.SUCCESS;
@@ -182,6 +184,9 @@ public class RepeatingSearchJob extends Job {
                     // Closing database
                     repository.close();
                 }, throwable -> Timber.e("Error happened", throwable));
+
+        // create new task after period
+        scheduleRepeatingSearch(repository.getUpdateInterval());
     }
 
     private void sendNotification(int vacanciesFound) {

@@ -20,6 +20,12 @@ public class Contract {
         void showErrorMessage(String message);
 
         void updateLastSearchTime(String updated);
+
+        void hideNoConnection();
+
+        void showNoConnection();
+
+        boolean getInternetStatus();
     }
 
     public interface ISearchPresenter {
@@ -36,5 +42,7 @@ public class Contract {
         void clearAllRequest();
 
         void updateData();
+
+        void onInternetStatusChanged(boolean isConnected);
     }
 }

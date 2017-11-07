@@ -17,16 +17,26 @@ public class Contract {
 
         void showUpdatingVacancySuccess(Boolean isFavorite);
         void showUpdatingVacancyError();
+
+        void hideNoConnection();
+
+        void showNoConnection();
+
+        boolean isConnected();
     }
 
     public interface IVacancyViewerPresenter {
         void updateFavoriteStatusVacancy(VacancyModel vacancy);
-        void bindView(IVacancyViewerView view);
+        void onCreate(IVacancyViewerView view);
 
         void getData(String request, String type, @Nullable String site);
 
-        void unbindView();
+        void onStop();
 
         void onDestroy();
+
+        void onInternetStatusChanged(boolean isConnected);
+
+        void onResume();
     }
 }

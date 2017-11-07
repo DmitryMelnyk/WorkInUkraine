@@ -14,7 +14,7 @@
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
+            android:layout_height="wrap_content"
             android:background="@color/white"
 
             android:contentInsetLeft="0dp"
@@ -99,18 +99,6 @@
 
         </android.support.v7.widget.Toolbar>
     </android.support.design.widget.AppBarLayout>
-
-    <TextView
-        android:id="@+id/tv_no_inet_connection"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/dimen_0dp"
-        android:background="@color/pink"
-        android:gravity="center_horizontal"
-        android:visibility="visible"
-        android:text="@string/msg_no_inet_connection_long"
-        android:textColor="@color/white"
-        />
 
     <android.support.v4.view.ViewPager
         android:id="@+id/vacancy_container"

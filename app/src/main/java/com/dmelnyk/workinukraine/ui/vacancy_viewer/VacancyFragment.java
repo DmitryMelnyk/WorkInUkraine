@@ -39,6 +39,7 @@ import com.bumptech.glide.request.target.Target;
 import com.bumptech.glide.request.transition.Transition;
 import com.dmelnyk.workinukraine.R;
 import com.dmelnyk.workinukraine.models.VacancyModel;
+import com.dmelnyk.workinukraine.utils.NetUtils;
 
 import java.util.concurrent.ExecutionException;
 
@@ -51,7 +52,6 @@ import butterknife.Unbinder;
  * Created by d264 on 9/8/17.
  */
 
-// TODO: error downloading page: see screenshot in mobile
 public class VacancyFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
 
     public static final String ABOUT_BLANK = "about:blank";
@@ -68,9 +68,11 @@ public class VacancyFragment extends Fragment implements SwipeRefreshLayout.OnRe
     @BindView(R.id.web_view) WebView mWebView;
     Unbinder unbinder;
 
-    private String mTitle;
+    private String mTitle = "nullable fragment";
     private String mUrl;
     private CallbackListener mCallback;
+    private boolean isDataFullyDownloaded;
+    private boolean isRefreshing;
 
     public static VacancyFragment getNewInstance(VacancyModel vacancy) {
         Bundle args = new Bundle();
@@ -98,9 +100,12 @@ public class VacancyFragment extends Fragment implements SwipeRefreshLayout.OnRe
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         mVacancy = getArguments().getParcelable(ARG_VACANCY);
         mTitle = mVacancy.title();
         mUrl = mVacancy.url();
+
+        Log.d(getClass().getSimpleName(), "onCreate(). Title=" + mTitle);
     }
 
     @Nullable
@@ -151,10 +156,10 @@ public class VacancyFragment extends Fragment implements SwipeRefreshLayout.OnRe
 
         mWebView.setWebViewClient(new CustomWebViewClient());
 
-//        if (isConnected()) {
+        if (isConnected()) {
             mWebView.loadUrl(mUrl);
-//        }
-//        checkInetStatus(null);
+            isRefreshing = true;
+        }
     }
 
     private WebChromeClient getWebViewClient() {
@@ -168,6 +173,8 @@ public class VacancyFragment extends Fragment implements SwipeRefreshLayout.OnRe
                 if (newProgress == 100) {
                     mBar.setVisibility(View.GONE);
                     // stop refreshing
+                    isRefreshing = false;
+                    isDataFullyDownloaded = true;
                     mSwipeRefreshLayout.setRefreshing(false);
                 }
             }
@@ -176,10 +183,10 @@ public class VacancyFragment extends Fragment implements SwipeRefreshLayout.OnRe
             public void onReceivedTitle(WebView view, String title) {
                 super.onReceivedTitle(view, title);
                 if (isAdded()) {
-                    if (mDownloadedTitle == null || !mDownloadedTitle.equals(ABOUT_BLANK)) {
+                    if (mDownloadedTitle == null || !title.equals(ABOUT_BLANK)) {
                         mDownloadedTitle = title;
                         mTitle = mDownloadedTitle;
-                        updateParentTitle(mTitle);
+                        updateParentTitle(title);
                     }
                 }
             }
@@ -203,9 +210,9 @@ public class VacancyFragment extends Fragment implements SwipeRefreshLayout.OnRe
         };
     }
 
-    private void updateParentTitle(String mTitle) {
+    private void updateParentTitle(String title) {
         if (mCallback != null) {
-            mCallback.updateTitle(mVacancy, mTitle);
+            mCallback.updateTitle(mVacancy, title);
         }
     }
 
@@ -221,6 +228,19 @@ public class VacancyFragment extends Fragment implements SwipeRefreshLayout.OnRe
 
     public Drawable getIcon() {
         return mIcon;
+    }
+
+    /**
+     * Reloads data
+     * This method is colled after establishing internet connection
+     */
+    public void reloadData() {
+        Log.d(getClass().getSimpleName(), "reloadData()");
+        if (isDataFullyDownloaded || isRefreshing) {
+            return;
+        } else {
+            onRefresh();
+        }
     }
 
     /**
@@ -244,15 +264,7 @@ public class VacancyFragment extends Fragment implements SwipeRefreshLayout.OnRe
         @Override
         public void onPageFinished(WebView view, String url) {
             super.onPageFinished(view, url);
-            if (isAdded()) {
-                // TODO
-//                if (isConnected()) {
-//                    mNoConnectionTextView.setVisibility(View.VISIBLE);
-//                } else {
-//                    mNoConnectionTextView.setVisibility(View.GONE);
-//                }
-                Toast.makeText(getContext(), "Page downloaded", Toast.LENGTH_SHORT).show();
-            }
+            showOrHideContent();
 
             Log.d(VacancyFragment.this.getClass().getSimpleName(), "onPageFinished()");
         }
@@ -265,6 +277,7 @@ public class VacancyFragment extends Fragment implements SwipeRefreshLayout.OnRe
             Log.d(VacancyFragment.this.getClass().getSimpleName(), "onReceivedError=" + error.getErrorCode());
             // TODO
 //            checkInetStatus(null);
+            showOrHideContent();
             super.onReceivedError(view, request, error);
         }
 
@@ -275,31 +288,38 @@ public class VacancyFragment extends Fragment implements SwipeRefreshLayout.OnRe
             Log.d(VacancyFragment.this.getClass().getSimpleName(), "onReceivedError=" + errorResponse.getStatusCode());
             // TODO
 //            checkInetStatus(errorResponse);
+            showOrHideContent();
             super.onReceivedHttpError(view, request, errorResponse);
         }
     }
 
-
+    private void showOrHideContent() {
+        if (isAdded()) {
+            if (isConnected()) {
+                mWebView.setVisibility(View.VISIBLE);
+            } else {
+                if (mBar.getProgress() != 100) {
+                    mWebView.setVisibility(View.GONE);
+                }
+            }
+        }
+    }
 
     @Override
     public void onRefresh() {
         Log.d(getClass().getSimpleName(), "SwipeRefreshLayout.onRefresh()");
 
-        Toast.makeText(getContext(), "Swipe!!!!", Toast.LENGTH_SHORT).show();
         if (isConnected()) {
-//            showNoConnectionView(false);
+            isRefreshing = true;
             mWebView.loadUrl(ABOUT_BLANK);
             mWebView.loadUrl(mUrl);
         } else {
             mSwipeRefreshLayout.setRefreshing(false);
-//            checkInetStatus(null);
         }
     }
 
     private boolean isConnected() {
-        // todo
-        return true;
-//        return mCallback.isConnected();
+        return NetUtils.isNetworkReachable(getContext());
     }
 
 
@@ -309,7 +329,5 @@ public class VacancyFragment extends Fragment implements SwipeRefreshLayout.OnRe
         void updateTitle(VacancyModel vacancy, String mTitle);
 
         void updateSiteIcon(VacancyModel vacancy, Drawable icon);
-
-        boolean isConnected();
     }
 }

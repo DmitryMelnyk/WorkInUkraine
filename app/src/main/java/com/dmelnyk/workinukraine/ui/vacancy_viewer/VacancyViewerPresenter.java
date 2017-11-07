@@ -26,13 +26,29 @@ public class VacancyViewerPresenter implements Contract.IVacancyViewerPresenter 
     }
 
     @Override
-    public void bindView(Contract.IVacancyViewerView view) {
+    public void onCreate(Contract.IVacancyViewerView view) {
         this.view = view;
+    }
+
+    @Override
+    public void onResume() {
+        boolean isConnected = view.isConnected();
+        // hide/show connection status
+        updateInternetStatusView(isConnected);
+    }
+
+    @Override
+    public void onStop() {
+        if (updatingFavoriteDispos != null) {
+            updatingFavoriteDispos.dispose();
+            vacanciesDisposable.dispose();
+        }
     }
 
     @Override
     public void onDestroy() {
         interactor.clear();
+        view = null;
     }
 
     @Override
@@ -49,18 +65,23 @@ public class VacancyViewerPresenter implements Contract.IVacancyViewerPresenter 
     }
 
     @Override
-    public void unbindView() {
-        view = null;
-        if (updatingFavoriteDispos != null) {
-            updatingFavoriteDispos.dispose();
-            vacanciesDisposable.dispose();
-        }
-    }
-
-    @Override
     public void updateFavoriteStatusVacancy(VacancyModel vacancy) {
         updatingFavoriteDispos = interactor.updateFavorite(vacancy).subscribe(
                 isFavorite -> view.showUpdatingVacancySuccess(isFavorite),
                 throwable -> view.showUpdatingVacancyError());
     }
+
+    @Override
+    public void onInternetStatusChanged(boolean isConnected) {
+        updateInternetStatusView(isConnected);
+    }
+
+    private void updateInternetStatusView(boolean isConnected) {
+        if (isConnected) {
+            view.hideNoConnection();
+        } else {
+            view.showNoConnection();
+        }
+    }
+
 }

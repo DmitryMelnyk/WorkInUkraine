@@ -97,8 +97,8 @@ public class SearchFragment extends BaseFragment implements
     private static String sItemClickedRequest = "";
 
     private DialogDelete mDialogDelete;
-    private DialogDownloading mDialogDownloading;
     private DialogRequest mDialogRequest;
+    private DialogDownloading mDialogDownloading;
     private ArrayList<RequestModel> mRequestsList;
     private SearchAdapter mAdapter;
 
@@ -413,6 +413,17 @@ public class SearchFragment extends BaseFragment implements
         mInternetStatusTextView.setText(R.string.msg_no_inet_connection_long);
         mInternetStatusTextView.setVisibility(View.VISIBLE);
     }
+
+    @Override
+    public void disableSearch() {
+        mButtonSearch.setEnabled(false);
+    }
+
+    @Override
+    public void enableSearch() {
+        mButtonSearch.setEnabled(true);
+    }
+
 
     // SearchAdapter.AdapterCallback for open DialogDelete
     @Override

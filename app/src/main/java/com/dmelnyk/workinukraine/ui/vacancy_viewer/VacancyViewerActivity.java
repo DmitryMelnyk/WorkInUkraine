@@ -1,17 +1,21 @@
 package com.dmelnyk.workinukraine.ui.vacancy_viewer;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.drawable.Drawable;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.webkit.WebResourceResponse;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -22,7 +26,10 @@ import com.dmelnyk.workinukraine.db.di.DbModule;
 import com.dmelnyk.workinukraine.models.VacancyModel;
 import com.dmelnyk.workinukraine.ui.vacancy_viewer.di.DaggerVacancyViewerComponent;
 import com.dmelnyk.workinukraine.utils.BaseAnimationActivity;
+import com.dmelnyk.workinukraine.utils.NetUtils;
+import com.dmelnyk.workinukraine.utils.NetworkChangeReceiver;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -50,18 +57,15 @@ public class VacancyViewerActivity extends BaseAnimationActivity
     @BindView(R.id.favorite_image_view) ImageView mFavoriteImageView;
     @BindView(R.id.title_text_view) TextView mTitleTextView;
     @BindView(R.id.date_text_view) TextView mDateTextView;
-    @BindView(R.id.tv_no_inet_connection) TextView mNoConnectionTextView;
     Unbinder unbinder;
 
     @Inject
     Contract.IVacancyViewerPresenter presenter;
-    List<VacancyModel> mVacancies;
-    private VacancyAdapter mAdapter;
 
-    private String mRequest;
-    private String mSite;
-    private String mType;
+    List<VacancyModel> mVacancies = new ArrayList<>();
+    private VacancyAdapter mAdapter;
     private VacancyModel mVacancyToDisplay;
+    private Snackbar snackBar;
 
     public static Intent getIntent(
             Context context,
@@ -73,6 +77,16 @@ public class VacancyViewerActivity extends BaseAnimationActivity
 
         return intent;
     }
+
+    private final BroadcastReceiver mConnectionChangingReseiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.d(getClass().getSimpleName(), "receved broadcast for internet connection changed!");
+
+            boolean isConnected = intent.getBooleanExtra(NetworkChangeReceiver.EXTRA_NETWORK_IS_AVAILABLE, false);
+            presenter.onInternetStatusChanged(isConnected);
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,24 +101,43 @@ public class VacancyViewerActivity extends BaseAnimationActivity
 
         // gets vacancy to show position
         mVacancyToDisplay = getIntent().getParcelableExtra(EXTRA_VACANCY_TO_DISPLAY);
-        mRequest = mVacancyToDisplay.request();
-        mSite = mVacancyToDisplay.site();
-        mType = getIntent().getStringExtra(EXTRA_TYPE);
+        mVacancies.add(mVacancyToDisplay);
+        String request = mVacancyToDisplay.request();
+        String site = mVacancyToDisplay.site();
+        String type = getIntent().getStringExtra(EXTRA_TYPE);
 
-//        ((NestedScrollView) findViewById(R.id.nsv)).setFillViewport (true);
-        presenter.bindView(this);
-        presenter.getData(mRequest, mType, mSite);
+        presenter.onCreate(this);
+        presenter.getData(request, type, site);
+        initializeToolbar(mVacancyToDisplay);
+        snackBar = Snackbar.make(mTitleTextView, R.string.msg_no_inet_connection_short, Snackbar.LENGTH_INDEFINITE);
+    }
+
+    private void initializeToolbar(VacancyModel vacancyToDisplay) {
+        String title = vacancyToDisplay.title();
+        String date = vacancyToDisplay.date();
+
+        mTitleTextView.setText(title);
+        mDateTextView.setText(date);
+        configFavoriteIcon();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        presenter.onResume();
+        // registering downloading receiver
+        IntentFilter connectionStatusFilter = new IntentFilter();
+        connectionStatusFilter.addAction(NetworkChangeReceiver.ACTION_NETWORK_STATE_CHANGED);
+        LocalBroadcastManager.getInstance(getApplicationContext())
+                .registerReceiver(mConnectionChangingReseiver, connectionStatusFilter);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        presenter.unbindView();
+        presenter.onStop();
+        LocalBroadcastManager.getInstance(getApplicationContext())
+                .unregisterReceiver(mConnectionChangingReseiver);
     }
 
     @Override
@@ -130,12 +163,51 @@ public class VacancyViewerActivity extends BaseAnimationActivity
                 });
     }
 
+    @Override
+    public void hideNoConnection() {
+        if (snackBar.isShown()) {
+            snackBar.dismiss();
+        }
+
+        // update web page if needed
+        updatePage();
+    }
+
+    private void updatePage() {
+        if (mAdapter != null) {
+            int currentPosition = mVacancyContainer.getCurrentItem();
+            VacancyFragment currentFragment = mAdapter.getFragmentReference(currentPosition);
+            currentFragment.reloadData();
+        }
+    }
+
+    @Override
+    public void showNoConnection() {
+        displayWirelesSettingsSnackBar();
+    }
+
+    private void displayWirelesSettingsSnackBar() {
+        if (!snackBar.isShown()) {
+            snackBar.setAction("Enable Data", new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    startActivityForResult(new Intent(Settings.ACTION_WIRELESS_SETTINGS), 0);
+                }
+            });
+            snackBar.show();
+        }
+    }
+
     private void updateToolbar(int position) {
-        VacancyFragment currentFragment = (VacancyFragment) mAdapter.getItem(position);
+        Log.d(getClass().getSimpleName(), "updateToolbar. Vacancy position=" + position);
+
+        VacancyFragment currentFragment = mAdapter.getFragmentReference(position);
         String title = currentFragment.getTitle();
         Drawable icon = currentFragment.getIcon();
         String date = mVacancies.get(position).date();
-
+        Log.d(getClass().getSimpleName(), "updateToolbar. Title=" + title);
+        Log.d(getClass().getSimpleName(), "updateToolbar. Date=" + date);
+        Log.d(getClass().getSimpleName(), "updateToolbar. Icon=" + icon);
         // setting data to views
         mDateTextView.setText(date);
         mTitleTextView.setText(title);
@@ -189,7 +261,6 @@ public class VacancyViewerActivity extends BaseAnimationActivity
 
     @Override
     public void showUpdatingVacancyError() {
-        // TODO: move to strings
         Toast.makeText(this, R.string.msg_vacancy_update_error, Toast.LENGTH_SHORT).show();
     }
 
@@ -200,6 +271,8 @@ public class VacancyViewerActivity extends BaseAnimationActivity
 
     @Override
     public void updateTitle(VacancyModel vacancy, String title) {
+        Log.d(getClass().getSimpleName(), "updateTTitle(). Title=" + title);
+        Log.d(getClass().getSimpleName(), "Current vacancy. Title=" + title);
         if (mVacancies.get(mVacancyContainer.getCurrentItem()).equals(vacancy)) {
             mTitleTextView.setText(title);
         }
@@ -222,7 +295,6 @@ public class VacancyViewerActivity extends BaseAnimationActivity
 
             case R.id.favorite_image_view:
                 updateFavoriteVacancy(mVacancies.get(mVacancyContainer.getCurrentItem()));
-//                mIsFavorite = !mIsFavorite;
                 configFavoriteIcon();
                 break;
 
@@ -248,51 +320,13 @@ public class VacancyViewerActivity extends BaseAnimationActivity
         startActivity(intent);
     }
 
-    private void showNoConnectionView(boolean show) {
-        if (show) {
-            mNoConnectionTextView.setVisibility(View.VISIBLE);
-        } else {
-            mNoConnectionTextView.setVisibility(View.GONE);
-        }
-    }
-
-    private void checkInetStatus(WebResourceResponse errorResponse) {
-        if (isConnected()) {
-            // display web content
-            showNoConnectionView(false);
-        } else {
-            final Snackbar snackBar = Snackbar.make(mTitleTextView, R.string.msg_no_inet_connection_short, Snackbar.LENGTH_INDEFINITE);
-            snackBar.setAction("Enable Data", new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    startActivityForResult(new Intent(Settings.ACTION_WIRELESS_SETTINGS), 0);
-                    // TODO
-//                    mWebView.loadUrl("javascript:window.location.reload(true)");
-                    snackBar.dismiss();
-                }
-            });
-            Toast.makeText(this, R.string.msg_no_inet_connection_long, Toast.LENGTH_SHORT).show();
-            snackBar.show();
-            showNoConnectionView(true);
-        }
-    }
-
     /**
      * Check if there is any connectivity
      *
      * @return is Device Connected
      */
+    @Override
     public boolean isConnected() {
-        boolean isConnected = false;
-        ConnectivityManager cm = (ConnectivityManager)
-                getSystemService(Context.CONNECTIVITY_SERVICE);
-
-        if (null != cm) {
-            NetworkInfo info = cm.getActiveNetworkInfo();
-            isConnected = (info != null && info.isConnected() && info.isAvailable());
-        }
-
-        Log.d(getClass().getSimpleName(), "isConnected=" + isConnected);
-        return isConnected;
+        return NetUtils.isNetworkReachable(getApplicationContext());
     }
 }

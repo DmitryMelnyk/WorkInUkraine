@@ -26,6 +26,10 @@ public class Contract {
         void showNoConnection();
 
         boolean getInternetStatus();
+
+        void disableSearch();
+
+        void enableSearch();
     }
 
     public interface ISearchPresenter {

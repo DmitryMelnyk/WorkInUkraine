@@ -79,8 +79,10 @@ public class SearchPresenter implements Contract.ISearchPresenter {
     private void updateInternetStatusView(boolean isConnected) {
         if (isConnected) {
             view.hideNoConnection();
+            view.enableSearch();
         } else {
             view.showNoConnection();
+            view.disableSearch();
         }
     }
 

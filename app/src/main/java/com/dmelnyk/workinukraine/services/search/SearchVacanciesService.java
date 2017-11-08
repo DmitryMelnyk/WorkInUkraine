@@ -154,7 +154,6 @@ public class SearchVacanciesService extends Service {
         sendBroadcastMessage(ACTION_FINISHED, null /* request no need */, totalVacanciesCount);
         long endTime = System.nanoTime();
         Timber.d("\nSearch completed at %d seconds", (endTime - startTime) / 1000000000);
-//        stopSelf();
     }
 
     private void sendBroadcastMessage(String action, String request, int vacanciesCount) {

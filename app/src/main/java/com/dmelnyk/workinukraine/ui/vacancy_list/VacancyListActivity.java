@@ -74,6 +74,7 @@ public class VacancyListActivity extends BaseAnimationActivity implements
     private static final String KEY_ORIENTATION_CHANGED = "KEY_ORIENTATION_CHANGED";
     private static final String KEY_TOOLBAR_DEFAULT_HEIGHT = "KEY_TOOLBAR_DEFAULT_HEIGHT";
     private static final String KEY_SETTINGS_FLAG = "KEY_SETTINGS_FLAG";
+
     private static final String TAG = "TAG";
     private static final String KEY_REVEAL_X = "KEY_REVEAL_X";
     private static final String KEY_REVEAL_Y = "KEY_REVEAL_Y";
@@ -110,6 +111,7 @@ public class VacancyListActivity extends BaseAnimationActivity implements
     private int revealY;
     private ValueAnimator expandingHeightAnimator;
     private List<VacancyModel> mFavoritesVacanciesCache;
+    private int mCurrentTabPosition;
 
     @OnClick(R.id.favorite_image_view)
     public void onViewClicked() {
@@ -222,11 +224,11 @@ public class VacancyListActivity extends BaseAnimationActivity implements
         super.onRestoreInstanceState(savedInstanceState);
         // restoring ButtonTab position
         if (savedInstanceState != null) {
-            int currentPosition = savedInstanceState.getInt(KEY_CURRENT_POSITION);
+            mCurrentTabPosition = savedInstanceState.getInt(KEY_CURRENT_POSITION);
             mTabTitles = savedInstanceState.getStringArray(KEY_TAB_TITLES);
             mTabVacancyCount = savedInstanceState.getIntArray(KEY_TAB_VACANCY_COUNT);
             orientationHasChanged = savedInstanceState.getBoolean(KEY_ORIENTATION_CHANGED);
-            updateTitleView(currentPosition);
+            updateTitleView(mCurrentTabPosition);
         }
     }
 
@@ -241,8 +243,8 @@ public class VacancyListActivity extends BaseAnimationActivity implements
 
         mButtonTabs.setOnTabClickListener(tabClicked -> {
             mViewPager.setCurrentItem(tabClicked);
-
-            updateTitleView(tabClicked);
+            mCurrentTabPosition = tabClicked;
+            updateTitleView(mCurrentTabPosition);
         });
         mButtonTabs.setSaveEnabled(true);
 
@@ -380,9 +382,9 @@ public class VacancyListActivity extends BaseAnimationActivity implements
         mSlideAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager(), mTabTitles, allVacancies);
         mViewPager.setAdapter(mSlideAdapter);
 
-        if (!orientationHasChanged) {
-            updateTitleView(0);
-        }
+        // restores ButtonTab position (after recreation or filtering data)
+        updateTitleView(mCurrentTabPosition);
+        mViewPager.setCurrentItem(mCurrentTabPosition);
     }
 
     @Override
@@ -526,6 +528,8 @@ public class VacancyListActivity extends BaseAnimationActivity implements
     @Override
     public void updateFilter(Pair<Boolean, Set<String>> data) {
         launchFilterAnimation(mSettingsImageButton);
+
+        mCurrentTabPosition = mButtonTabs.getCurrentTab();
         // showing updating progress bar
         mViewPager.setVisibility(View.INVISIBLE);
         progressBar.setVisibility(View.VISIBLE);

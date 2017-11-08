@@ -102,6 +102,7 @@ public class SearchFragment extends BaseFragment implements
     private ArrayList<RequestModel> mRequestsList;
     private SearchAdapter mAdapter;
 
+    int mFoundVacancyCunt = 0;
     private final BroadcastReceiver mDownloadingBroadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -111,9 +112,17 @@ public class SearchFragment extends BaseFragment implements
             switch (intent.getAction()) {
                 case SearchVacanciesService.ACTION_FINISHED:
                     // updating data after searching vacancies
-                    int count = intent.getIntExtra(SearchVacanciesService.KEY_TOTAL_VACANCIES_COUNT, 0);
-                    Toast.makeText(context, "Founded vacancies=" + count, Toast.LENGTH_SHORT).show();
+                    int finalCount = intent.getIntExtra(SearchVacanciesService.KEY_TOTAL_VACANCIES_COUNT, 0);
+//                    Toast.makeText(context, "Founded vacancies=" + finalCount, Toast.LENGTH_SHORT).show();
                     presenter.updateData();
+                    break;
+                case SearchVacanciesService.ACTION_DOWNLOADING_IN_PROGRESS:
+                    mFoundVacancyCunt += intent.getIntExtra(SearchVacanciesService.KEY_TOTAL_VACANCIES_COUNT, 0);
+                    if (mDialogDownloading != null) {
+                        mDialogDownloading.updateVacanciesCount(mFoundVacancyCunt);
+                    }
+                    break;
+                default:
                     break;
             }
         }

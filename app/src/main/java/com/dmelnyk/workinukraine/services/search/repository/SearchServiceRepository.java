@@ -2,6 +2,7 @@ package com.dmelnyk.workinukraine.services.search.repository;
 
 import android.database.Cursor;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.dmelnyk.workinukraine.db.DbContract;
 import com.dmelnyk.workinukraine.db.DbItems;
@@ -138,12 +139,15 @@ public class SearchServiceRepository implements ISearchServiceRepository {
         int newVacancies = cursor.getCount();
         boolean isFilterEnable = filterUtil.isFilterEnable(request);
         Set<String> filterWords = filterUtil.getFilterWords(request);
+        Log.d(getClass().getSimpleName(), "isFilterEnable=" + isFilterEnable);
+        Log.d(getClass().getSimpleName(), "FilterWords=" + filterWords);
 
         if (isFilterEnable && !filterWords.isEmpty()) {
             for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
                 VacancyModel vacancy = VacancyModel.MAPPER.apply(cursor);
+                Log.d(getClass().getSimpleName(), "New vacancy=" + vacancy.title());
                 for (String filter : filterWords) {
-                    if (vacancy.title().contains(filter)) {
+                    if (vacancy.title().toLowerCase().contains(filter.toLowerCase())) {
                         newVacancies--;
                         break;
                     }
@@ -152,7 +156,7 @@ public class SearchServiceRepository implements ISearchServiceRepository {
         }
         cursor.close();
 
-        Timber.d("New vacancies count=" + newVacancies);
+        Log.d(getClass().getSimpleName(), "New vacancies count=" + newVacancies);
         return newVacancies;
     }
 

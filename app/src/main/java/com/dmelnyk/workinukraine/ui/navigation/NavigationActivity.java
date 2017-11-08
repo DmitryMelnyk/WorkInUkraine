@@ -167,7 +167,7 @@ public class NavigationActivity extends BaseAnimationActivity implements
                 break;
             case NAV_ABOUT_POSITION:
                 // TODO
-                break;
+                return;
             case NAV_SETTINGS_POSITION:
                 fragment = new SettingsFragment();
                 break;

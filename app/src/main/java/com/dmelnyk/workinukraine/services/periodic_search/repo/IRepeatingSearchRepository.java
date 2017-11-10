@@ -67,7 +67,12 @@ public interface IRepeatingSearchRepository {
     long getUpdateInterval();
 
     /**
-     * @return The status of enabling repeated search
+     * @return The status of enabling sleep mode
      */
     boolean isSleepModeEnabled();
+
+    /**
+     * @return The status of enabling repeated search
+     */
+    boolean isPeriodicSearchEnable();
 }

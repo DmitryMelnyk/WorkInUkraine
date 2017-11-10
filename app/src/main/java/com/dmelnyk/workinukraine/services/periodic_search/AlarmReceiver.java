@@ -46,8 +46,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        Timber.d("Alarm receiver starts!");
-        Log.e("999", "alarm receiver started!");
+        Log.d(getClass().getSimpleName(), "alarm receiver started!");
         mContext = context;
 
         DaggerRepeatingSearchComponent.builder()
@@ -56,35 +55,37 @@ public class AlarmReceiver extends BroadcastReceiver {
                 .build()
                 .inject(this);
 
-        // check i is time to turn of service. In that case starts morning alarm
+        // check if is time to turn of service. In that case starts morning alarm
         // Starts repeating service if it is enable in settings and there is time
         // before sleep.
-        if (!repository.isSleepModeEnabled()
-                || repository.getSleepFromTime().after(repository.getCurrentTime())) {
-            // Starting searching service
-            registerSearchBroadcastReceiver(context);
-            startSearchVacanciesService(context);
+        if (!repository.isSleepModeEnabled()) {
+            if (repository.getCurrentTime().after(repository.getWakeTime())
+                && repository.getSleepFromTime().after(repository.getCurrentTime())){
+                // Starting searching service
+                registerSearchBroadcastReceiver(context);
+                startSearchVacanciesService(context);
+            }
         } else {
-                Timber.d("Vacancy service stopped! Time to sleep!");
-                Log.e("ALARM", "Vacancy service stopped! Time to sleep!");
-                // Starts wake alarm
-                long wakeUpTime = getMorningAlarm(
-                        repository.getCurrentTime(),
-                        repository.getWakeTime());
-
-                alarmClockUtil.startAlarmClockAtTime(wakeUpTime);
+                Log.e(getClass().getSimpleName(), "Vacancy service doesn't started becouse it's time to sleep!");
+//                // Starts wake alarm
+//                long wakeUpTime = getMorningAlarm(
+//                        repository.getCurrentTime(),
+//                        repository.getWakeTime());
+//
+//                alarmClockUtil.startAlarmClockAtTime(wakeUpTime);
+            return;
             }
     }
 
     // Check if wake time is in the past. Then add 1 day.
-    private long getMorningAlarm(Calendar calendarNow, Calendar calendarWakeTime) {
-        if (calendarWakeTime.before(calendarNow)) {
-            // if time is in the past add 1 day
-            calendarWakeTime.add(Calendar.DATE, 1);
-        }
-
-        return calendarWakeTime.getTimeInMillis();
-    }
+//    private long getMorningAlarm(Calendar calendarNow, Calendar calendarWakeTime) {
+//        if (calendarWakeTime.before(calendarNow)) {
+//            // if time is in the past add 1 day
+//            calendarWakeTime.add(Calendar.DATE, 1);
+//        }
+//
+//        return calendarWakeTime.getTimeInMillis();
+//    }
 
     private void registerSearchBroadcastReceiver(Context context) {
         IntentFilter intentFilter = new IntentFilter();

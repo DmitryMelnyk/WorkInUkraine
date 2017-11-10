@@ -108,7 +108,6 @@ public class VacancyListRepository implements IVacancyListRepository {
                         updateRequestTableData(request); // setting newVacancies count to 0
                     }
 
-                    close();
                     return result;
                 }).firstOrError();
     }

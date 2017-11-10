@@ -48,7 +48,7 @@
             android:configChanges="orientation|screenSize" />
         <activity android:name=".ui.filter.FilterActivity" />
 
-        <receiver android:name=".services.periodic_search.AlarmReceiver" />
+        <!--<receiver android:name=".services.periodic_search.AlarmReceiver" />-->
         <receiver android:name=".services.periodic_search.BootReceiver" />
         <receiver
             android:name=".utils.NetworkChangeReceiver"

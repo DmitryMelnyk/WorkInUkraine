@@ -14,7 +14,10 @@ public interface ISettingsRepository {
     void savePeriodPosition(int checkedNumPosition);
     void saveSoundState(boolean checked);
     void saveVibroState(boolean checked);
-    void saveSleepModeStateChecked(boolean checked);
+    void saveSleepModeStateEnable(boolean checked);
+    void savePeriodicSearchEnable(boolean checked);
+
+    boolean getPeriodicSearchCheckedState();
 
     String getSleepModeStatesFrom();
 
@@ -33,4 +36,5 @@ public interface ISettingsRepository {
     void saveSleepModeFromTime(String from);
 
     void saveSleepModeToTime(String to);
+
 }

@@ -3,10 +3,8 @@ package com.dmelnyk.workinukraine.job;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.RingtoneManager;
@@ -15,23 +13,35 @@ import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
-import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.dmelnyk.workinukraine.R;
 import com.dmelnyk.workinukraine.db.di.DbModule;
+import com.dmelnyk.workinukraine.models.RequestModel;
+import com.dmelnyk.workinukraine.models.VacancyModel;
 import com.dmelnyk.workinukraine.services.periodic_search.di.DaggerRepeatingSearchComponent;
 import com.dmelnyk.workinukraine.services.periodic_search.di.RepeatingSearchModule;
 import com.dmelnyk.workinukraine.services.periodic_search.repo.IRepeatingSearchRepository;
-import com.dmelnyk.workinukraine.services.search.SearchVacanciesService;
+import com.dmelnyk.workinukraine.services.search.repository.ISearchServiceRepository;
 import com.dmelnyk.workinukraine.ui.navigation.NavigationActivity;
 import com.dmelnyk.workinukraine.utils.Tags;
+import com.dmelnyk.workinukraine.utils.parsing.ParserHeadHunters;
+import com.dmelnyk.workinukraine.utils.parsing.ParserJobsUa;
+import com.dmelnyk.workinukraine.utils.parsing.ParserRabotaUa;
+import com.dmelnyk.workinukraine.utils.parsing.ParserWorkNewInfo;
+import com.dmelnyk.workinukraine.utils.parsing.ParserWorkUa;
 import com.evernote.android.job.Job;
 import com.evernote.android.job.JobManager;
 import com.evernote.android.job.JobRequest;
 
-import java.util.Calendar;
-import java.util.concurrent.TimeUnit;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import javax.inject.Inject;
 
@@ -43,7 +53,11 @@ import timber.log.Timber;
 
 public class RepeatingSearchJob extends Job {
     public static final String TAG = "RepeatingSearchJob_TAG";
-    private static int jobId;
+    private final static int HEADHUNTERSUA = 0;
+    private final static int JOBSUA        = 1;
+    private final static int RABOTAUA      = 2;
+    private final static int WORKNEWINFO   = 3;
+    private final static int WORKUA        = 4;
 
     private Context mContext;
 
@@ -52,156 +66,216 @@ public class RepeatingSearchJob extends Job {
     }
 
     @Inject
-    IRepeatingSearchRepository repository;
+    IRepeatingSearchRepository settingsRepository;
+    @Inject
+    ISearchServiceRepository repository;
+
+    public static void scheduleRepeatingSearch(long interval) {
+
+        int jobId = new JobRequest.Builder(TAG)
+                .setPeriodic(interval)
+                .setRequiredNetworkType(JobRequest.NetworkType.NOT_ROAMING)
+                .setUpdateCurrent(true)
+                .build()
+                .schedule();
+
+        saveTaskId(jobId);
+        Log.d(Tags.REPEATING_SEARCH, "scheduleRepeatingSearch(). jobId=" + jobId);
+    }
+
+    private static void saveTaskId(int jobId) {
+
+    }
 
     @NonNull
     @Override
     protected Result onRunJob(Params params) {
-
-        Log.e("!!!", "RepeatingSearchJob.onRunJob()");
-
+        Log.d(getClass().getSimpleName(), "RepeatingSearchJob.onRunJob()");
         mContext = getContext();
+
         DaggerRepeatingSearchComponent.builder()
                 .dbModule(new DbModule(mContext))
                 .repeatingSearchModule(new RepeatingSearchModule())
                 .build()
                 .inject(this);
 
-        if (repository.getRequestCount() == 0) {
-            // don't start repeating alarm if there is no request
-            Timber.d("999", "repeating alarm doesn't start because of empty request list");
+        // Stops task if periodic search has been disabled in settings
+        if (!settingsRepository.isPeriodicSearchEnable()) {
+            JobManager.instance().cancelAllForTag(TAG);
             return Result.SUCCESS;
         }
 
-        if (!repository.isSleepModeEnabled()) {
-//            JobManager.instance().cancel(jobId);
+        if (settingsRepository.getRequestCount() == 0) {
+            // don't start repeating alarm if there is no request
+            Log.d(getClass().getSimpleName(), "repeating alarm doesn't start because of empty request list");
+            return Result.SUCCESS;
+        }
+
+        if (!settingsRepository.isSleepModeEnabled()) {
             // Starting searching service
-            registerSearchBroadcastReceiver(mContext);
-            startSearchVacanciesService(mContext);
+            getRequestAndStartJob(mContext);
         } else {
             // check i is time to turn of service. In that case starts morning alarm
             // Starts repeating service if it is enable in settings and there is time
             // before sleep.
-            if (repository.getSleepFromTime().after(repository.getCurrentTime())) {
+            if (settingsRepository.getCurrentTime().after(settingsRepository.getWakeTime())
+                    && settingsRepository.getSleepFromTime().after(settingsRepository.getCurrentTime())){
                 // Starting searching service
-                registerSearchBroadcastReceiver(mContext);
-                startSearchVacanciesService(mContext);
+                getRequestAndStartJob(mContext);
             } else {
-                Timber.d("Vacancy service stopped! Time to sleep!");
-                Log.e("ALARM", "Vacancy service stopped! Time to sleep!");
-                // Starts wake alarm
-                long wakeUpTime = getMorningAlarm(
-                        repository.getCurrentTime(),
-                        repository.getWakeTime());
-
-                scheduleSearchAtTime(wakeUpTime);
+                Log.e(getClass().getSimpleName(), "Vacancy service doesn't started becouse it's time to sleep!");
             }
         }
 
         return Result.SUCCESS;
     }
 
-    public static void scheduleRepeatingSearch(long interval) {
-
-        jobId = new JobRequest.Builder(TAG)
-//                .setPeriodic(interval)
-                .setExecutionWindow(interval, interval + 60 * 60 * 1000)
-                .setRequiredNetworkType(JobRequest.NetworkType.NOT_ROAMING)
-//                .setUpdateCurrent(true)
-                .build()
-                .schedule();
-        Log.e(Tags.REPEATING_SEARCH, "scheduleRepeatingSearch(). jobId=" + jobId);
+    private void getRequestAndStartJob(Context context) {
+        repository.getRequests()
+                .subscribe(requests -> {
+                    Log.d(getClass().getSimpleName(), "repository.getRequests()=" + requests);
+                    startSearching(requests, context);
+                });
     }
 
-    // schedule task to run in the morning
-    private void scheduleSearchAtTime(long wakeUpTime) {
-        jobId = new JobRequest.Builder(TAG)
-                .setExecutionWindow(wakeUpTime, wakeUpTime + 60 * 60 * 1000)
-                .setRequiredNetworkType(JobRequest.NetworkType.NOT_ROAMING)
-//                .setUpdateCurrent(true)
-                .build()
-                .schedule();
+    private void startSearching(List<RequestModel> requests, Context context) {
+        Log.d(getClass().getSimpleName(), "startSearching. Requests=" + requests);
+        ExecutorService pool = Executors.newCachedThreadPool();
+        // Creating parallel search tasks for each search request
+        long startTime = System.nanoTime();
 
-        Log.e(Tags.REPEATING_SEARCH, "scheduleSearchAtTime()... jobId=" + jobId);
+        List<Future> futures = new ArrayList<>();
+        for (RequestModel requestModel : requests) {
+            SearchVacanciesTask[] callables = new SearchVacanciesTask[5];
 
-    }
-
-    // Check if wake time is in the past. Then add 1 day.
-    private long getMorningAlarm(Calendar calendarNow, Calendar calendarWakeTime) {
-        if (calendarWakeTime.before(calendarNow)) {
-            // if time is in the past add 1 day
-            calendarWakeTime.add(Calendar.DATE, 1);
-        }
-
-        return calendarWakeTime.getTimeInMillis();
-    }
-
-    private void registerSearchBroadcastReceiver(Context context) {
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(SearchVacanciesService.ACTION_FINISHED_REPEATING_SEARCH);
-        LocalBroadcastManager.getInstance(context).registerReceiver(
-                mDownloadingBroadcastReceiver, intentFilter);
-    }
-
-    private void startSearchVacanciesService(Context context) {
-        Intent searchService = new Intent(context, SearchVacanciesService.class);
-        // default (without keys) triggers background searching
-        context.startService(searchService);
-    }
-
-    private final BroadcastReceiver mDownloadingBroadcastReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            switch (intent.getAction()) {
-                // downloading finished
-                case SearchVacanciesService.ACTION_FINISHED_REPEATING_SEARCH:
-                    // Unregister receiver
-                    LocalBroadcastManager.getInstance(context)
-                            .unregisterReceiver(mDownloadingBroadcastReceiver);
-                    // Finding new vacancies
-                    checkNewVacancies();
+            // Creates and starts 5 task for each request search
+            for (int i = 0; i < 5; ++i) {
+                callables[i] = new SearchVacanciesTask(i, requestModel.request(), context);
+                futures.add(pool.submit(callables[i]));
             }
         }
-    };
+
+        // Waiting for result
+        for (Future future : futures) {
+            try {
+                future.get();
+            } catch (Exception e) {
+                Timber.e(e);
+            }
+        }
+
+        // After finishing search finds new vacancies
+        checkNewVacancies();
+        long endTime = System.nanoTime();
+        Timber.d("\nSearch completed at %d seconds", (endTime - startTime) / 1000000000);
+    }
+
+    private class SearchVacanciesTask implements Callable<List<VacancyModel>> {
+        private final int code;
+        private final String request;
+        private final Context context;
+
+        public SearchVacanciesTask(int code, String request, Context context) {
+            this.code = code;
+            this.request = request;
+            this.context = context;
+        }
+
+        @Override
+        public List<VacancyModel> call() throws Exception {
+            Timber.d(" Starting task " + code);
+            List<VacancyModel> list = new ArrayList<>();
+
+            // get list of vacancies from proper site
+            switch (code) {
+                case HEADHUNTERSUA:
+                    list = new ParserHeadHunters(context).getJobs(request);
+                    break;
+                case JOBSUA:
+                    list = new ParserJobsUa(context).getJobs(request);
+                    break;
+                case RABOTAUA:
+                    list = new ParserRabotaUa(context).getJobs(request);
+                    break;
+                case WORKNEWINFO:
+                    list = new ParserWorkNewInfo(context).getJobs(request);
+                    break;
+                case WORKUA:
+                    list = new ParserWorkUa(context).getJobs(request);
+                    break;
+            }
+
+            // after each of 5 request save cache to 'count'.
+            // Then save all cache in repository after getting all result from 5 sites
+            saveDataToMap(request, list);
+
+            return list;
+        }
+    }
+
+    private volatile Map<String, Integer> count = new HashMap<>();
+    private volatile Map<String, List<VacancyModel>> cache = new HashMap<>();
+
+    private void saveDataToMap(String request, List<VacancyModel> list) throws Exception {
+        if (count.containsKey(request)) {
+            count.put(request, count.get(request) + 1);
+        } else {
+            count.put(request, 1);
+        }
+
+        if (!cache.containsKey(request)) {
+            List<VacancyModel> vacancyList = new ArrayList<>();
+            cache.put(request, vacancyList);
+        }
+
+        // saving cache to cache
+        cache.get(request).addAll(list);
+
+        // Saves vacancies after getting results from all 5 sites
+        if (count.get(request) == 5) {
+            repository.saveVacancies(cache.get(request));
+        }
+    }
 
     private void checkNewVacancies() {
-        repository.getNewVacancies()
+        settingsRepository.getNewVacancies()
                 .subscribe(newVacancies -> {
                     // Shows notification if you've found new vacancies
-                    Timber.d("Found vacancies count=" + newVacancies.size());
+                    Log.d(getClass().getSimpleName(), "Found vacancies count=" + newVacancies.size());
 
-                    int previousNewVacanciesCount = repository.getPreviousNewVacanciesCount();
-                    Timber.d("Previous new vacancies count=" + previousNewVacanciesCount);
+                    int previousNewVacanciesCount = settingsRepository.getPreviousNewVacanciesCount();
+                    Log.d(getClass().getSimpleName(), "Previous new vacancies count=" + previousNewVacanciesCount);
                     if (!newVacancies.isEmpty()
                             && newVacancies.size() != previousNewVacanciesCount) {
                         sendNotification(newVacancies.size());
-                        repository.saveNewVacanciesCount(newVacancies.size());
-                        Timber.d("new vacancies " + newVacancies.size());
+                        settingsRepository.saveNewVacanciesCount(newVacancies.size());
+                        Log.d(getClass().getSimpleName(), "new vacancies " + newVacancies.size());
                     } else {
-                        Timber.d("no new vacancies!");
+                        Log.d(getClass().getSimpleName(), "no new vacancies!");
                     }
 
                     // Closing database
-                    repository.close();
+                    settingsRepository.close();
                 }, throwable -> Timber.e("Error happened", throwable));
 
         // create new task after period
-        scheduleRepeatingSearch(repository.getUpdateInterval());
+        scheduleRepeatingSearch(settingsRepository.getUpdateInterval());
     }
 
     private void sendNotification(int vacanciesFound) {
         final Bitmap largeExpandedAvatar = BitmapFactory.decodeResource(
                 mContext.getResources(), R.mipmap.ic_launcher);
 
-        boolean isVibroEnable = repository.isVibroEnable();
-        boolean isSoundEnable = repository.isSoundEnable();
+        boolean isVibroEnable = settingsRepository.isVibroEnable();
+        boolean isSoundEnable = settingsRepository.isSoundEnable();
 
         // for Version >= 26
         initChannels(mContext);
 
+        String msg = mContext.getString(R.string.msg_founded_new_vacancies) + " " + vacanciesFound;
         NotificationCompat.Builder notification = new NotificationCompat.Builder(mContext, "default")
                 .setContentTitle(mContext.getString(R.string.app_name))
-                .setContentText("Найдено новых вакансий: " + vacanciesFound)
+                .setContentText(msg)
                 .setSmallIcon(R.drawable.ic_work_black_24dp)
                 .setLargeIcon(largeExpandedAvatar)
                 .setContentIntent(createPendingIntent(mContext))

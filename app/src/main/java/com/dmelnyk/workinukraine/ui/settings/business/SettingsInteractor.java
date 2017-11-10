@@ -1,7 +1,10 @@
 package com.dmelnyk.workinukraine.ui.settings.business;
 
+import android.util.Log;
+
 import com.dmelnyk.workinukraine.job.RepeatingSearchJob;
 import com.dmelnyk.workinukraine.ui.settings.repository.ISettingsRepository;
+import com.evernote.android.job.JobManager;
 
 /**
  * Created by d264 on 6/27/17.
@@ -17,10 +20,11 @@ public class SettingsInteractor implements ISettingsInteractor {
 
     @Override
     public boolean[] getCheckedStates() {
-        boolean[] states = new boolean[3];
+        boolean[] states = new boolean[4];
         states[0] = repository.getSoundCheckedStates();
         states[1] = repository.getVibroCheckedStates();
         states[2] = repository.getSleepModeCheckedState();
+        states[3] = repository.getPeriodicSearchCheckedState();
         return states;
     }
 
@@ -74,7 +78,7 @@ public class SettingsInteractor implements ISettingsInteractor {
 
     @Override
     public void saveSleepModeCheckedState(boolean checked) {
-        repository.saveSleepModeStateChecked(checked);
+        repository.saveSleepModeStateEnable(checked);
     }
 
     @Override
@@ -103,7 +107,21 @@ public class SettingsInteractor implements ISettingsInteractor {
                 repository.saveVibroState(checked);
                 break;
             case 2:
-                repository.saveSleepModeStateChecked(checked);
+                repository.saveSleepModeStateEnable(checked);
+                break;
+            case 3:
+                repository.savePeriodicSearchEnable(checked);
+                if (checked) {
+                    runRepeatingJob();
+                }
+                break;
+            default:
+                throw new Error("Switcher interaction case not realized errot!");
         }
+    }
+
+    private void runRepeatingJob() {
+        long intervalInMillis = repository.getPeriodInMillis();
+        RepeatingSearchJob.scheduleRepeatingSearch(intervalInMillis);
     }
 }

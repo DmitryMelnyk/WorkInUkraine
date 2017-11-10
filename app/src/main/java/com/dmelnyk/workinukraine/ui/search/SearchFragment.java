@@ -407,7 +407,9 @@ public class SearchFragment extends BaseFragment implements
             public void onAnimationStart(Animation animation) { /* NOP */ }
             @Override
             public void onAnimationEnd(Animation animation) {
-                mInternetStatusTextView.setVisibility(View.GONE);
+                if (isAdded()) {
+                    mInternetStatusTextView.setVisibility(View.GONE);
+                }
             }
             @Override
             public void onAnimationRepeat(Animation animation) { /* NOP */ }

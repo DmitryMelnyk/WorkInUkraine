@@ -19,12 +19,12 @@ public class SettingsRepository implements ISettingsRepository {
     private static final boolean CHECKED_DEFAULT = true;
     private static final String SOUND = "sound";
     private static final String VIBRO = "vibro";
+    private static final String PERIODIC_SEARCH = "PERIODIC_SEARCH";
     private static final String SLEEP_MODE = "sleep mode";
     private static final String SLEEP_MODE_FROM = "sleep mode from";
     private static final String SLEEP_MODE_TO = "sleep mode to";
     private static final String SLEEP_MODE_FROM_DEFAULT = "23:00";
     private static final String SLEEP_MODE_TO_DEFAULT = "7:00";
-
 
     private Context mContext;
 
@@ -81,6 +81,11 @@ public class SettingsRepository implements ISettingsRepository {
     }
 
     @Override
+    public boolean getPeriodicSearchCheckedState() {
+        return mContext.getSharedPreferences(SETTINGS, 0)
+                .getBoolean(PERIODIC_SEARCH, CHECKED_DEFAULT);
+    }
+    @Override
     public String getSleepModeStatesFrom() {
         String from = mContext.getSharedPreferences(SETTINGS, 0)
                 .getString(SLEEP_MODE_FROM, SLEEP_MODE_FROM_DEFAULT);
@@ -134,9 +139,16 @@ public class SettingsRepository implements ISettingsRepository {
     }
 
     @Override
-    public void saveSleepModeStateChecked(boolean checked) {
+    public void saveSleepModeStateEnable(boolean checked) {
         mContext.getSharedPreferences(SETTINGS, 0).edit()
                 .putBoolean(SLEEP_MODE, checked)
+                .commit();
+    }
+
+    @Override
+    public void savePeriodicSearchEnable(boolean checked) {
+        mContext.getSharedPreferences(SETTINGS, 0).edit()
+                .putBoolean(PERIODIC_SEARCH, checked)
                 .commit();
     }
 
@@ -153,5 +165,4 @@ public class SettingsRepository implements ISettingsRepository {
                 .putString(SLEEP_MODE_TO, to)
                 .commit();
     }
-
 }

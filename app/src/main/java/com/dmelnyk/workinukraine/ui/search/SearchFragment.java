@@ -21,6 +21,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -72,6 +73,7 @@ public class SearchFragment extends BaseFragment implements
     private static final String TAG_DIALOG_REQUEST = "request_dialog";
     private static final String TAG_DIALOG_DELETE = "delete_dialog";
     private static final String KEY_DIALOG_STACK_LEVEL = "dialog_stack_level";
+    private static final String KEY_IS_CONNECTED = "KEY_IS_CONNECTED";
     private static final int REQUEST_CODE_VACANCY_ACTIVITY = 1001;
 
     public static final String ARGS_RUN_SEARCHING = "run_downloading";
@@ -86,6 +88,7 @@ public class SearchFragment extends BaseFragment implements
     @BindView(R.id.refreshed_text_view) TextView mLastUpdateTimeTextView;
     @BindView(R.id.new_text_view) TextView mNewTextView;
     @BindView(R.id.tv_inet_connection) TextView mInternetStatusTextView;
+    @BindView(R.id.progress_bar) ProgressBar mProgressBar;
     Unbinder unbinder;
 
     private View emptyView;
@@ -95,6 +98,7 @@ public class SearchFragment extends BaseFragment implements
 
     private OnFragmentInteractionListener mListener;
     private static String sItemClickedRequest = "";
+    private boolean mIsConnected;
 
     private DialogDelete mDialogDelete;
     private DialogRequest mDialogRequest;
@@ -113,8 +117,8 @@ public class SearchFragment extends BaseFragment implements
                 case SearchVacanciesService.ACTION_FINISHED:
                     // updating data after searching vacancies
                     int finalCount = intent.getIntExtra(SearchVacanciesService.KEY_TOTAL_VACANCIES_COUNT, 0);
-//                    Toast.makeText(context, "Founded vacancies=" + finalCount, Toast.LENGTH_SHORT).show();
-                    presenter.updateData();
+                    Toast.makeText(context, "Founded vacancies=" + finalCount, Toast.LENGTH_SHORT).show();
+                    presenter.downloadingFinished(finalCount);
                     break;
                 case SearchVacanciesService.ACTION_DOWNLOADING_IN_PROGRESS:
                     mFoundVacancyCunt += intent.getIntExtra(SearchVacanciesService.KEY_TOTAL_VACANCIES_COUNT, 0);
@@ -134,6 +138,7 @@ public class SearchFragment extends BaseFragment implements
             Log.d(getClass().getSimpleName(), "receved broadcast for internet connection changed!");
 
             boolean isConnected = intent.getBooleanExtra(NetworkChangeReceiver.EXTRA_NETWORK_IS_AVAILABLE, false);
+            mIsConnected = isConnected;
             presenter.onInternetStatusChanged(isConnected);
         }
     };
@@ -176,6 +181,7 @@ public class SearchFragment extends BaseFragment implements
         // Restores state
         if (savedInstanceState != null) {
             mDialogStackLevel = savedInstanceState.getInt(KEY_DIALOG_STACK_LEVEL);
+            mIsConnected = savedInstanceState.getBoolean(KEY_IS_CONNECTED);
         }
 
         emptyView = view.findViewById(R.id.emptyView);
@@ -212,12 +218,15 @@ public class SearchFragment extends BaseFragment implements
         connectionStatusFilter.addAction(NetworkChangeReceiver.ACTION_NETWORK_STATE_CHANGED);
         LocalBroadcastManager.getInstance(getContext())
                 .registerReceiver(mConnectionChangingReseiver, connectionStatusFilter);
+
+        mIsConnected = NetUtils.isNetworkReachable(getContext());
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt(KEY_DIALOG_STACK_LEVEL, mDialogStackLevel);
+        outState.putBoolean(KEY_IS_CONNECTED, mIsConnected);
     }
 
     @Override
@@ -253,7 +262,11 @@ public class SearchFragment extends BaseFragment implements
                 showDialogRequest(null);
                 break;
             case R.id.buttonSearch:
-                showDialogDownloading();
+                if(!mIsConnected) {
+                    Toast.makeText(getContext(), R.string.msg_no_inet_connection_long, Toast.LENGTH_SHORT).show();
+                } else {
+                    showDialogDownloading();
+                }
                 break;
         }
     }
@@ -293,6 +306,12 @@ public class SearchFragment extends BaseFragment implements
             }
             return true;
         });
+    }
+
+    @Override
+    public void hideProgressBar() {
+        mProgressBar.setVisibility(View.GONE);
+        mRecyclerView.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -353,7 +372,7 @@ public class SearchFragment extends BaseFragment implements
 
     @Override
     public void updateData(ArrayList<RequestModel> data) {
-        Timber.d(" updateData(ArrayList<RequestModel> data)");
+        Timber.d(" downloadingFinished(ArrayList<RequestModel> data)");
 
         mRequestsList.clear();
         mRequestsList.addAll(data);
@@ -376,13 +395,16 @@ public class SearchFragment extends BaseFragment implements
 
         // update vacancies count in main menu
         mListener.setVacanciesCount(allVacanciesCount);
+    }
 
+    @Override
+    public void updateDownloadingDialog(int count) {
         // restoring DownloadingDialog if needed
         mDialogDownloading = (DialogDownloading) getFragmentManager().findFragmentByTag(TAG_DIALOG_DOWNLOADING);
         if (mDialogDownloading != null) {
             mDialogDownloading.setCallback(this);
             if (SearchVacanciesService.sIsDownloadingFinished) {
-                mDialogDownloading.downloadingFinished(allVacanciesCount);
+                mDialogDownloading.downloadingFinished(SearchVacanciesService.sVacanciesCount);
             }
         }
     }
@@ -424,17 +446,6 @@ public class SearchFragment extends BaseFragment implements
         mInternetStatusTextView.setText(R.string.msg_no_inet_connection_long);
         mInternetStatusTextView.setVisibility(View.VISIBLE);
     }
-
-    @Override
-    public void disableSearch() {
-        mButtonSearch.setEnabled(false);
-    }
-
-    @Override
-    public void enableSearch() {
-        mButtonSearch.setEnabled(true);
-    }
-
 
     // SearchAdapter.AdapterCallback for open DialogDelete
     @Override

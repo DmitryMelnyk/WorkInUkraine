@@ -2,6 +2,7 @@ package com.dmelnyk.workinukraine.utils.parsing;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.dmelnyk.workinukraine.application.WorkInUaApplication;
@@ -44,14 +45,15 @@ public class ParserHeadHunters {
      * Parse page with given jobRequest parameters.
      * @param request - Request in format "search request / city".
      * @return list of VacancyModule's or empty ArrayList
+     * Result is null when server not response
      */
-    @NonNull
+    @Nullable
     public List<VacancyModel> getJobs(String request) {
         String jobRequest = request.split(" / ")[0];
         String city = request.split(" / ")[1];
         Log.d(TAG, "started getJobs(). City = " + city + " request = " + jobRequest);
 
-        List<VacancyModel> vacancies = new ArrayList<>();
+        List<VacancyModel> vacancies = null;
 
         String cityId = cities.getCityId(CityUtils.SITE.HEADHUNTERSUA, city);
         String correctedRequest = netUtils.replaceSpacesWithPlus(jobRequest);
@@ -63,6 +65,8 @@ public class ParserHeadHunters {
             Log.e(TAG, "Server not response!");
             return vacancies;
         }
+
+        vacancies = new ArrayList<>();
 
         Document doc = Jsoup.parse(response);
         Elements links = doc.getElementsByTag("div").select("div[class=\"search-result-description__item search-result-description__item_primary\"]");

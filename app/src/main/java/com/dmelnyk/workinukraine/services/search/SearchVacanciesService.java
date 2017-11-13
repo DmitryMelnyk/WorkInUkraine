@@ -9,6 +9,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
+import com.dmelnyk.workinukraine.db.DbContract;
 import com.dmelnyk.workinukraine.models.RequestModel;
 import com.dmelnyk.workinukraine.db.di.DaggerDbComponent;
 import com.dmelnyk.workinukraine.db.di.DbModule;
@@ -24,8 +25,10 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -49,7 +52,10 @@ public class SearchVacanciesService extends Service {
     public static final String ACTION_DOWNLOADING_IN_PROGRESS = "downloading in process";
 
     public static boolean sIsDownloadingFinished = false;
+    public static int sVacanciesCount = 0;
+
     private ExecutorService pool;
+    private boolean mIsJobCanceled;
 
     @IntDef({MODE_SEARCH, MODE_REPEATING_SEARCH})
     @Retention(RetentionPolicy.CLASS)
@@ -90,7 +96,9 @@ public class SearchVacanciesService extends Service {
     }
 
     private void startSearchingProcess(Intent intent) {
+        // default values
         sIsDownloadingFinished = false;
+        sVacanciesCount = 0;
 
         if (intent == null) {
             mMode = MODE_REPEATING_SEARCH;
@@ -116,6 +124,8 @@ public class SearchVacanciesService extends Service {
         Log.e(getClass().getSimpleName(), "stopService()");
         if (pool != null) {
             pool.shutdownNow();
+            mIsJobCanceled = true;
+            sIsDownloadingFinished = true;
         }
     }
 
@@ -160,10 +170,14 @@ public class SearchVacanciesService extends Service {
     private void sendBroadcastMessage(String action, String request, int vacanciesCount) {
         Timber.d(" Sending broadcast: " + action);
 
+        // if job is canceled don't send any messages
+        if (mIsJobCanceled) return;
+
         Intent broadcast = null;
         switch (action) {
             case ACTION_FINISHED:
                 sIsDownloadingFinished = true;
+                sVacanciesCount = vacanciesCount;
                 switch (mMode) {
                     // Searching when the app is running
                     case MODE_SEARCH:
@@ -205,6 +219,7 @@ public class SearchVacanciesService extends Service {
             Timber.d(" Starting task " + code);
             List<VacancyModel> list = new ArrayList<>();
 
+            String site = DbContract.SearchSites.SITES[code];
             switch (code) {
                 case HEADHUNTERSUA:
                     list = new ParserHeadHunters(getApplicationContext()).getJobs(request);
@@ -223,10 +238,13 @@ public class SearchVacanciesService extends Service {
                     break;
             }
 
-            // after each of 5 request save cache to 'count'.
-            // Then save all cache in repository after getting all result from 5 sites
-            saveDataToMap(request, list);
-            sendBroadcastMessage(ACTION_DOWNLOADING_IN_PROGRESS, request, list.size());
+            // if job is canceled don't do anything
+            if (!mIsJobCanceled) {
+                // after each of 5 request save cache to 'count'.
+                // Then save all cache in repository after getting all result from 5 sites
+                saveDataToMap(request, list, site);
+                sendBroadcastMessage(ACTION_DOWNLOADING_IN_PROGRESS, request, list.size());
+            }
 
             return list;
         }
@@ -236,9 +254,20 @@ public class SearchVacanciesService extends Service {
 
     private volatile Map<String, Integer> count = new HashMap<>();
     private volatile Map<String, List<VacancyModel>> cache = new HashMap<>();
+    private volatile Map<String, Set<String>> sitesMap = new HashMap<>();
 
-    private void saveDataToMap(String request, List<VacancyModel> list) throws Exception {
+    private void saveDataToMap(String request, List<VacancyModel> list, String site) throws Exception {
         totalVacanciesCount += list.size();
+
+        // adds response site to map for clearing only this old vacancies
+        if (list != null) {
+            Set<String> sites = sitesMap.containsKey(request)
+                    ? sitesMap.get(request)
+                    : new HashSet<>();
+
+            sites.add(site);
+            sitesMap.put(request, sites);
+        }
 
         if (count.containsKey(request)) {
             count.put(request, count.get(request) + 1);
@@ -251,12 +280,12 @@ public class SearchVacanciesService extends Service {
             cache.put(request, vacancyList);
         }
 
-        // saving cache to cache
+        // saving vacancies to cache
         cache.get(request).addAll(list);
 
-        // Saves vacancies after getting results from all 5 sites
+        // Saves vacancies to db after getting results from all 5 sites
         if (count.get(request) == 5) {
-            repository.saveVacancies(cache.get(request));
+            repository.saveVacancies(cache.get(request), sitesMap.get(request));
         }
     }
 

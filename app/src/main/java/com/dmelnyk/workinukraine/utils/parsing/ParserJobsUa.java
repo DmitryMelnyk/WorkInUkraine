@@ -45,6 +45,7 @@ public class ParserJobsUa {
      * Parse page with given jobRequest parameters.
      * @param request - Request in format "search request / city".
      * @return list of VacancyModule's or empty ArrayList
+     * Result is null when server not response
      */
     @NonNull
     public List<VacancyModel> getJobs(String request) {
@@ -52,7 +53,7 @@ public class ParserJobsUa {
         String city = request.split(" / ")[1];
         Log.d(TAG, "started getJobs(). City = " + city + " request = " + jobRequest);
 
-        List<VacancyModel> vacancies = new ArrayList<>();
+        List<VacancyModel> vacancies = null;
 
         String cityId = cities.getCityId(CityUtils.SITE.JOBSUA, city);
         String correctedRequest = netUtils.replaceSpacesWithPlus(jobRequest);
@@ -65,6 +66,7 @@ public class ParserJobsUa {
             return vacancies;
         }
 
+        vacancies = new ArrayList<>();
         Document doc = Jsoup.parse(response);
         Elements links = doc.getElementsByTag("div").select("div[class=\"b-vacancy__top\"]");
         for (Element link : links) {

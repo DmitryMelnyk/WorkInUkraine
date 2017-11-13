@@ -4,6 +4,7 @@ import com.dmelnyk.workinukraine.models.RequestModel;
 import com.dmelnyk.workinukraine.models.VacancyModel;
 
 import java.util.List;
+import java.util.Set;
 
 import io.reactivex.Single;
 
@@ -20,9 +21,10 @@ public interface ISearchServiceRepository {
 
     /**
      * Saves vacancies from all websites
-     * @param stringListMap
+     * @param vacancies
+     * @param responseSites
      */
-    void saveVacancies(List<VacancyModel> stringListMap) throws Exception;
+    void saveVacancies(List<VacancyModel> vacancies, Set<String> responseSites) throws Exception;
 
     /**
      * Returns list of RequestModel items

@@ -16,6 +16,7 @@ import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
 
 import com.dmelnyk.workinukraine.R;
+import com.dmelnyk.workinukraine.db.DbContract;
 import com.dmelnyk.workinukraine.db.di.DbModule;
 import com.dmelnyk.workinukraine.models.RequestModel;
 import com.dmelnyk.workinukraine.models.VacancyModel;
@@ -36,8 +37,10 @@ import com.evernote.android.job.JobRequest;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -186,6 +189,7 @@ public class RepeatingSearchJob extends Job {
             Timber.d(" Starting task " + code);
             List<VacancyModel> list = new ArrayList<>();
 
+            String site = DbContract.SearchSites.SITES[code];
             // get list of vacancies from proper site
             switch (code) {
                 case HEADHUNTERSUA:
@@ -207,7 +211,7 @@ public class RepeatingSearchJob extends Job {
 
             // after each of 5 request save cache to 'count'.
             // Then save all cache in repository after getting all result from 5 sites
-            saveDataToMap(request, list);
+            saveDataToMap(request, list, site);
 
             return list;
         }
@@ -215,8 +219,20 @@ public class RepeatingSearchJob extends Job {
 
     private volatile Map<String, Integer> count = new HashMap<>();
     private volatile Map<String, List<VacancyModel>> cache = new HashMap<>();
+    private volatile Map<String, Set<String>> sitesMap = new HashMap<>();
 
-    private void saveDataToMap(String request, List<VacancyModel> list) throws Exception {
+    private void saveDataToMap(String request, List<VacancyModel> list, String site) throws Exception {
+
+        // adds response site to map for clearing only this old vacancies
+        if (list != null) {
+            Set<String> sites = sitesMap.containsKey(request)
+                    ? sitesMap.get(request)
+                    : new HashSet<>();
+
+            sites.add(site);
+            sitesMap.put(request, sites);
+        }
+
         if (count.containsKey(request)) {
             count.put(request, count.get(request) + 1);
         } else {
@@ -228,12 +244,12 @@ public class RepeatingSearchJob extends Job {
             cache.put(request, vacancyList);
         }
 
-        // saving cache to cache
+        // saving vacancies to cache
         cache.get(request).addAll(list);
 
-        // Saves vacancies after getting results from all 5 sites
+        // Saves vacancies to db after getting results from all 5 sites
         if (count.get(request) == 5) {
-            repository.saveVacancies(cache.get(request));
+            repository.saveVacancies(cache.get(request), sitesMap.get(request));
         }
     }
 

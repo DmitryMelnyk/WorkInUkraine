@@ -2,6 +2,7 @@ package com.dmelnyk.workinukraine.services.periodic_search.repo;
 
 import android.database.Cursor;
 
+import com.dmelnyk.workinukraine.ui.settings.repository.ISettingsRepository;
 import com.dmelnyk.workinukraine.utils.SharedPrefUtil;
 import com.dmelnyk.workinukraine.db.DbContract;
 import com.dmelnyk.workinukraine.ui.settings.repository.SettingsRepository;
@@ -25,7 +26,7 @@ public class RepeatingSearchRepository implements IRepeatingSearchRepository {
     private static final String TABLE_VACANCIES = DbContract.SearchSites.TABLE_ALL_SITES;
 
     private final BriteDatabase db;
-    private final SettingsRepository settingsRepository;
+    private final ISettingsRepository settingsRepository;
     private final SharedPrefUtil sharedPrefUtil;
 
     public RepeatingSearchRepository(BriteDatabase db, SettingsRepository settingsRepo, SharedPrefUtil sharedPrefUtil) {
@@ -109,6 +110,11 @@ public class RepeatingSearchRepository implements IRepeatingSearchRepository {
         return settingsRepository.getSleepModeCheckedState();
     }
 
+    @Override
+    public boolean isPeriodicSearchEnable() {
+        return settingsRepository.getPeriodicSearchCheckedState();
+    }
+
     private Calendar getCalendarTime(String time) {
         String hour = time.split(":")[0];
         String minute = time.split(":")[1];
@@ -121,6 +127,4 @@ public class RepeatingSearchRepository implements IRepeatingSearchRepository {
 
         return c;
     }
-
-
 }

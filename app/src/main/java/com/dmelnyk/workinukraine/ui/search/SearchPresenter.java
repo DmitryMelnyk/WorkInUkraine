@@ -1,7 +1,5 @@
 package com.dmelnyk.workinukraine.ui.search;
 
-import android.util.Log;
-
 import com.dmelnyk.workinukraine.ui.search.business.ISearchInteractor;
 import com.dmelnyk.workinukraine.models.RequestModel;
 import com.dmelnyk.workinukraine.ui.search.Contract.ISearchView;
@@ -79,10 +77,8 @@ public class SearchPresenter implements Contract.ISearchPresenter {
     private void updateInternetStatusView(boolean isConnected) {
         if (isConnected) {
             view.hideNoConnection();
-            view.enableSearch();
         } else {
             view.showNoConnection();
-            view.disableSearch();
         }
     }
 
@@ -92,7 +88,8 @@ public class SearchPresenter implements Contract.ISearchPresenter {
     }
 
     @Override
-    public void updateData() {
+    public void downloadingFinished(int vacanciesCount) {
+        view.updateDownloadingDialog(vacanciesCount);
         getRequests();
     }
 
@@ -107,6 +104,9 @@ public class SearchPresenter implements Contract.ISearchPresenter {
     }
 
     private void displayData(List<RequestModel> requestsList) {
+        // restore downloading dialog if if was running
+        view.hideProgressBar();
+        view.updateDownloadingDialog(-1);
         view.updateData((ArrayList<RequestModel>) requestsList);
         view.updateVacanciesCount(countAllVacancies(requestsList));
         view.updateNewVacanciesCount(countAllNewVacancies(requestsList));

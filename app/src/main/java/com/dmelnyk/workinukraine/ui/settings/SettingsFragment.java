@@ -42,10 +42,10 @@ public class SettingsFragment extends BaseFragment implements
 
         DialogTimePicker.OnDialogTimePickerInteractionListener {
 
-    private static final String DIALOG_PERIOD_TAG = "dialog period tag";
     private static final String WEBSTORE_APP_ADDRESS = "http://www.example.com";
 
     @BindView(R.id.updatePeriod) TextView mUpdatePeriod;
+    @BindView(R.id.periiodicSearchSwitcher) Switch mPeriodicSwitcher;
     @BindView(R.id.soundSwitcherText) TextView mSoundSwitcherText;
     @BindView(R.id.soundSwitcher) Switch mSoundSwitcher;
     @BindView(R.id.vibroSwitcherText) TextView mVibroSwitcherText;
@@ -69,8 +69,6 @@ public class SettingsFragment extends BaseFragment implements
 
         WorkInUaApplication.get(getContext()).getAppComponent()
                 .add(new SettingsModule()).inject(this);
-
-        Log.e("1010", "SettingsFragment onCreate");
     }
 
     @Override
@@ -85,15 +83,14 @@ public class SettingsFragment extends BaseFragment implements
     }
 
     private void initializeSwitcherListeners() {
-        mSoundSwitcher.setOnCheckedChangeListener((button, isChecked) -> {
-            presenter.onSwitcherChecked(0, isChecked);
-        });
-        mVibroSwitcher.setOnCheckedChangeListener((button, isChecked) -> {
-            presenter.onSwitcherChecked(1, isChecked);
-        });
-        mDisturbSwitcher.setOnCheckedChangeListener((button, isChecked) -> {
-            presenter.onSwitcherChecked(2, isChecked);
-        });
+        mSoundSwitcher.setOnCheckedChangeListener((button, isChecked) ->
+            presenter.onSwitcherChecked(0, isChecked));
+        mVibroSwitcher.setOnCheckedChangeListener((button, isChecked) ->
+            presenter.onSwitcherChecked(1, isChecked));
+        mDisturbSwitcher.setOnCheckedChangeListener((button, isChecked) ->
+            presenter.onSwitcherChecked(2, isChecked));
+        mPeriodicSwitcher.setOnCheckedChangeListener((buttonView, isChecked) ->
+                presenter.onSwitcherChecked(3, isChecked));
     }
 
     @Override
@@ -125,6 +122,7 @@ public class SettingsFragment extends BaseFragment implements
         mSoundSwitcher.setChecked(checkedStates[0]);
         mVibroSwitcher.setChecked(checkedStates[1]);
         mDisturbSwitcher.setChecked(checkedStates[2]);
+        mPeriodicSwitcher.setChecked(checkedStates[3]);
 
         // Initialize text items
         mUpdatePeriod.setText(textStates[0]);

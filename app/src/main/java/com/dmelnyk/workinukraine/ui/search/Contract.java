@@ -19,6 +19,8 @@ public class Contract {
 
         void showErrorMessage(String message);
 
+        void updateDownloadingDialog(int count);
+
         void updateLastSearchTime(String updated);
 
         void hideNoConnection();
@@ -27,9 +29,7 @@ public class Contract {
 
         boolean getInternetStatus();
 
-        void disableSearch();
-
-        void enableSearch();
+        void hideProgressBar();
     }
 
     public interface ISearchPresenter {
@@ -45,7 +45,7 @@ public class Contract {
 
         void clearAllRequest();
 
-        void updateData();
+        void downloadingFinished(int vacanciesCount);
 
         void onInternetStatusChanged(boolean isConnected);
     }

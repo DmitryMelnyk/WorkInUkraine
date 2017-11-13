@@ -163,8 +163,6 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="250dp"
         app:layout_anchor="@id/app_bar"
-        app:layout_anchorGravity="bottom|center_horizontal"
-
-        />
+        app:layout_anchorGravity="bottom|center_horizontal" />
 
 </android.support.design.widget.CoordinatorLayout>

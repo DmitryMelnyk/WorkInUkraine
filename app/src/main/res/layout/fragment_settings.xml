@@ -96,15 +96,27 @@
                         android:src="@drawable/settings_period"
                         />
                     <LinearLayout
-                        style="@style/LinearLayout.SettingsItem.TextViews">
-                        <TextView
-                            style="@style/TextView.SettingsItem.First"
-                            android:text="@string/settings_item_period"
-                            />
-                        <TextView
-                            android:id="@+id/updatePeriod"
-                            style="@style/TextView.SettingsItem.Second"
-                            android:text="Каждый 6 часов"
+                        android:gravity="center_vertical"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_weight="85"
+                            style="@style/LinearLayout.SettingsItem.TextViews">
+                            <TextView
+                                style="@style/TextView.SettingsItem.First"
+                                android:text="@string/settings_item_period"
+                                />
+                            <TextView
+                                android:id="@+id/updatePeriod"
+                                style="@style/TextView.SettingsItem.Second"
+                                android:text="Каждый 6 часов"
+                                />
+                        </LinearLayout>
+                        <Switch
+                            android:id="@+id/periiodicSearchSwitcher"
+                            style="@style/Switcher"
                             />
                     </LinearLayout>
                 </LinearLayout>

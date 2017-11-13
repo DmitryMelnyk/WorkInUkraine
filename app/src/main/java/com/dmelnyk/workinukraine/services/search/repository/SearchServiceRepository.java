@@ -60,12 +60,12 @@ public class SearchServiceRepository implements ISearchServiceRepository {
     }
 
     @Override
-    public void saveVacancies(List<VacancyModel> allVacancies) throws Exception {
-        Timber.d("Found %d vacancies", allVacancies.size());
+    public void saveVacancies(List<VacancyModel> vacancies, Set<String> responseSites) throws Exception {
+        Timber.d("Found %d vacancies", vacancies.size());
 
-        if (allVacancies.isEmpty()) return;
+        if (vacancies.isEmpty()) return;
 
-        String request = allVacancies.get(0).request();
+        String request = vacancies.get(0).request();
 
         if (shouldBeUpdated(request)) {
             updateTimeStatusVacancies(request);
@@ -75,7 +75,7 @@ public class SearchServiceRepository implements ISearchServiceRepository {
         List<VacancyModel> oldVacancies = getPreviousVacancies(request);
 
         List<VacancyModel> updatedVacancies = new ArrayList<>();
-        for (VacancyModel vacancy : allVacancies) {
+        for (VacancyModel vacancy : vacancies) {
             VacancyModel.Builder vacancyBuilder = VacancyModel.builder()
                     .setDate(vacancy.date())
                     .setRequest(vacancy.request())
@@ -101,16 +101,32 @@ public class SearchServiceRepository implements ISearchServiceRepository {
         }
 
         // remove all previous vacancies with current request
-        db.delete(VACANCY_TABLE, DbContract.SearchRequest.Columns.REQUEST + " = '" + request + "'");
+        // don't remove request from sites that did not response.
+        clearOldVacancies(responseSites, request);
         // writing vacancies to db
         writeVacanciesToDb(updatedVacancies);
 
         // updating request table
         int newVacanciesCount = getNewVacanciesCount(request);
         long updatingTime = System.currentTimeMillis();
-        updateRequestTable(request, allVacancies.size(), newVacanciesCount, updatingTime);
+        updateRequestTable(request, vacancies.size(), newVacanciesCount, updatingTime);
 
         db.close();
+    }
+
+    private void clearOldVacancies(Set<String> responseSites, String request) {
+        Log.d(getClass().getSimpleName(), "clearOldVacancies. Request=" + request + " response sites=" + responseSites);
+        BriteDatabase.Transaction transaction = db.newTransaction();
+        try {
+            for (String site : responseSites) {
+                db.delete(VACANCY_TABLE, DbContract.SearchSites.Columns.REQUEST + " = '" + request
+                        + "' AND " + DbContract.SearchSites.Columns.SITE + " = '" + site + "'");
+            }
+            transaction.markSuccessful();
+        } finally {
+            transaction.end();
+        }
+
     }
 
     @NonNull

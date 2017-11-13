@@ -89,7 +89,6 @@
     </LinearLayout>
 
     <Button
-        android:visibility="gone"
         android:id="@+id/button_cancel"
         android:layout_width="match_parent"
         android:layout_height="0dp"

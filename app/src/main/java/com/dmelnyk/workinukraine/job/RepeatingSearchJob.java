@@ -263,7 +263,7 @@ public class RepeatingSearchJob extends Job {
                     Log.d(getClass().getSimpleName(), "Previous new vacancies count=" + previousNewVacanciesCount);
                     if (!newVacancies.isEmpty()
                             && newVacancies.size() != previousNewVacanciesCount) {
-                        sendNotification(newVacancies.size());
+                        sendNotification(newVacancies);
                         settingsRepository.saveNewVacanciesCount(newVacancies.size());
                         Log.d(getClass().getSimpleName(), "new vacancies " + newVacancies.size());
                     } else {
@@ -278,9 +278,15 @@ public class RepeatingSearchJob extends Job {
         scheduleRepeatingSearch(settingsRepository.getUpdateInterval());
     }
 
-    private void sendNotification(int vacanciesFound) {
+    private void sendNotification(List<VacancyModel> vacancies) {
         final Bitmap largeExpandedAvatar = BitmapFactory.decodeResource(
                 mContext.getResources(), R.mipmap.ic_launcher);
+
+        // getting list of vacancies's titles
+        String bigText = "";
+        for (VacancyModel vacancy : vacancies) {
+            bigText += vacancy.title() + "\n";
+        }
 
         boolean isVibroEnable = settingsRepository.isVibroEnable();
         boolean isSoundEnable = settingsRepository.isSoundEnable();
@@ -288,12 +294,17 @@ public class RepeatingSearchJob extends Job {
         // for Version >= 26
         initChannels(mContext);
 
-        String msg = mContext.getString(R.string.msg_founded_new_vacancies) + " " + vacanciesFound;
+        String msg = mContext.getString(R.string.msg_founded_new_vacancies);
+
         NotificationCompat.Builder notification = new NotificationCompat.Builder(mContext, "default")
-                .setContentTitle(mContext.getString(R.string.app_name))
-                .setContentText(msg)
                 .setSmallIcon(R.drawable.ic_work_black_24dp)
                 .setLargeIcon(largeExpandedAvatar)
+                .setContentTitle(mContext.getString(R.string.app_name))
+                .setContentText(msg)
+                .setStyle(new NotificationCompat.BigTextStyle()
+                        .bigText(bigText)
+                        .setSummaryText("Всего вакансий: " + vacancies.size())
+                )
                 .setContentIntent(createPendingIntent(mContext))
                 .setAutoCancel(true);
 
@@ -327,6 +338,8 @@ public class RepeatingSearchJob extends Job {
 
     private PendingIntent createPendingIntent(Context context) {
         Intent intent = new Intent(context, NavigationActivity.class);
+        intent.putExtra(NavigationActivity.EXTRA_SEARCH_FRAGMENT, true);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         PendingIntent pendingIntent = PendingIntent.getActivity(
                 context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 

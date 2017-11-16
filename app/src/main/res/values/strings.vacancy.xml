@@ -4,6 +4,7 @@
     <string name="msg_item_removed_from_favorite">Вакансия удалена из списка избранных!</string>
 
     <string name="text_view_tab_is_empty">Вы пока еще не добавили ни одной вакансии в список избранных!</string>
+    <string name="text_view_tab_is_empty2">Список вакансий пуст!</string>
     <string name="vacancies_found">Вакансий</string>
     <string name="msg_item_already_exists_in_filter">Данный фильтр уже существует в списке!</string>
     <string name="msg_item_added">добавлен к фильтрам!</string>

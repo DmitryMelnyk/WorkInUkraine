@@ -48,6 +48,7 @@ public class NavigationActivity extends BaseAnimationActivity implements
         SearchFragment.OnFragmentInteractionListener,
         BaseFragment.OnFragmentInteractionListener {
 
+    public static final String EXTRA_SEARCH_FRAGMENT = "EXTRA_SEARCH_FRAGMENT";
     @BindView(R.id.toolbar)
     Toolbar toolbar;
     @BindView(R.id.container)
@@ -58,7 +59,6 @@ public class NavigationActivity extends BaseAnimationActivity implements
 
     @Inject INavigationPresenter presenter;
     @Inject NavUtil navUtil;
-//    @Inject AlarmClockUtil alarmUtil;
 
     private static final int NAV_SEARCH_POSITION = 0;
     private static final int NAV_REFRESH_POSITION = 1;
@@ -109,15 +109,13 @@ public class NavigationActivity extends BaseAnimationActivity implements
 
         presenter.bindView(this);
 
+        // open SearchFragment if this activity was started from Notification
+        if (getIntent().getBooleanExtra(EXTRA_SEARCH_FRAGMENT, false)) {
+            navigator.closeMenu();
+        }
         // TODO
 //        Intent splash = new Intent(this, SplashActivity.class);
 //        startActivity(splash);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-//        alarmUtil.stopAlarmClock();
     }
 
     @Override
@@ -126,16 +124,12 @@ public class NavigationActivity extends BaseAnimationActivity implements
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
-//        alarmUtil.startAlarmClock();
-    }
-
-    @Override
     protected void onDestroy() {
         presenter.unbindView();
         super.onDestroy();
-    }    @Override
+    }
+
+    @Override
     public void onBackPressed() {
         if (navigator.isMenuHidden()) {
             navigator.openMenu(true);

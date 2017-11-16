@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.Context;
 import android.util.Log;
 
+import com.crashlytics.android.Crashlytics;
 import com.dmelnyk.workinukraine.job.RepeatingSearchJob;
 import com.dmelnyk.workinukraine.job.AppJobCreator;
 import com.dmelnyk.workinukraine.ui.settings.repository.SettingsRepository;
@@ -11,6 +12,7 @@ import com.dmelnyk.workinukraine.utils.SharedPrefUtil;
 import com.dmelnyk.workinukraine.utils.Tags;
 import com.evernote.android.job.JobManager;
 
+import io.fabric.sdk.android.Fabric;
 import timber.log.Timber;
 
 /**
@@ -29,6 +31,7 @@ public class WorkInUaApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        Fabric.with(this, new Crashlytics());
 
         appComponent = DaggerApplicationComponent.builder()
                 .applicationModule(new ApplicationModule(this))

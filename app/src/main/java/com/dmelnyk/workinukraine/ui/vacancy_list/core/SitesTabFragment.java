@@ -114,7 +114,7 @@ public class SitesTabFragment extends Fragment {
             adapter.setOnAdapterInteractionListener(this);
 
             RecyclerView recyclerView = (RecyclerView) LayoutInflater.from(container.getContext())
-                    .inflate(R.layout.fragment_base_rv, null);
+                    .inflate(R.layout.recycler_view, null);
             recyclerView.setLayoutManager(new LinearLayoutManager(container.getContext()));
 
             recyclerView.setAdapter(adapter);

@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 
 import com.dmelnyk.workinukraine.R;
 import com.dmelnyk.workinukraine.models.VacancyModel;
+import com.dmelnyk.workinukraine.ui.search.RecyclerViewModified;
 import com.dmelnyk.workinukraine.ui.vacancy_list.VacancyListActivity;
 
 import java.util.ArrayList;
@@ -22,7 +23,7 @@ import java.util.List;
 
 public class FavoriteTabFragment extends BaseTabFragment {
 
-    private RecyclerView mRecyclerView;
+//    private RecyclerViewModified mRecyclerView;
     private VacancyCardViewAdapter mAdapter;
     private static List<VacancyModel> sCache;
 
@@ -38,8 +39,8 @@ public class FavoriteTabFragment extends BaseTabFragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         Log.e(getClass().getSimpleName(), "onViewCreated()");
         super.onViewCreated(view, savedInstanceState);
-        mRecyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
+//        mRecyclerView = view.findViewById(R.id.recycler_view);
+//        mRecyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
     }
 
     @Override
@@ -77,6 +78,9 @@ public class FavoriteTabFragment extends BaseTabFragment {
 
     public void updateData(List<VacancyModel> vacancies) {
         sCache = new ArrayList<>(vacancies);
+//        if (mRecyclerView != null && mRecyclerView.getAdapter() != null) {
+//            mRecyclerView.getAdapter().notifyDataSetChanged();
+//        }
         updateAdapter();
     }
 }

@@ -10,9 +10,11 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.dmelnyk.workinukraine.R;
 import com.dmelnyk.workinukraine.models.VacancyModel;
+import com.dmelnyk.workinukraine.ui.search.RecyclerViewModified;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -32,7 +34,7 @@ public class BaseTabFragment extends Fragment implements
     public static final String FRAGMENT_RECENT = "recent";
     public static final String ARG_CARD_TYPE = "card_adapter_type";
 
-    private RecyclerView mRecyclerView;
+    protected RecyclerViewModified mRecyclerView;
     private int mCardAdapterType;
 
     @StringDef({ FRAGMENT_FAVORITE, FRAGMENT_NEW, FRAGMENT_RECENT })
@@ -86,8 +88,14 @@ public class BaseTabFragment extends Fragment implements
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         createProperAdapter();
-        mRecyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
+
+        if (mCardAdapterType == VacancyCardViewAdapter.TYPE_FAVORITE) {
+            ((TextView) view.findViewById(R.id.empty_view)).setText(R.string.text_view_tab_is_empty);
+        }
+
+        mRecyclerView = view.findViewById(R.id.recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
+        mRecyclerView.setEmptyView(view.findViewById(R.id.empty_view));
         mRecyclerView.setAdapter(mAdapter);
     }
 
@@ -102,7 +110,7 @@ public class BaseTabFragment extends Fragment implements
      */
     public void createProperAdapter() {
         if (mCardAdapterType == VacancyCardViewAdapter.TYPE_FAVORITE && mItems.isEmpty()) {
-            mAdapter = new EmptyFavoriteViewAdapter(null, mCardAdapterType);
+            mAdapter = new EmptyFavoriteViewAdapter(new ArrayList<>(), mCardAdapterType);
         } else {
             mAdapter = new VacancyCardViewAdapter(mItems, mCardAdapterType);
             mAdapter.setOnAdapterInteractionListener(this);

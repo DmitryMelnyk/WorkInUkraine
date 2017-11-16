@@ -6,6 +6,7 @@ import android.os.Build;
 import android.support.annotation.IntDef;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -54,13 +55,14 @@ public class VacancyCardViewAdapter extends RecyclerView.Adapter<VacancyCardView
     @IntDef(value = { TYPE_FAVORITE, TYPE_NEW, TYPE_RECENT, TYPE_STANDARD })
     public @interface CardViewType {}
 
-    private ArrayList<VacancyModel> mDataSet;
+    private ArrayList<VacancyModel> mDataSet ;
     private int mCardViewType;
 
     public VacancyCardViewAdapter(ArrayList<VacancyModel> vacancies,
                                   int cardViewType) {
         mDataSet = vacancies;
         mCardViewType = cardViewType;
+        Log.e("111", "Adapter Created. vacancies=" + vacancies);
     }
 
     @Override
@@ -154,7 +156,9 @@ public class VacancyCardViewAdapter extends RecyclerView.Adapter<VacancyCardView
 
     @Override
     public int getItemCount() {
-        return mDataSet.size();
+        return mDataSet == null
+                ? 0
+                : mDataSet.size();
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {

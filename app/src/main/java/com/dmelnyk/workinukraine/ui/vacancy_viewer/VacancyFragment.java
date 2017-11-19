@@ -3,14 +3,10 @@ package com.dmelnyk.workinukraine.ui.vacancy_viewer;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -24,28 +20,17 @@ import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.DataSource;
-import com.bumptech.glide.load.engine.GlideException;
-import com.bumptech.glide.request.FutureTarget;
-import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.SimpleTarget;
-import com.bumptech.glide.request.target.Target;
 import com.bumptech.glide.request.transition.Transition;
 import com.dmelnyk.workinukraine.R;
 import com.dmelnyk.workinukraine.models.VacancyModel;
 import com.dmelnyk.workinukraine.utils.NetUtils;
 
-import java.util.concurrent.ExecutionException;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 import butterknife.Unbinder;
 
 /**
@@ -68,7 +53,7 @@ public class VacancyFragment extends Fragment implements SwipeRefreshLayout.OnRe
     @BindView(R.id.web_view) WebView mWebView;
     Unbinder unbinder;
 
-    private String mTitle = "nullable fragment";
+    private String mTitle = "Starting title";
     private String mUrl;
     private CallbackListener mCallback;
     private boolean isDataFullyDownloaded;
@@ -243,6 +228,15 @@ public class VacancyFragment extends Fragment implements SwipeRefreshLayout.OnRe
         }
     }
 
+    public boolean goBack() {
+        boolean canGoBack = mWebView.canGoBack();
+        if (canGoBack) {
+            mWebView.goBack();
+        }
+
+        return canGoBack;
+    }
+
     /**
      * WebViewClient subclass loads all hyperlinks in the existing WebView
      */
@@ -275,8 +269,6 @@ public class VacancyFragment extends Fragment implements SwipeRefreshLayout.OnRe
                                     WebResourceError error) {
 
             Log.d(VacancyFragment.this.getClass().getSimpleName(), "onReceivedError=" + error.getErrorCode());
-            // TODO
-//            checkInetStatus(null);
             showOrHideContent();
             super.onReceivedError(view, request, error);
         }
@@ -286,8 +278,6 @@ public class VacancyFragment extends Fragment implements SwipeRefreshLayout.OnRe
         public void onReceivedHttpError(WebView view,
                                         WebResourceRequest request, WebResourceResponse errorResponse) {
             Log.d(VacancyFragment.this.getClass().getSimpleName(), "onReceivedError=" + errorResponse.getStatusCode());
-            // TODO
-//            checkInetStatus(errorResponse);
             showOrHideContent();
             super.onReceivedHttpError(view, request, errorResponse);
         }

@@ -1,21 +1,29 @@
 package com.dmelnyk.workinukraine.ui.vacancy_viewer;
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.webkit.ValueCallback;
 import android.webkit.WebResourceResponse;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -51,6 +59,12 @@ public class VacancyViewerActivity extends BaseAnimationActivity
 
     private static final String EXTRA_TYPE = "extra_type";
     private static final String EXTRA_VACANCY_TO_DISPLAY = "extra_display_vacancy";
+
+    private static final String TAG = VacancyViewerActivity.class.getSimpleName();
+    private String mCM;
+    private ValueCallback<Uri> mUM;
+    private ValueCallback<Uri[]> mUMA;
+    private final static int FCR=1;
 
     @BindView(R.id.vacancy_container) ViewPager mVacancyContainer;
     @BindView(R.id.site_icon_image_view) ImageView mSiteIconImageView;
@@ -110,6 +124,14 @@ public class VacancyViewerActivity extends BaseAnimationActivity
         presenter.getData(request, type, site);
         initializeToolbar(mVacancyToDisplay);
         snackBar = Snackbar.make(mTitleTextView, R.string.msg_no_inet_connection_short, Snackbar.LENGTH_INDEFINITE);
+
+        checkPermission();
+    }
+
+    private void checkPermission() {
+        if(Build.VERSION.SDK_INT >=23 && (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED)) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+        }
     }
 
     private void initializeToolbar(VacancyModel vacancyToDisplay) {
@@ -145,6 +167,42 @@ public class VacancyViewerActivity extends BaseAnimationActivity
         presenter.onDestroy();
         unbinder.unbind();
         super.onDestroy();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        super.onActivityResult(requestCode, resultCode, intent);
+        if(Build.VERSION.SDK_INT >= 21){
+            Uri[] results = null;
+            //Check if response is positive
+            if(resultCode== Activity.RESULT_OK){
+                if(requestCode == FCR){
+                    if(null == mUMA){
+                        return;
+                    }
+                    if(intent == null || intent.getData() == null){
+                        //Capture Photo if no image available
+                        if(mCM != null){
+                            results = new Uri[]{Uri.parse(mCM)};
+                        }
+                    }else{
+                        String dataString = intent.getDataString();
+                        if(dataString != null){
+                            results = new Uri[]{Uri.parse(dataString)};
+                        }
+                    }
+                }
+            }
+            mUMA.onReceiveValue(results);
+            mUMA = null;
+        }else{
+            if(requestCode == FCR){
+                if(null == mUM) return;
+                Uri result = intent == null || resultCode != RESULT_OK ? null : intent.getData();
+                mUM.onReceiveValue(result);
+                mUM = null;
+            }
+        }
     }
 
     @Override
@@ -232,6 +290,26 @@ public class VacancyViewerActivity extends BaseAnimationActivity
     @Override
     public void onExit() {
         onBackPressed();
+    }
+
+    @Override
+    public boolean onKeyLongPress(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            finish();
+            return true;
+        }
+
+        return super.onKeyLongPress(keyCode, event);
+    }
+
+    @Override
+    public void onBackPressed() {
+        int item = mVacancyContainer.getCurrentItem();
+        VacancyFragment fragment = mAdapter.getFragmentReference(item);
+        // if there is no browser history - exit  this activity
+        if (!fragment.goBack()) {
+            super.onBackPressed();
+        }
     }
 
     @Override

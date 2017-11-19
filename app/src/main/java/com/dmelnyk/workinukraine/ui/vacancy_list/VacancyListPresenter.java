@@ -107,6 +107,7 @@ public class VacancyListPresenter implements Contract.IVacancyPresenter {
 
         // Exit from activity if no vacancies found
         if (siteTabsCount == 0) {
+            Log.d(getClass().getSimpleName(), "displayData(). No vacancy has found. Exit from activity!");
             view.exitActivity();
             clear();
             return;

@@ -5,6 +5,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:name=".application.WorkInUaApplication"
@@ -40,9 +41,6 @@
             android:name=".ui.vacancy_list.VacancyListActivity"
             android:label="@string/title_activity_vacancy"
             android:theme="@style/VacancyTheme" />
-        <activity
-            android:name=".ui.vacancy_viewer.WebViewActivity"
-            android:configChanges="orientation|screenSize" />
         <activity
             android:name=".ui.vacancy_viewer.VacancyViewerActivity"
             android:configChanges="orientation|screenSize" />

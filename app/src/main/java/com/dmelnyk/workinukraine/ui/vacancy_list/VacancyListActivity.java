@@ -389,6 +389,7 @@ public class VacancyListActivity extends BaseAnimationActivity implements
 
     @Override
     public void exitActivity() {
+        Log.d(getClass().getSimpleName(), "exitActivity() is coled!");
         setResult(RESULT_CANCELED);
         finish();
     }

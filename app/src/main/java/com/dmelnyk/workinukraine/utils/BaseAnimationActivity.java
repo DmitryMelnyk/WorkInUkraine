@@ -30,7 +30,7 @@ public class BaseAnimationActivity extends AppCompatActivity {
     }
 
     public void onExit() {
-        super.onBackPressed();
+        onBackPressed();
         overridePendingTransitionExit();
     }
 

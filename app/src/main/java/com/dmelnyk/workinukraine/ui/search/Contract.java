@@ -30,6 +30,8 @@ public class Contract {
         boolean getInternetStatus();
 
         void hideProgressBar();
+
+        void showProgressBar();
     }
 
     public interface ISearchPresenter {

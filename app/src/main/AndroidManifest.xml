@@ -17,21 +17,22 @@
         <activity
             android:name=".ui.splash.SplashActivity"
             android:noHistory="true"
+            android:theme="@style/SplashTheme"
             android:screenOrientation="portrait">
 
-            <!-- <intent-filter> -->
-            <!-- <action android:name="android.intent.action.MAIN"/> -->
-            <!-- <category android:name="android.intent.category.LAUNCHER"/> -->
-            <!-- </intent-filter> -->
+             <intent-filter>
+             <action android:name="android.intent.action.MAIN"/>
+             <category android:name="android.intent.category.LAUNCHER"/>
+             </intent-filter>
         </activity>
         <activity
             android:name=".ui.navigation.NavigationActivity"
             android:launchMode="singleInstance">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+            <!--<intent-filter>-->
+                <!--<action android:name="android.intent.action.MAIN" />-->
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+                <!--<category android:name="android.intent.category.LAUNCHER" />-->
+            <!--</intent-filter>-->
         </activity>
 
         <!-- <service android:name=".services.GetDataIntentService"/> -->
@@ -44,7 +45,6 @@
         <activity
             android:name=".ui.vacancy_viewer.VacancyViewerActivity"
             android:configChanges="orientation|screenSize" />
-        <activity android:name=".ui.filter.FilterActivity" />
 
         <!--<receiver android:name=".services.periodic_search.AlarmReceiver" />-->
         <receiver android:name=".services.periodic_search.BootReceiver" />

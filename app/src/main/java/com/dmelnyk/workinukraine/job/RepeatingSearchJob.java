@@ -74,6 +74,7 @@ public class RepeatingSearchJob extends Job {
     ISearchServiceRepository repository;
 
     public static void scheduleRepeatingSearch(long interval) {
+        AppJobCreator.clearAllTasks();
 
         int jobId = new JobRequest.Builder(TAG)
                 .setPeriodic(interval)
@@ -82,12 +83,7 @@ public class RepeatingSearchJob extends Job {
                 .build()
                 .schedule();
 
-        saveTaskId(jobId);
         Log.d(Tags.REPEATING_SEARCH, "scheduleRepeatingSearch(). jobId=" + jobId);
-    }
-
-    private static void saveTaskId(int jobId) {
-
     }
 
     @NonNull
@@ -104,7 +100,7 @@ public class RepeatingSearchJob extends Job {
 
         // Stops task if periodic search has been disabled in settings
         if (!settingsRepository.isPeriodicSearchEnable()) {
-            JobManager.instance().cancelAllForTag(TAG);
+            AppJobCreator.clearAllTasks();
             return Result.SUCCESS;
         }
 
@@ -274,8 +270,8 @@ public class RepeatingSearchJob extends Job {
                     settingsRepository.close();
                 }, throwable -> Timber.e("Error happened", throwable));
 
-        // create new task after period
-        scheduleRepeatingSearch(settingsRepository.getUpdateInterval());
+//        // create new task after period
+//        scheduleRepeatingSearch(settingsRepository.getUpdateInterval());
     }
 
     private void sendNotification(List<VacancyModel> vacancies) {

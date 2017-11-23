@@ -19,6 +19,7 @@ import android.widget.TextView;
 
 import com.dmelnyk.workinukraine.R;
 import com.dmelnyk.workinukraine.application.WorkInUaApplication;
+import com.dmelnyk.workinukraine.ui.dialogs.loading.LoadingDialog;
 import com.dmelnyk.workinukraine.ui.splash.SplashActivity;
 import com.dmelnyk.workinukraine.ui.navigation.Contract.INavigationPresenter;
 import com.dmelnyk.workinukraine.ui.navigation.di.NavigationModule;
@@ -113,9 +114,6 @@ public class NavigationActivity extends BaseAnimationActivity implements
         if (getIntent().getBooleanExtra(EXTRA_SEARCH_FRAGMENT, false)) {
             navigator.closeMenu();
         }
-        // TODO
-//        Intent splash = new Intent(this, SplashActivity.class);
-//        startActivity(splash);
     }
 
     @Override

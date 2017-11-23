@@ -90,6 +90,7 @@ public class SearchPresenter implements Contract.ISearchPresenter {
     @Override
     public void downloadingFinished(int vacanciesCount) {
         view.updateDownloadingDialog(vacanciesCount);
+        view.showProgressBar();
         getRequests();
     }
 

@@ -1,5 +1,6 @@
 package com.dmelnyk.workinukraine.ui.search;
 
+import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -31,6 +32,7 @@ import com.dmelnyk.workinukraine.db.di.DbModule;
 import com.dmelnyk.workinukraine.services.search.SearchVacanciesService;
 import com.dmelnyk.workinukraine.ui.dialogs.delete.DialogDelete;
 import com.dmelnyk.workinukraine.ui.dialogs.downloading.DialogDownloading;
+import com.dmelnyk.workinukraine.ui.dialogs.loading.LoadingDialog;
 import com.dmelnyk.workinukraine.ui.dialogs.request.DialogRequest;
 import com.dmelnyk.workinukraine.ui.search.Contract.ISearchPresenter;
 import com.dmelnyk.workinukraine.ui.search.di.DaggerSearchComponent;
@@ -103,6 +105,8 @@ public class SearchFragment extends BaseFragment implements
     private DialogDelete mDialogDelete;
     private DialogRequest mDialogRequest;
     private DialogDownloading mDialogDownloading;
+    private LoadingDialog tempDialog;
+
     private ArrayList<RequestModel> mRequestsList;
     private SearchAdapter mAdapter;
 
@@ -117,7 +121,6 @@ public class SearchFragment extends BaseFragment implements
                 case SearchVacanciesService.ACTION_FINISHED:
                     // updating data after searching vacancies
                     int finalCount = intent.getIntExtra(SearchVacanciesService.KEY_TOTAL_VACANCIES_COUNT, 0);
-                    Toast.makeText(context, "Founded vacancies=" + finalCount, Toast.LENGTH_SHORT).show();
                     presenter.downloadingFinished(finalCount);
                     break;
                 case SearchVacanciesService.ACTION_DOWNLOADING_IN_PROGRESS:
@@ -237,6 +240,10 @@ public class SearchFragment extends BaseFragment implements
                 .unregisterReceiver(mDownloadingBroadcastReceiver);
         LocalBroadcastManager.getInstance(getContext())
                 .unregisterReceiver(mConnectionChangingReseiver);
+
+        if (tempDialog != null) {
+            tempDialog.dismiss();
+        }
     }
 
     @Override
@@ -312,6 +319,12 @@ public class SearchFragment extends BaseFragment implements
     public void hideProgressBar() {
         mProgressBar.setVisibility(View.GONE);
         mRecyclerView.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void showProgressBar() {
+        mProgressBar.setVisibility(View.VISIBLE);
+        mRecyclerView.setVisibility(View.GONE);
     }
 
     @Override
@@ -482,8 +495,13 @@ public class SearchFragment extends BaseFragment implements
         } else {
             Intent vacancyActivityIntent = new Intent(getContext(), VacancyListActivity.class);
             vacancyActivityIntent.setAction(itemRequest.request());
+
+            // TODO
+            tempDialog = LoadingDialog.getInstance(getContext());
+            tempDialog.show();
+
             startActivityForResult(vacancyActivityIntent, REQUEST_CODE_VACANCY_ACTIVITY);
-            getActivity().overridePendingTransition(R.anim.slide_from_right, R.anim.slide_to_left);
+//            getActivity().overridePendingTransition(R.anim.slide_from_right, R.anim.slide_to_left);
         }
     }
 

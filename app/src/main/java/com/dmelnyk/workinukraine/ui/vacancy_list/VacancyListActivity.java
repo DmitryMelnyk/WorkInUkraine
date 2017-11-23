@@ -33,6 +33,7 @@ import android.widget.Toast;
 import com.dmelnyk.workinukraine.R;
 import com.dmelnyk.workinukraine.db.di.DbModule;
 import com.dmelnyk.workinukraine.models.VacancyModel;
+import com.dmelnyk.workinukraine.ui.dialogs.loading.LoadingDialog;
 import com.dmelnyk.workinukraine.ui.vacancy_list.core.BaseTabFragment;
 import com.dmelnyk.workinukraine.ui.vacancy_list.core.FilterAdapter;
 import com.dmelnyk.workinukraine.ui.vacancy_list.core.FilterView;
@@ -97,7 +98,6 @@ public class VacancyListActivity extends BaseAnimationActivity implements
 
     private int[] mTabVacancyCount;
     private String[] mTabTitles;
-    private boolean orientationHasChanged;
     private int mButtonTabType; // look initializeButtonTabs() function
     private FilterView animationLayout;
 
@@ -227,7 +227,7 @@ public class VacancyListActivity extends BaseAnimationActivity implements
             mCurrentTabPosition = savedInstanceState.getInt(KEY_CURRENT_POSITION);
             mTabTitles = savedInstanceState.getStringArray(KEY_TAB_TITLES);
             mTabVacancyCount = savedInstanceState.getIntArray(KEY_TAB_VACANCY_COUNT);
-            orientationHasChanged = savedInstanceState.getBoolean(KEY_ORIENTATION_CHANGED);
+//            orientationHasChanged = savedInstanceState.getBoolean(KEY_ORIENTATION_CHANGED);
             updateTitleView(mCurrentTabPosition);
         }
     }
@@ -441,7 +441,6 @@ public class VacancyListActivity extends BaseAnimationActivity implements
             int hypotenuse = (int) Math.hypot(appBar.getWidth(), appBar.getHeight());
 //            mSettingsImageButton.setBackgroundResource(R.drawable.rounded_cancell_button);
 //            mSettingsImageButton.setImageResource(R.mipmap.image_cancel);
-            Log.e("!!!", "revealX=" + revealX + ", revealY=" + revealY);
 
             FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) animationContainer.getLayoutParams();
             params.width = appBar.getWidth();

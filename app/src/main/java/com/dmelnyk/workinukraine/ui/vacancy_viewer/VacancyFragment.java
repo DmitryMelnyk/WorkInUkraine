@@ -9,6 +9,7 @@ import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -49,6 +50,7 @@ public class VacancyFragment extends Fragment implements SwipeRefreshLayout.OnRe
     private static final String ARG_VACANCY = "arg_vacancy";
 
     @BindView(R.id.swipe) SwipeRefreshLayout mSwipeRefreshLayout;
+    @BindView(R.id.nested_scroll_view) NestedScrollView mNestedScrollView;
     @BindView(R.id.progress_bar) ProgressBar mBar;
     @BindView(R.id.web_view) WebView mWebView;
     Unbinder unbinder;
@@ -136,7 +138,7 @@ public class VacancyFragment extends Fragment implements SwipeRefreshLayout.OnRe
         mWebView.getSettings().setSupportZoom(true);
         mWebView.getSettings().setLoadsImagesAutomatically(true);
         mWebView.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
-        mWebView.setWebChromeClient(getWebViewClient());
+        mWebView.setWebChromeClient(createWebChromeClient());
 
 
         mWebView.setWebViewClient(new CustomWebViewClient());
@@ -147,7 +149,7 @@ public class VacancyFragment extends Fragment implements SwipeRefreshLayout.OnRe
         }
     }
 
-    private WebChromeClient getWebViewClient() {
+    private WebChromeClient createWebChromeClient() {
         return new WebChromeClient() {
             @Override
             public void onProgressChanged(WebView view, int newProgress) {
@@ -246,9 +248,11 @@ public class VacancyFragment extends Fragment implements SwipeRefreshLayout.OnRe
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
             // When user clicks a hyperlink, load in the existing WebView
-            if (url.startsWith("http"))
+            if (url.startsWith("http")) {
+                view.loadUrl(url);
+                mNestedScrollView.scrollTo(0, 100);
                 return false;
-            else {
+            } else {
                 Intent i = new Intent(Intent.ACTION_VIEW);
                 startActivity(i);
                 return true;
@@ -258,9 +262,8 @@ public class VacancyFragment extends Fragment implements SwipeRefreshLayout.OnRe
         @Override
         public void onPageFinished(WebView view, String url) {
             super.onPageFinished(view, url);
-            showOrHideContent();
-
             Log.d(VacancyFragment.this.getClass().getSimpleName(), "onPageFinished()");
+            showOrHideContent();
         }
 
         @RequiresApi(api = Build.VERSION_CODES.M)

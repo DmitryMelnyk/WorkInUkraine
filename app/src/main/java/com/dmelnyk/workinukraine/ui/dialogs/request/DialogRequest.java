@@ -95,14 +95,10 @@ public class DialogRequest extends BaseDialog {
                         }
 
                         @Override
-                        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-                        }
+                        public void beforeTextChanged(CharSequence s, int start, int count, int after) { /* NOP */ }
 
                         @Override
-                        public void afterTextChanged(Editable s) {
-
-                        }
+                        public void afterTextChanged(Editable s) { /* NOP */ }
                     });
                 });
 
@@ -157,7 +153,7 @@ public class DialogRequest extends BaseDialog {
     private boolean requestIsCorrect(String request) {
         for (int i = 0; i < request.length(); i++) {
             if (Character.isLetterOrDigit(request.charAt(i))
-                    || " -".contains(request.substring(i, i+1))) {
+                    || " -+#.".contains(request.substring(i, i+1))) { // list of permitted symbols in request
                 continue;
             } else {
                 return false;

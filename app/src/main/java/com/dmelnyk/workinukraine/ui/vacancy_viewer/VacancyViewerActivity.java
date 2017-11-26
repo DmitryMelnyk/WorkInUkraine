@@ -391,11 +391,17 @@ public class VacancyViewerActivity extends BaseAnimationActivity
     }
 
     public void createShareIntent(VacancyModel vacancy) {
-        Intent intent = new Intent();
-        intent.setAction(Intent.ACTION_SEND);
+        Intent intent = new Intent(Intent.ACTION_SEND);
         intent.putExtra(Intent.EXTRA_TEXT, vacancy.title() + ": " + vacancy.url());
         intent.setType("text/plain");
-        startActivity(intent);
+
+        Intent viewInBrowser = new Intent();
+        viewInBrowser.setAction(Intent.ACTION_VIEW);
+        viewInBrowser.setData(Uri.parse(vacancy.url()));
+
+        Intent chooserIntent = Intent.createChooser(intent, getResources().getString(R.string.open_in_browser));
+        chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Intent[]{ viewInBrowser });
+        startActivity(chooserIntent);
     }
 
     /**

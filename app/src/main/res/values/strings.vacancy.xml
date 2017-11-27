@@ -14,4 +14,5 @@
     <string name="msg_no_inet_connection_short">Нет соединения...</string>
     <string name="msg_no_inet_connection_long">Нет соединения с интернетом!</string>
     <string name="msg_connection_established">Соединение установлено...</string>
+    <string name="open_in_browser">Открыть в ...</string>
 </resources>

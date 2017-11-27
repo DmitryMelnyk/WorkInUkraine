@@ -255,13 +255,14 @@ public class RepeatingSearchJob extends Job {
                     // Shows notification if you've found new vacancies
                     Log.d(getClass().getSimpleName(), "Found vacancies count=" + newVacancies.size());
 
+                    List<VacancyModel> filteredVacancies = repository.getFilteredVacancies(newVacancies);
                     int previousNewVacanciesCount = settingsRepository.getPreviousNewVacanciesCount();
                     Log.d(getClass().getSimpleName(), "Previous new vacancies count=" + previousNewVacanciesCount);
-                    if (!newVacancies.isEmpty()
-                            && newVacancies.size() != previousNewVacanciesCount) {
-                        sendNotification(newVacancies);
-                        settingsRepository.saveNewVacanciesCount(newVacancies.size());
-                        Log.d(getClass().getSimpleName(), "new vacancies " + newVacancies.size());
+                    if (!filteredVacancies.isEmpty()
+                            && filteredVacancies.size() != previousNewVacanciesCount) {
+                        sendNotification(filteredVacancies);
+                        settingsRepository.saveNewVacanciesCount(filteredVacancies.size());
+                        Log.d(getClass().getSimpleName(), "new vacancies " + filteredVacancies.size());
                     } else {
                         Log.d(getClass().getSimpleName(), "no new vacancies!");
                     }
@@ -269,9 +270,6 @@ public class RepeatingSearchJob extends Job {
                     // Closing database
                     settingsRepository.close();
                 }, throwable -> Timber.e("Error happened", throwable));
-
-//        // create new task after period
-//        scheduleRepeatingSearch(settingsRepository.getUpdateInterval());
     }
 
     private void sendNotification(List<VacancyModel> vacancies) {

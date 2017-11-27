@@ -23,6 +23,7 @@ import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 
 import com.dmelnyk.workinukraine.R;
 
@@ -118,6 +119,8 @@ public class ButtonTabs extends View {
         if (icons != null) {
             initializeBitmapIcons();
         }
+
+        mSizeIsInitialized = false;
         invalidate();
     }
 
@@ -190,11 +193,14 @@ public class ButtonTabs extends View {
         mWidth = mHeight * resource.length;
         mRadius = mHeight / 2;
 
-        CoordinatorLayout.LayoutParams lp = (CoordinatorLayout.LayoutParams) getLayoutParams();
-        lp.width = (int) mWidth;
-        lp.setBehavior(new ButtonTabBehavior());
-        setLayoutParams(lp);
+        ViewGroup.LayoutParams layoutParams = getLayoutParams();
+        layoutParams.width = (int) mWidth;
+        setLayoutParams(layoutParams);
+        if (layoutParams instanceof CoordinatorLayout.LayoutParams) {
+            ((CoordinatorLayout.LayoutParams) layoutParams).setBehavior(new ButtonTabBehavior());
+        }
         mSizeIsInitialized = true;
+        Log.d(getClass().getSimpleName(), "Initializing new size=" + mWidth);
     }
 
     @Override
@@ -217,6 +223,7 @@ public class ButtonTabs extends View {
         for (int i = 0; i < mButtonsStates.length; i++) {
             if (i == buttonPosition) {
                 mButtonsStates[i] = true;
+                if (mCallback != null)
                 mCallback.tabSelected(i);
             } else {
                 mButtonsStates[i] = false;

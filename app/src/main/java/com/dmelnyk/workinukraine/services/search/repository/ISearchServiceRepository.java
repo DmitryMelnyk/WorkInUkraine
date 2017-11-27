@@ -32,4 +32,6 @@ public interface ISearchServiceRepository {
      * @return The Observable that emits list of search requests
      */
     Single<List<RequestModel>> getRequests();
+
+    List<VacancyModel> getFilteredVacancies(List<VacancyModel> vacancies);
 }

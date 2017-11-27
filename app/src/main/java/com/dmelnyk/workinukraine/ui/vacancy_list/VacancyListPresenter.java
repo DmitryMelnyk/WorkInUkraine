@@ -25,19 +25,25 @@ import static com.dmelnyk.workinukraine.ui.vacancy_list.business.IVacancyListInt
 
 public class VacancyListPresenter implements Contract.IVacancyPresenter {
 
+    private static final int DEFAULT_BUTTON_TAB_TYPE = -1;
+    private static final int[] DEFAULT_TAV_VACANCY_COUNT = null;
     private final IVacancyListInteractor interactor;
     private Contract.IVacancyView view;
 
-    CompositeDisposable compositeDisposable = new CompositeDisposable();
+    private CompositeDisposable compositeDisposable = new CompositeDisposable();
+    private Disposable favoritesDisposable;
 
     private static Map<String, List<VacancyModel>> sDataCache;
     private static boolean sIsDisplayed;
     private static String mRequest;
-    private Disposable favoritesDisposable;
+    private static int sButtonTabType = DEFAULT_BUTTON_TAB_TYPE;
+    private static int[] sTabVacancyCount = DEFAULT_TAV_VACANCY_COUNT;
 
     public VacancyListPresenter(IVacancyListInteractor interactor, String request) {
         this.interactor = interactor;
         this.mRequest = request;
+        sTabVacancyCount = DEFAULT_TAV_VACANCY_COUNT;
+        sButtonTabType = DEFAULT_BUTTON_TAB_TYPE;
         // Don't get data from db if we have saved data
         if (sDataCache == null) {
             getAllVacancies(request);
@@ -54,7 +60,9 @@ public class VacancyListPresenter implements Contract.IVacancyPresenter {
         // If request to database has been already received get the result in cache
         if (sDataCache != null) {
             // successful result
-            displayData(sDataCache);
+            displayData(sDataCache, false);
+        } else {
+            getAllVacancies(request);
         }
     }
 
@@ -82,6 +90,7 @@ public class VacancyListPresenter implements Contract.IVacancyPresenter {
 
     @Override
     public void filterUpdated(Pair<Boolean, Set<String>> filters) {
+        sIsDisplayed = false;
         compositeDisposable.add(
                 interactor.updateFilter(filters)
                 .subscribe(() -> {
@@ -92,13 +101,13 @@ public class VacancyListPresenter implements Contract.IVacancyPresenter {
                                 sDataCache = new HashMap<>(vacanciesMap);
                                 if (view != null) {
                                     sIsDisplayed = true;
-                                    displayData(sDataCache);
+                                    displayData(sDataCache, true);
                                 }
                             });
                 }));
     }
 
-    private void displayData(Map<String, List<VacancyModel>> vacanciesMap) {
+    private void displayData(Map<String, List<VacancyModel>> vacanciesMap, boolean isFiltered) {
         // Counting vacancies count in all tabs
         int siteTabsCount = vacanciesMap.get(IVacancyListInteractor.DATA_ALL).size();
         int newVacanciesCount = vacanciesMap.get(IVacancyListInteractor.DATA_NEW).size();
@@ -113,36 +122,50 @@ public class VacancyListPresenter implements Contract.IVacancyPresenter {
             return;
         }
 
-        int[] tabVacancyCount = newVacanciesCount > 0 && recentVacanciesCount > 0
-                ? new int[4] : new int[3];
+        if (true/*sTabVacancyCount == DEFAULT_TAV_VACANCY_COUNT*/) {
+            sTabVacancyCount = newVacanciesCount > 0 && recentVacanciesCount > 0
+                    ? new int[4] : new int[3];
+        } else {
+            Log.e(getClass().getSimpleName(), "sTabVacancyCount is already defined =" + sTabVacancyCount);
+        }
+
+        sTabVacancyCount[0] = siteTabsCount; // first item is always the same
+        // sButtonTabType: -1 - not defined yet, 1 - only new vacancies, 2 - new and recent, 3 - only recent
+        if (true/*sButtonTabType == DEFAULT_BUTTON_TAB_TYPE*/) {
+            if (newVacanciesCount > 0 && recentVacanciesCount == 0) {
+                sButtonTabType = 1;
+            }
+            if (newVacanciesCount > 0 && recentVacanciesCount > 0) {
+                sButtonTabType = 2;
+            }
+            if (newVacanciesCount == 0) {
+                sButtonTabType = 3;
+            }
+        } else {
+            Log.e(getClass().getSimpleName(), "sButtonTabType is already defined =" + sButtonTabType);
+        }
 
         String[] tabTitles = null;
-        int buttonTabType = 0; // 1 - only new vacancies, 2 - new and recent, 3 - only recent
-
-        tabVacancyCount[0] = siteTabsCount; // first item is always the same
-        if (newVacanciesCount > 0 && recentVacanciesCount == 0) {
-            tabTitles = interactor.getTitles(IVacancyListInteractor.TITLE_NEW);
-            tabVacancyCount[1] = newVacanciesCount;
-            tabVacancyCount[2] = favoriteVacanciesCount;
-            buttonTabType = 1;
+        switch (sButtonTabType) {
+            case 1:
+                tabTitles = interactor.getTitles(IVacancyListInteractor.TITLE_NEW);
+                sTabVacancyCount[1] = newVacanciesCount;
+                sTabVacancyCount[2] = favoriteVacanciesCount;
+                break;
+            case 2:
+                tabTitles = interactor.getTitles(IVacancyListInteractor.TITLE_NEW_AND_RECENT);
+                sTabVacancyCount[1] = newVacanciesCount;
+                sTabVacancyCount[2] = recentVacanciesCount;
+                sTabVacancyCount[3] = favoriteVacanciesCount;
+                break;
+            case 3:
+                tabTitles = interactor.getTitles(IVacancyListInteractor.TITLE_RECENT);
+                sTabVacancyCount[1] = recentVacanciesCount;
+                sTabVacancyCount[2] = favoriteVacanciesCount;
+                break;
         }
 
-        if (newVacanciesCount > 0 && recentVacanciesCount > 0) {
-            tabTitles = interactor.getTitles(IVacancyListInteractor.TITLE_NEW_AND_RECENT);
-            tabVacancyCount[1] = newVacanciesCount;
-            tabVacancyCount[2] = recentVacanciesCount;
-            tabVacancyCount[3] = favoriteVacanciesCount;
-            buttonTabType = 2;
-        }
-
-        if (newVacanciesCount == 0) {
-            tabTitles = interactor.getTitles(IVacancyListInteractor.TITLE_RECENT);
-            tabVacancyCount[1] = recentVacanciesCount;
-            tabVacancyCount[2] = favoriteVacanciesCount;
-            buttonTabType = 3;
-        }
-
-        view.displayTabFragment(tabTitles, tabVacancyCount, buttonTabType, vacanciesMap);
+        view.displayTabFragment(tabTitles, sTabVacancyCount, sButtonTabType, vacanciesMap, isFiltered);
     }
 
     private void getAllVacancies(String request) {
@@ -153,7 +176,7 @@ public class VacancyListPresenter implements Contract.IVacancyPresenter {
                     sDataCache = new HashMap<>(vacanciesMap);
                     if (view != null) {
                         sIsDisplayed = true;
-                        displayData(sDataCache);
+                        displayData(sDataCache, false);
                     }
                 }));
     }
@@ -210,9 +233,11 @@ public class VacancyListPresenter implements Contract.IVacancyPresenter {
 
     @Override
     public void clear() {
-        sDataCache = null;
-        compositeDisposable.clear();
-        sIsDisplayed = false;
         interactor.clear();
+        compositeDisposable.clear();
+        sDataCache = null;
+        sTabVacancyCount = null;
+        sIsDisplayed = false;
+        sButtonTabType = DEFAULT_BUTTON_TAB_TYPE;
     }
 }

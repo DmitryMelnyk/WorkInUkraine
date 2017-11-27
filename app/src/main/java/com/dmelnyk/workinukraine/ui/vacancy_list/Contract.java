@@ -26,8 +26,9 @@ public class Contract {
         void displayTabFragment(
                 String[] tabTitles,
                 int[] tabVacancyCount,
-                int isButtonTubWithNewIcon,
-                Map<String, List<VacancyModel>> allVacancies);
+                int buttonTabType,
+                Map<String, List<VacancyModel>> allVacancies,
+                boolean isFiltered);
 
         void exitActivity();
     }

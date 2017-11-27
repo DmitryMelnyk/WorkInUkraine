@@ -3,7 +3,9 @@ package com.dmelnyk.workinukraine.services.search.repository;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
 import android.util.Log;
+import android.widget.Toast;
 
+import com.dmelnyk.workinukraine.db.Db;
 import com.dmelnyk.workinukraine.db.DbContract;
 import com.dmelnyk.workinukraine.db.DbItems;
 import com.dmelnyk.workinukraine.models.RequestModel;
@@ -13,6 +15,7 @@ import com.dmelnyk.workinukraine.utils.SharedPrefUtil;
 import com.squareup.sqlbrite2.BriteDatabase;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -244,5 +247,44 @@ public class SearchServiceRepository implements ISearchServiceRepository {
         } finally {
             transaction.end();
         }
+    }
+
+    @Override
+    public List<VacancyModel> getFilteredVacancies(List<VacancyModel> vacancies) {
+        Set<String> requests = getRequestsList();
+
+        for (String request : requests) {
+            boolean isFilterEnable = filterUtil.isFilterEnable(request);
+            Set<String> filterWords = filterUtil.getFilterWords(request);
+            Log.d(getClass().getSimpleName(), "isFilterEnable=" + isFilterEnable);
+            Log.d(getClass().getSimpleName(), "FilterWords=" + filterWords);
+
+            if (isFilterEnable && !filterWords.isEmpty()) {
+                for (VacancyModel vacancy : vacancies) {
+                    if (vacancy.request().equals(request)) {
+                        for (String filter : filterWords) {
+                            if (vacancy.title().toLowerCase().contains(filter.toLowerCase())) {
+                                vacancies.remove(vacancy);
+                                break;
+                            }
+                        }
+                    } else {
+                        continue;
+                    }
+                }
+            }
+        }
+
+        return vacancies;
+    }
+
+    private Set<String> getRequestsList() {
+        Set<String> requests = new HashSet<>();
+        try (Cursor cursor = db.query("SELECT " +  DbContract.SearchRequest.Columns.REQUEST + " FROM " + REQUEST_TABLE)) {
+            for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
+                requests.add(Db.getString(cursor, DbContract.SearchRequest.Columns.REQUEST));
+            }
+        }
+        return requests;
     }
 }

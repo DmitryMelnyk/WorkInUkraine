@@ -228,7 +228,6 @@ public class VacancyListActivity extends BaseAnimationActivity implements
             mCurrentTabPosition = savedInstanceState.getInt(KEY_CURRENT_POSITION);
             mTabTitles = savedInstanceState.getStringArray(KEY_TAB_TITLES);
             mTabVacancyCount = savedInstanceState.getIntArray(KEY_TAB_VACANCY_COUNT);
-//            orientationHasChanged = savedInstanceState.getBoolean(KEY_ORIENTATION_CHANGED);
             updateTitleView(mCurrentTabPosition);
         }
     }
@@ -375,10 +374,9 @@ public class VacancyListActivity extends BaseAnimationActivity implements
             String[] tabTitles,
             int[] tabVacancyCount,
             int buttonTabType,
-            Map<String, List<VacancyModel>> allVacancies) {
+            Map<String, List<VacancyModel>> allVacancies,
+            boolean isFiltered) {
 
-        progressBar.setVisibility(View.GONE);
-        mViewPager.setVisibility(View.VISIBLE);
         mSettingsImageButton.setVisibility(View.VISIBLE);
         // Initialize tab titles
         mTabTitles = tabTitles;
@@ -386,19 +384,23 @@ public class VacancyListActivity extends BaseAnimationActivity implements
         mButtonTabType = buttonTabType;
         // initialize ButtonTubs
         initializeButtonTabs(buttonTabType);
-        mSlideAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager(), mTabTitles, allVacancies);
-        mViewPager.setAdapter(mSlideAdapter);
+        updateData(allVacancies);
+
+        // after filtering set current tab to 0 (starting position)
+        if (isFiltered) {
+            mCurrentTabPosition = 0;
+        }
 
         // restores ButtonTab position (after recreation or filtering data)
         updateTitleView(mCurrentTabPosition);
-        mViewPager.setCurrentItem(mCurrentTabPosition);
+        Log.d(getClass().getSimpleName(), "currentTabPosition=" + mCurrentTabPosition);
     }
 
-    @Override
-    public void exitActivity() {
-        Log.d(getClass().getSimpleName(), "exitActivity() is coled!");
-        setResult(RESULT_CANCELED);
-        finish();
+    private void updateData(Map<String, List<VacancyModel>> allVacancies) {
+        mSlideAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager(), mTabTitles, allVacancies);
+        mViewPager.setAdapter(mSlideAdapter);
+        progressBar.setVisibility(View.GONE);
+        mViewPager.setVisibility(View.VISIBLE);
     }
 
     public void initializeButtonTabs(int buttonTabType) {
@@ -411,6 +413,7 @@ public class VacancyListActivity extends BaseAnimationActivity implements
         mTitleTextView.setText(mTabTitles[tabPosition]);
         mTitleVacanciesCountTextView.setText("" + mTabVacancyCount[tabPosition]);
         mButtonTabs.selectTab(tabPosition);
+        mViewPager.setCurrentItem(tabPosition);
     }
 
     @Override
@@ -427,6 +430,13 @@ public class VacancyListActivity extends BaseAnimationActivity implements
         } else {
             Log.e(getClass().getSimpleName(), "Can't update favorites. mSlideAdapter=null.");
         }
+    }
+
+    @Override
+    public void exitActivity() {
+        Log.d(getClass().getSimpleName(), "exitActivity() is called!");
+        setResult(RESULT_CANCELED);
+        finish();
     }
 
     @Override
@@ -536,7 +546,6 @@ public class VacancyListActivity extends BaseAnimationActivity implements
     public void updateFilter(Pair<Boolean, Set<String>> data) {
         launchFilterAnimation(mSettingsImageButton);
 
-        mCurrentTabPosition = mButtonTabs.getCurrentTab();
         // showing updating progress bar
         mViewPager.setVisibility(View.INVISIBLE);
         progressBar.setVisibility(View.VISIBLE);
@@ -544,7 +553,6 @@ public class VacancyListActivity extends BaseAnimationActivity implements
 
         mTitleTextView.postDelayed(() -> {
             presenter.filterUpdated(data);
-//            mButtonTabs.selectTab(mButtonTabs.getCurrentTab());
         }, 600);
     }
 

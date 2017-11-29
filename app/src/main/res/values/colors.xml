@@ -5,6 +5,8 @@
     <color name="colorAccent">@color/green</color>
     <color name="colorAccent2">@color/green</color>
 
+    <color name="colorLauncher">#324a5e</color>
+
     <color name="colorItem">@color/violet_light</color>
     <color name="colorBackground">@color/white_soft</color>
     <!-- Navigation Activity -->

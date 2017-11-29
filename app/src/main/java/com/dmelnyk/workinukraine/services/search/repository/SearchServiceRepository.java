@@ -16,6 +16,7 @@ import com.squareup.sqlbrite2.BriteDatabase;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -260,11 +261,15 @@ public class SearchServiceRepository implements ISearchServiceRepository {
             Log.d(getClass().getSimpleName(), "FilterWords=" + filterWords);
 
             if (isFilterEnable && !filterWords.isEmpty()) {
-                for (VacancyModel vacancy : vacancies) {
+                Iterator<VacancyModel> iterator = vacancies.iterator();
+                while (iterator.hasNext()) {
+                    VacancyModel vacancy = iterator.next();
+
+                    // if current vacancies's request not match the request continue
                     if (vacancy.request().equals(request)) {
                         for (String filter : filterWords) {
                             if (vacancy.title().toLowerCase().contains(filter.toLowerCase())) {
-                                vacancies.remove(vacancy);
+                                iterator.remove();
                                 break;
                             }
                         }

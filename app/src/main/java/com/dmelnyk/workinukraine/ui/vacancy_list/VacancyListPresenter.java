@@ -45,9 +45,9 @@ public class VacancyListPresenter implements Contract.IVacancyPresenter {
         sTabVacancyCount = DEFAULT_TAV_VACANCY_COUNT;
         sButtonTabType = DEFAULT_BUTTON_TAB_TYPE;
         // Don't get data from db if we have saved data
-        if (sDataCache == null) {
-            getAllVacancies(request);
-        }
+//        if (sDataCache == null) {
+//            getAllVacancies(request);
+//        }
     }
 
     @Override

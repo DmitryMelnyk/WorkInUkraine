@@ -85,9 +85,6 @@ dependencies {
     annotationProcessor "com.google.dagger:dagger-compiler:2.9"
     provided 'javax.annotation:jsr250-api:1.0'
 
-    // HTexView
-    compile 'hanks.xyz:htextview-library:0.1.5'
-
     // RootNavigation
     compile 'com.yarolegovich:sliding-root-nav:1.0.2'
 

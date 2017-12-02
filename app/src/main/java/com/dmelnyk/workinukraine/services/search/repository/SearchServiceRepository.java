@@ -114,8 +114,6 @@ public class SearchServiceRepository implements ISearchServiceRepository {
         int newVacanciesCount = getNewVacanciesCount(request);
         long updatingTime = System.currentTimeMillis();
         updateRequestTable(request, vacancies.size(), newVacanciesCount, updatingTime);
-
-        db.close();
     }
 
     private void clearOldVacancies(Set<String> responseSites, String request) {
@@ -291,5 +289,11 @@ public class SearchServiceRepository implements ISearchServiceRepository {
             }
         }
         return requests;
+    }
+
+    @Override
+    protected void finalize() throws Throwable {
+        super.finalize();
+        closeDb();
     }
 }

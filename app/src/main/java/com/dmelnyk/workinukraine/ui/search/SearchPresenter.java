@@ -1,5 +1,7 @@
 package com.dmelnyk.workinukraine.ui.search;
 
+import android.util.Log;
+
 import com.dmelnyk.workinukraine.ui.search.business.ISearchInteractor;
 import com.dmelnyk.workinukraine.models.RequestModel;
 import com.dmelnyk.workinukraine.ui.search.Contract.ISearchView;
@@ -98,6 +100,7 @@ public class SearchPresenter implements Contract.ISearchPresenter {
         disposableRequests = interactor.getRequests()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(requestsList -> {
+                    Log.d(getClass().getSimpleName(), "Requests received");
                     if (view != null) {
                         displayData(requestsList);
                     }

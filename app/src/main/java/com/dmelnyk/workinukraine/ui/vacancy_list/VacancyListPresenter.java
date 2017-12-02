@@ -115,12 +115,12 @@ public class VacancyListPresenter implements Contract.IVacancyPresenter {
         int favoriteVacanciesCount = vacanciesMap.get(DATA_FAVORITE).size();
 
         // Exit from activity if no vacancies found
-        if (siteTabsCount == 0) {
-            Log.d(getClass().getSimpleName(), "displayData(). No vacancy has found. Exit from activity!");
-            view.exitActivity();
-            clear();
-            return;
-        }
+//        if (siteTabsCount == 0) {
+//            Log.d(getClass().getSimpleName(), "displayData(). No vacancy has found. Exit from activity!");
+//            view.exitActivity();
+//            clear();
+//            return;
+//        }
 
         if (true/*sTabVacancyCount == DEFAULT_TAV_VACANCY_COUNT*/) {
             sTabVacancyCount = newVacanciesCount > 0 && recentVacanciesCount > 0

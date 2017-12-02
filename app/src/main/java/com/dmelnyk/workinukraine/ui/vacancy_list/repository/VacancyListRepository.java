@@ -154,7 +154,8 @@ public class VacancyListRepository implements IVacancyListRepository {
 
         return Completable.fromCallable(() -> {
             ContentValues updatedVacancy = DbItems.createVacancyFavoriteItem(false, vacancy);
-            db.update(TABLE, updatedVacancy, DbContract.SearchSites.Columns.URL
+            db.update(TABLE, updatedVacancy, DbContract.SearchSites.Columns.REQUEST
+                    + " ='" + vacancy.request() + DbContract.SearchSites.Columns.URL
                     + " ='" + vacancy.url() + "'");
             return true;
         });
@@ -166,7 +167,8 @@ public class VacancyListRepository implements IVacancyListRepository {
         Timber.d("\nSaving to TYPE_FAVORITE table %s", vacancy);
         Cursor cursor = db.query("SELECT * FROM "
                 + DbContract.SearchSites.TABLE_ALL_SITES
-                + " WHERE " + DbContract.SearchSites.Columns.IS_FAVORITE + " =1"
+                + " WHERE " + DbContract.SearchSites.Columns.REQUEST + " ='" + vacancy.request()
+                + "' AND " + DbContract.SearchSites.Columns.IS_FAVORITE + " =1"
                 + " AND " + DbContract.SearchSites.Columns.URL
                 + " = '" + vacancy.url() + "'");
 
@@ -176,8 +178,10 @@ public class VacancyListRepository implements IVacancyListRepository {
             return Completable.fromCallable(() -> {
                 // updating vacancy in DbContract.SearchSites.TABLE_ALL_SITES
                 ContentValues updatedVacancy = DbItems.createVacancyFavoriteItem(true, vacancy);
-                db.update(TABLE, updatedVacancy, DbContract.SearchSites.Columns.URL
-                        + " ='" + vacancy.url() + "'");
+                db.update(TABLE, updatedVacancy,
+                        DbContract.SearchSites.Columns.REQUEST + " = ? AND " +
+                        DbContract.SearchSites.Columns.URL + " = ?",
+                        new String[]{ vacancy.request(), vacancy.url()});
                 return true;
             });
         } else {

@@ -8,10 +8,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.dmelnyk.workinukraine.R;
-import com.dmelnyk.workinukraine.utils.BaseDialog;
+import com.dmelnyk.workinukraine.ui.dialogs.BaseDialog;
 import com.victor.loading.rotate.RotateLoading;
 
 import butterknife.BindView;

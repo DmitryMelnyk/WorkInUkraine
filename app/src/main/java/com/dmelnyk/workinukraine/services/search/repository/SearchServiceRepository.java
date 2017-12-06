@@ -64,7 +64,7 @@ public class SearchServiceRepository implements ISearchServiceRepository {
     }
 
     @Override
-    public void saveVacancies(List<VacancyModel> vacancies, Set<String> responseSites) throws Exception {
+    public synchronized void saveVacancies(List<VacancyModel> vacancies, Set<String> responseSites) throws Exception {
         Timber.d("Found %d vacancies", vacancies.size());
 
         if (vacancies.isEmpty()) return;

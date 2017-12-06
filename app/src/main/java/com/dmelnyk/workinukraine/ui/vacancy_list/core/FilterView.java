@@ -148,14 +148,16 @@ public class FilterView extends ConstraintLayout implements
 
     private void addWord(String word) {
         String toast;
-        if (!wordsList.contains(word)) {
+        if (wordsList.contains(word)) {
+            toast = getContext().getString(R.string.msg_item_already_exists_in_filter);
+        } else if (word.length() < 3) {
+            toast = getContext().getString(R.string.msg_item_must_be_longer_ther_three);
+        } else {
             wordsList.add(word);
             mAdapter.notifyDataSetChanged();
             mEditText.getText().clear();
             mSwitcher.setChecked(true);
             toast = word + " " + getResources().getString(R.string.msg_item_added);
-        } else {
-            toast = getContext().getString(R.string.msg_item_already_exists_in_filter);
         }
 
         Toast.makeText(getContext(), toast, Toast.LENGTH_SHORT).show();

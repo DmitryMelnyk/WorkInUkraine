@@ -1,4 +1,4 @@
-package com.dmelnyk.workinukraine.utils;
+package com.dmelnyk.workinukraine.ui.dialogs;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;

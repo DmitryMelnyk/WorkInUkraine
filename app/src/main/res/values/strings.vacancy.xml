@@ -7,6 +7,7 @@
     <string name="text_view_tab_is_empty2">Список вакансий пуст!</string>
     <string name="vacancies_found">Вакансий</string>
     <string name="msg_item_already_exists_in_filter">Данный фильтр уже существует в списке!</string>
+    <string name="msg_item_must_be_longer_ther_three">Фильтр должен содержать не менее 3-х символов!</string>
     <string name="msg_item_added">добавлен к фильтрам!</string>
 
     <string name="msg_updating_in_progress">Применение фильтров...</string>

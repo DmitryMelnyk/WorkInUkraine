@@ -28,13 +28,6 @@
         <activity
             android:name=".ui.navigation.NavigationActivity"
             android:launchMode="singleInstance">
-
-            <!-- <intent-filter> -->
-            <!-- <action android:name="android.intent.action.MAIN" /> -->
-
-
-            <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
-            <!-- </intent-filter> -->
         </activity>
 
         <!-- <service android:name=".services.GetDataIntentService"/> -->
@@ -64,11 +57,6 @@
             android:value="d6d73607d880c21f41dea02e391a88fe56d55821" />
 
         <activity android:name=".utils.ButtonActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
     </application>
 

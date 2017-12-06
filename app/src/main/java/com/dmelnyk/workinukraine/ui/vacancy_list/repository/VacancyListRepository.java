@@ -57,7 +57,6 @@ public class VacancyListRepository implements IVacancyListRepository {
             updateTimeStatusVacancies(request);
         }
 
-        // TODO: get raw vacancies then save them to rawCache
         // All vacancies
         Observable<List<VacancyModel>> allObservable =
                 db.createQuery(TABLE, "SELECT * FROM "

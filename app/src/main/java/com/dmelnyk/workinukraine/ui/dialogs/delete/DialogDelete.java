@@ -3,14 +3,13 @@ package com.dmelnyk.workinukraine.ui.dialogs.delete;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringDef;
-import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.dmelnyk.workinukraine.R;
-import com.dmelnyk.workinukraine.utils.BaseDialog;
+import com.dmelnyk.workinukraine.ui.dialogs.BaseDialog;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

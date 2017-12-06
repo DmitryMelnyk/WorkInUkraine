@@ -21,7 +21,7 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.dmelnyk.workinukraine.R;
-import com.dmelnyk.workinukraine.utils.BaseDialog;
+import com.dmelnyk.workinukraine.ui.dialogs.BaseDialog;
 import com.dmelnyk.workinukraine.utils.MyBounceInterpolator;
 
 import java.util.ArrayList;

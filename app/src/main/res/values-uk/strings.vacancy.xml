@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="msg_item_saved_to_favorite">Васансія додана в список обраних!</string>
+    <string name="msg_item_removed_from_favorite">Вакансія видалена зі списку обраних!</string>
+
+    <string name="text_view_tab_is_empty">Ви поки що не додали жодної вакансії в список обраних!</string>
+    <string name="text_view_tab_is_empty2">Список вакансій порожній!</string>
+    <string name="vacancies_found">Вакансій</string>
+    <string name="msg_item_already_exists_in_filter">Даний фільтр вже існує в списку!</string>
+    <string name="msg_item_must_be_longer_ther_three">Фільтр повинен містити не менше 3-х символів!</string>
+    <string name="msg_item_added">доданий до фільтрів!</string>
+
+    <string name="msg_updating_in_progress">Застосування фільтрів ...</string>
+
+    <string name="msg_no_inet_connection_short">Немає з\'єднання...</string>
+    <string name="msg_no_inet_connection_long">Немає з\'єднання з інтернетом!</string>
+    <string name="msg_connection_established">З\'єднання встановлено...</string>
+    <string name="open_in_browser">Відкрити в ...</string>
+</resources>

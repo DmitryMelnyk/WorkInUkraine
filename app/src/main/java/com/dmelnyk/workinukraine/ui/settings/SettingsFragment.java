@@ -169,8 +169,11 @@ public class SettingsFragment extends BaseFragment implements
                 // TODO
                 break;
             case R.id.about:
-                // TODO
-                SearchVacanciesJob.scheduleSearchTask();
+                new MaterialDialog.Builder(getContext())
+                        .title(R.string.title_activity_vacancy)
+                        .content(R.string.version)
+                        .positiveText("OK")
+                        .show();
                 break;
             case R.id.thumbUp:
                 Intent openInWebStore = new Intent(Intent.ACTION_VIEW, Uri.parse(WEBSTORE_APP_ADDRESS));

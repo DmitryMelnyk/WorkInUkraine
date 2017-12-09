@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="filter_title">фильтры</string>
+    <string name="filter_hide">Скрывать вакансии</string>
+    <string name="filter_keyword">Введить ключевое слово</string>
+    <string name="filter_cancel">Отмена</string>
+    <string name="filter_ok">Применить</string>
+
+</resources>

@@ -1,7 +1,6 @@
 package com.dmelnyk.workinukraine.ui.navigation;
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.ColorInt;
@@ -17,10 +16,9 @@ import android.support.v7.widget.Toolbar;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.dmelnyk.workinukraine.R;
 import com.dmelnyk.workinukraine.application.WorkInUaApplication;
-import com.dmelnyk.workinukraine.ui.dialogs.loading.LoadingDialog;
-import com.dmelnyk.workinukraine.ui.splash.SplashActivity;
 import com.dmelnyk.workinukraine.ui.navigation.Contract.INavigationPresenter;
 import com.dmelnyk.workinukraine.ui.navigation.di.NavigationModule;
 import com.dmelnyk.workinukraine.ui.navigation.menu.DrawerAdapter;
@@ -50,10 +48,10 @@ public class NavigationActivity extends BaseAnimationActivity implements
         BaseFragment.OnFragmentInteractionListener {
 
     public static final String EXTRA_SEARCH_FRAGMENT = "EXTRA_SEARCH_FRAGMENT";
-    @BindView(R.id.toolbar)
-    Toolbar toolbar;
-    @BindView(R.id.container)
-    FrameLayout container;
+    private static final String EXTRA_INFO_DIALOG = "EXTRA_INFO_DIALOG";
+
+    @BindView(R.id.toolbar) Toolbar toolbar;
+    @BindView(R.id.container) FrameLayout container;
 
     private TextView mVacanciesCountTextView;
     private static final String FRAGMENT_SEARCH = SearchFragment.class.getName();
@@ -71,6 +69,7 @@ public class NavigationActivity extends BaseAnimationActivity implements
     private Drawable[] screenIcons;
     private SlidingRootNav navigator;
     private boolean wasHomePressed;
+    private boolean mIsInfoDialogDisplayed;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -158,7 +157,7 @@ public class NavigationActivity extends BaseAnimationActivity implements
                 }
                 break;
             case NAV_ABOUT_POSITION:
-                // TODO
+                showInfoDialog();
                 return;
             case NAV_SETTINGS_POSITION:
                 fragment = new SettingsFragment();
@@ -236,5 +235,34 @@ public class NavigationActivity extends BaseAnimationActivity implements
     @Override
     public void setVacanciesCount(int vacancies) {
         mVacanciesCountTextView.setText("" + vacancies);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(EXTRA_INFO_DIALOG, mIsInfoDialogDisplayed);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        mIsInfoDialogDisplayed = savedInstanceState.getBoolean(EXTRA_INFO_DIALOG);
+        if (mIsInfoDialogDisplayed) {
+            showInfoDialog();
+        }
+    }
+
+    private void showInfoDialog() {
+        mIsInfoDialogDisplayed = true;
+
+        MaterialDialog dialog = new MaterialDialog.Builder(this)
+                .title(R.string.title_activity_vacancy)
+                .content(R.string.about)
+                .positiveText("OK")
+                .build();
+
+        dialog.setOnDismissListener(dialog1 -> mIsInfoDialogDisplayed = false);
+
+        dialog.show();
     }
 }

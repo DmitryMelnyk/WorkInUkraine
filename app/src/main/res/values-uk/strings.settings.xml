@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Settings Fragment -->
+    <string name="settings_toolbar">Налаштування</string>
+    <string name="settings_notification">ПОВІДОМЛЕННЯ</string>
+    <string name="settings_item_period">Перевіряти наявність нових вакансій</string>
+    <string name="settings_sound_notification">Використовувати звукові сповіщення</string>
+    <string name="settings_vibro_notification">Ввикористовувати вібрацію</string>
+    <string name="settings_dont_disturb">Не турбувати</string>
+    <string name="settings_support">ПІДТРИМКА</string>
+    <string name="settings_send_feedback">Надіслати відгук</string>
+    <string name="settings_about">Про програму</string>
+    <string name="settings_cheched_on">Увімкнено</string>
+    <string name="settings_cheched_of">Вимкнено</string>
+    <string name="time_picker_from">Від</string>
+    <string name="time_picker_to">До</string>
+</resources>

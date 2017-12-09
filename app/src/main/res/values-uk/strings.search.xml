@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="new_vacancies">НОВИХ</string>
+    <string name="refreshed">Оновлено</string>
+    <string name="menu_clear">Очистити запити</string>
+    <string name="title">Шукати</string>
+    <string name="no_vacancies_found">За даним запитом не знайдено жодної вакансії. Попытайтесь обновить поиск.</string>
+    <string name="search_toolbar_remove_all_requests">Видалити всі запити?</string>
+    <string name="dialog_search_processing">Йде пошук вакансій...</string>
+    <string name="popup_edit_item">Редагувати</string>
+
+    <string name="delete_request">Видалити запит?</string>
+    <string name="city_kiev">Київ</string>
+
+    <string name="dialog_search_spinner_prompt">Виберіть місто пошуку</string>
+    <string name="dialog_search_edittext_hint">Введіть запит</string>
+    <string name="dialog_search_edittext_hint_error">Неприпустимі символи!</string>
+
+    <!-- Dialog Delete -->
+    <string name="dialog_delete_remove">Видалити</string>
+    <string name="dialog_delete_cancel">Скасувати</string>
+    <string name="dialog_delete_clear_toast">Список вакансій очищено!</string>
+    <string name="card_view_adapter_job_added_to_favorite">Вакансія додана в спис в список обраних!</string>
+    <string name="card_view_adapter_job_exists_in_table">Вакансія вже існує в списку обраних!</string>
+    <string name="card_view_adapter_job_removed_from_favorite">Вакансія видалена зі списку обраних!</string>
+    <string name="cancel">Скасувати</string>
+</resources>

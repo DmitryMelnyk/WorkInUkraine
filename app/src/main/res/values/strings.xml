@@ -6,7 +6,6 @@
     <string name="notification_title">Поступили новые предложения работы</string>
     <string name="notification_summary">Всего найдено вакансий: </string>
 
-    <string name="settings_activity_title">Настройки</string>
     <string name="webview_menu_add_to_favorite">Добавить в список избранных</string>
     <string name="card_view_popup_share">Поделиться</string>
     <string name="card_view_popup_remove">Удалить</string>
@@ -16,4 +15,9 @@
 
     <!---->
     <string name="title_activity_vacancy">Поиск вакансий</string>
+    <string name="version">Версия программы: 1.0</string>
+    <string name="about">Программа ищет вакансии на сайтах hh.ua, jobs.ua, rabota.ua, work.ua, worknew.info и оповещает о поступлении новых предложений. В настройках прироложения вы можете выбрать периодичность поиска, настроить "спящий режим" во избежание оповещений в ночное время.
+
+Вы можете одновременно искать вакансии по нескольким запросам, а также настроить фильтр вакансий.</string>
+    <string name="info_toolbar">Информация</string>
 </resources>

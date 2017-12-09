@@ -1,0 +1,23 @@
+<resources>
+    <string name="app_name">Work In Ukraine</string>
+    <string name="minimal_request_length">Мінімальна довжина запиту 3 символу</string>
+
+    <!-- Notification -->
+    <string name="notification_title">Надійшли нові пропозиції роботи</string>
+    <string name="notification_summary">Всього знайдено вакансій: </string>
+
+    <string name="webview_menu_add_to_favorite">Додати в список обраних</string>
+    <string name="card_view_popup_share">Поділитися</string>
+    <string name="card_view_popup_remove">Видалити</string>
+    <string name="card_view_popup_add_to_favorite">До обраних</string>
+    <!--<string name="no_internet_connection">Нет доступа к интернету. Проверьте подключение и повторите попытку позже!</string>-->
+    <string name="nav_founded_vacancies">Знайдено вакансій</string>
+
+    <!---->
+    <string name="title_activity_vacancy">Пошук вакансій</string>
+    <string name="version">Версія програми: 1.0 </string>
+    <string name="about">Програма шукає вакансії на сайтах hh.ua, jobs.ua, rabota.ua, work.ua, worknew.info і повідомляє про надходження нових пропозицій. В налаштуваннях ви можете обрати періодичність пошуку, налаштувати "сплячий режим", щоб уникнути сповіщень в нічний час.
+
+Ви можете одночасно шукати вакансії за кількома запитами, а також налаштувати фільтр вакансій.</string>
+    <string name="info_toolbar">Інформація</string>
+</resources>

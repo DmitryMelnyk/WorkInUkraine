@@ -21,7 +21,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginTop="@dimen/dimen_16dp"
-        android:text="фильтры"
+        android:text="@string/filter_title"
         android:textAppearance="@style/TextAppearance.AppCompat.Button"
         android:textColor="@color/white"
         android:textStyle="bold"
@@ -30,20 +30,6 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        />
-
-
-    <TextView
-        android:id="@+id/textView2"
-        style="@style/TextViewFilter"
-        android:text="Скрывать вакансии"
-        android:layout_height="0dp"
-        android:layout_width="0dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginStart="16dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/filter_title"
         />
 
     <Switch
@@ -63,7 +49,7 @@
         android:layout_width="0dp"
         android:layout_height="35dp"
         android:background="@color/white"
-        android:hint="Введить ключевое слово"
+        android:hint="@string/filter_keyword"
         android:textColorHint="@color/colorAccent2"
         android:textSize="12sp"
         android:maxLines="1"
@@ -95,7 +81,7 @@
 
 
     <TextView
-        android:text="Скрывать вакансии"
+        android:text="@string/filter_hide"
         style="@style/TextViewFilter"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
@@ -134,7 +120,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/dimen_8dp"
-        android:text="Отмена"
+        android:text="@string/filter_cancel"
         android:textSize="12sp"
         app:layout_constraintTop_toBottomOf="@+id/recyclerView"
         app:layout_constraintRight_toLeftOf="@+id/button_ok"
@@ -150,7 +136,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/dimen_8dp"
-        android:text="Применить"
+        android:text="@string/filter_ok"
         android:textSize="12sp"
         app:layout_constraintTop_toBottomOf="@+id/recyclerView"
         app:layout_constraintLeft_toRightOf="@+id/button_cancel"

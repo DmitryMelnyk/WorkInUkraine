@@ -3,7 +3,7 @@
 
     <string name="new_vacancies">НОВЫХ</string>
     <string name="refreshed">Обновлено</string>
-    <string name="menu_clear">Очистись запросы</string>
+    <string name="menu_clear">Очистить запросы</string>
     <string name="title">Искать</string>
     <string name="no_vacancies_found">По данному запросу нет ни одной вакансии. Попытайтесь обновить поиск.</string>
     <string name="search_toolbar_remove_all_requests">Удалить все запросы?</string>

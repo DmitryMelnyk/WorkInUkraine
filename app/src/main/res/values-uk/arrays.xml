@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Sound preferences -->
+    <string-array name="settings_message">
+        <item>Включити звукові повідомлення</item>
+        <item>Включити вібрацію</item>
+    </string-array>
+
+    <string-array name="settings_message_values">
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+
+    <string-array name="settings_message_default">
+        <item>checked</item>
+        <item>checked</item>
+    </string-array>
+
+    <!-- Sound period preferences -->
+    <string-array name="settings_message_period">
+        <item>1 година</item>
+        <item>3 години</item>
+        <item>6 годин</item>
+        <item>12 гордин</item>
+        <item>24 години</item>
+    </string-array>
+
+    <string-array name="settings_period_summary">
+        <item>Кожну годину</item>
+        <item>Кожні 3 години</item>
+        <item>Кожні 6 годин</item>
+        <item>Кожні 12 годин</item>
+        <item>Кожні 24 години</item>
+    </string-array>
+
+    <integer-array name="settings_period_number">
+        <item>1</item>
+        <item>3</item>
+        <item>6</item>
+        <item>12</item>
+        <item>24</item>
+    </integer-array>
+
+    <integer-array name="settings_period_number_milliseconds">
+        <item>3600000</item>
+        <item>10800000</item>
+        <item>21600000</item>
+        <item>43200000</item>
+        <item>86400000</item>
+    </integer-array>
+
+    <string-array name="nav_titles">
+        <item>Шукати вакансії</item>
+        <item>Оновити вакансії</item>
+        <item>Інформація</item>
+        <item>Налаштунки</item>
+        <item />
+        <item>Вийти</item>
+    </string-array>
+
+    <array name="nav_titles_icon">
+        <item>@drawable/ic_nav_search_vacancies</item>
+        <item>@drawable/ic_nav_refresh</item>
+        <item>@drawable/ic_nav_about</item>
+        <item>@drawable/ic_nav_settings</item>
+        <item>0</item>
+        <item>@drawable/ic_nav_exit</item>
+    </array>
+
+    <string-array name="vacancy_tabfragment_tabs">
+        <item>hedhunters.ua</item>
+        <item>jobs.ua</item>
+        <item>rabota.ua</item>
+        <item>worknew.info</item>
+        <item>work.ua</item>
+    </string-array>
+
+    <string-array name="tab_titles_with_new">
+        <item>Всі</item>
+        <item>Нові</item>
+        <item>Обрані</item>
+    </string-array>
+
+    <string-array name="tab_titles_with_new_and_recent">
+        <item>Всі</item>
+        <item>Нові</item>
+        <item>Нещодавні</item>
+        <item>Обрані</item>
+    </string-array>
+
+    <string-array name="tab_titles_with_recent">
+        <item>Всі</item>
+        <item>Нещодавні</item>
+        <item>Обрані</item>
+    </string-array>
+
+    <string-array name="vacancy_titles">
+        <item>Знайдено вакансій</item>
+        <item>Нові вакансії</item>
+        <item>Нещодавні вакансії</item>
+        <item>Обрані вакансії</item>
+    </string-array>
+
+    <string-array name="cities">
+        <!--<item>Киев</item>-->
+        <item>Житомир</item>
+        <item>Луганськ</item>
+        <item>Ужгород</item>
+        <item>Чернівці</item>
+        <item>Луцьк</item>
+        <item>Полтава</item>
+        <item>Хмельницький</item>
+        <item>Маріуполь</item>
+        <item>Одеса</item>
+        <item>Вінниця</item>
+        <item>Черкаси</item>
+        <item>Тернопіль</item>
+        <item>Дніпро (Дніпропетровськ)</item>
+        <item>Суми</item>
+        <item>Кривий Ріг</item>
+        <item>Львів</item>
+        <item>Рівне</item>
+        <item>Кропивницький (Кіровоград)</item>
+        <item>Миколаїв</item>
+        <item>Нікополь</item>
+        <item>Харків</item>
+        <item>Івано-Франківськ</item>
+        <item>Севастополь</item>
+        <item>Чернігів</item>
+        <item>Херсон</item>
+        <item>Запоріжжя</item>
+        <item>Донецьк</item>
+        <item>Сімферополь</item>
+    </string-array>
+</resources>

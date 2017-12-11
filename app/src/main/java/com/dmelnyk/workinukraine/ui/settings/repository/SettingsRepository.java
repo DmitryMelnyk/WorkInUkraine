@@ -13,8 +13,7 @@ import javax.inject.Inject;
 public class SettingsRepository implements ISettingsRepository {
 
     private static final String SETTINGS = "settings";
-    // TODO: PERIOD_DEFAULT = 3;
-    private static final int PERIOD_DEFAULT = 1; //1 - hour, 2 - 3 hours, 3 - 6 hours,..
+    private static final int PERIOD_DEFAULT = 2; //0 - hour, 1 - 3 hours, 2 - 6 hours,..
     private static final String PERIOD = "period";
     private static final boolean CHECKED_DEFAULT = true;
     private static final String SOUND = "sound";
@@ -24,7 +23,7 @@ public class SettingsRepository implements ISettingsRepository {
     private static final String SLEEP_MODE_FROM = "sleep mode from";
     private static final String SLEEP_MODE_TO = "sleep mode to";
     private static final String SLEEP_MODE_FROM_DEFAULT = "23:00";
-    private static final String SLEEP_MODE_TO_DEFAULT = "7:00";
+    private static final String SLEEP_MODE_TO_DEFAULT = "9:00";
 
     private Context mContext;
 

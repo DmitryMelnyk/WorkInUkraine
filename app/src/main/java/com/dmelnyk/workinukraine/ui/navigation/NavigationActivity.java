@@ -256,7 +256,7 @@ public class NavigationActivity extends BaseAnimationActivity implements
         mIsInfoDialogDisplayed = true;
 
         MaterialDialog dialog = new MaterialDialog.Builder(this)
-                .title(R.string.title_activity_vacancy)
+                .title(R.string.info_toolbar)
                 .content(R.string.about)
                 .positiveText("OK")
                 .build();

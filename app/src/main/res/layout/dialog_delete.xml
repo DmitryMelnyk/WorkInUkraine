@@ -16,7 +16,7 @@
         android:gravity="center"
         android:padding="10dp"
         android:textColor="@color/colorPrimary"
-        fontPath="fonts/FranckerCYR-ExtraBold.otf"
+        fontPath="@string/font"
         tools:ignore="MissingPrefix" />
 
     <LinearLayout

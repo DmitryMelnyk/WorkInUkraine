@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_gravity="center"
@@ -18,10 +19,11 @@
             android:id="@+id/tv_title"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:textColor="@color/green"
+            android:textColor="@color/colorPrimaryDark"
             android:text="senior"
             android:gravity="center"
-            />
+            fontPath="@string/font"
+            tools:ignore="MissingPrefix" />
 
         <ImageButton
             android:id="@+id/ib_remove"
@@ -29,7 +31,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:background="@android:color/transparent"
-            android:src="@drawable/ic_filter_remove"
+            android:src="@drawable/ic_filter_remove_dark"
             />
     </LinearLayout>
 </android.support.v7.widget.CardView>

@@ -43,6 +43,7 @@ public class SettingsFragment extends BaseFragment implements
         DialogTimePicker.OnDialogTimePickerInteractionListener {
 
     private static final String WEBSTORE_APP_ADDRESS = "http://www.example.com";
+    private static final String APP_EMAIL = "bugsupp0rt@yahoo.com                 ";
 
     @BindView(R.id.updatePeriod) TextView mUpdatePeriod;
     @BindView(R.id.periiodicSearchSwitcher) Switch mPeriodicSwitcher;
@@ -191,7 +192,7 @@ public class SettingsFragment extends BaseFragment implements
                 mail.setType("text/plain");
 //                mail.putExtra(Intent.EXTRA_EMAIL, "dmitrydev264@gmail.com");
                 mail.putExtra(Intent.EXTRA_SUBJECT, "From WorkInUkraine app");
-                mail.setData(Uri.parse("mailto:dmitrydev264@gmail.com"));
+                mail.setData(Uri.parse("mailto:" + APP_EMAIL));
                 startActivity(mail);
                 break;
         }

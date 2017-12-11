@@ -76,20 +76,20 @@
     </string-array>
 
     <string-array name="tab_titles_with_new">
-        <item>Всі</item>
+        <item>Усі</item>
         <item>Нові</item>
         <item>Обрані</item>
     </string-array>
 
     <string-array name="tab_titles_with_new_and_recent">
-        <item>Всі</item>
+        <item>Усі</item>
         <item>Нові</item>
         <item>Нещодавні</item>
         <item>Обрані</item>
     </string-array>
 
     <string-array name="tab_titles_with_recent">
-        <item>Всі</item>
+        <item>Усі</item>
         <item>Нещодавні</item>
         <item>Обрані</item>
     </string-array>

@@ -24,7 +24,7 @@
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         android:textColor="?android:textColorPrimary"
-        fontPath="fonts/FranckerCYR-ExtraBold.otf"
+        fontPath="@string/font"
         tools:ignore="MissingPrefix" />
 
 </LinearLayout>

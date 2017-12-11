@@ -2,7 +2,7 @@
 <resources>
 
     <string name="errors_db_request_already_exists">Даний запит вже існує в базі даних!</string>
-    <string name="errors_db_favorite_vacancy_already_exists">Вакансія вже існує в базі даних!</string>
+    <string name="errors_db_favorite_vacancy_already_exists">Вакансія вже існує в списку обраних!</string>
     <string name="msg_vacancy_update_error">Виникла помилка при спробі оновини обрану вакансію!</string>
 
 </resources>

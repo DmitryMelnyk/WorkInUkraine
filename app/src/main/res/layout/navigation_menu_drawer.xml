@@ -22,7 +22,7 @@
         android:text="@string/nav_founded_vacancies"
         android:textColor="@color/colorPrimary"
         android:textSize="10sp"
-        fontPath="fonts/FranckerCYR-ExtraBold.otf"
+        fontPath="@string/font"
         tools:ignore="MissingPrefix"
         />
 
@@ -51,7 +51,7 @@
             android:textSize="36sp"
             android:text="0"
             android:textColor="@color/colorPrimary"
-            fontPath="fonts/FranckerCYR-ExtraBold.otf"
+            fontPath="@string/font"
             tools:ignore="MissingPrefix" />
 
     </LinearLayout>

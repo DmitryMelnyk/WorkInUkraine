@@ -55,7 +55,7 @@
                         android:prompt="@string/dialog_search_spinner_prompt"
                         android:textAlignment="center"
                         android:layout_width="match_parent"
-                        fontPath="fonts/FranckerCYR-ExtraBold.otf"
+                        fontPath="@string/font"
                         tools:ignore="MissingPrefix" />
                     <View
                         android:layout_width="match_parent"
@@ -82,7 +82,7 @@
                     android:theme="@style/TextLabelInputLayout"
                     android:backgroundTint="@color/grey"
                     android:textAlignment="center"
-                    fontPath="fonts/FranckerCYR-ExtraBold.otf"
+                    fontPath="@string/font"
                     >
 
                     <EditText
@@ -95,7 +95,7 @@
                         android:maxLines="1"
                         android:textColor="@color/colorPrimary"
                         android:textSize="18sp"
-                        fontPath="fonts/FranckerCYR-ExtraBold.otf"
+                        fontPath="@string/font"
                         tools:ignore="MissingPrefix" />
                 </android.support.design.widget.TextInputLayout>
             </TableRow>

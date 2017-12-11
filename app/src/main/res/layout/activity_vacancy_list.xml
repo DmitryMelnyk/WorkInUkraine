@@ -44,20 +44,18 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:text="Все"
                     android:textStyle="bold"
                     android:textSize="30sp"
                     android:textColor="@android:color/white"
-                    fontPath="fonts/FranckerCYR-ExtraBold.otf"
+                    fontPath="@string/font"
                     tools:ignore="MissingPrefix"
                     />
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:alpha="0.3"
-                    android:layout_marginTop="5dp"
-                    android:layout_marginBottom="5dp"
+                    android:alpha="0.9"
+
                     android:layout_marginLeft="80dp"
                     android:layout_marginRight="80dp"
                     android:background="@color/white" />
@@ -70,7 +68,7 @@
                     android:textSize="26sp"
                     android:textStyle="bold"
                     android:textColor="@android:color/white"
-                    fontPath="fonts/FranckerCYR-ExtraBold.otf"
+                    fontPath="@string/font"
                     tools:ignore="MissingPrefix"
                     />
             </LinearLayout>

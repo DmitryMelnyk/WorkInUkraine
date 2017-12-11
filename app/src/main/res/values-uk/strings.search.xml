@@ -7,7 +7,7 @@
     <string name="title">Шукати</string>
     <string name="no_vacancies_found">За даним запитом не знайдено жодної вакансії. Попытайтесь обновить поиск.</string>
     <string name="search_toolbar_remove_all_requests">Видалити всі запити?</string>
-    <string name="dialog_search_processing">Йде пошук вакансій...</string>
+    <string name="dialog_search_processing">Триває пошук вакансій...</string>
     <string name="popup_edit_item">Редагувати</string>
 
     <string name="delete_request">Видалити запит?</string>

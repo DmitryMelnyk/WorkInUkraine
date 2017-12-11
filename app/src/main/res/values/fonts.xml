@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="font1">fonts/NotoSerif-Bold.ttf</string>
+    <string name="font2">fonts/AlegreyaSans-Bold.ttf</string>
+    <string name="font3">fonts/AlegreyaSansSC-Bold.ttf</string>
+    <string name="font4">fonts/Lora-Bold.ttf</string>
+    <string name="font5">fonts/OldStandard-Bold.ttf</string>
+    <string name="font6">fonts/Oswald-Bold.ttf</string>
+    <string name="font7">fonts/Philosopher-Bold.ttf</string>
+    <string name="font8">fonts/PlayfairDisplay-Bold.ttf</string>
+    <string name="font9">fonts/PlayfairDisplaySC-Bold.ttf</string>
+    <string name="font10">fonts/ProstoOne-Regular.ttf</string>
+    <string name="font11">fonts/PT_Sans-Caption-Web-Bold.ttf</string>
+    <string name="font12">fonts/PT_Serif-Web-Bold.ttf</string>
+    <string name="font13">fonts/UbuntuMono-Bold.ttf</string>
+
+    <string name="font">@string/font4</string>
+     <!--!!4, !10, 12, 1, 3-->
+</resources>

@@ -43,7 +43,7 @@
     <style name="PopupMenu" parent="Widget.AppCompat.PopupMenu.Overflow">
         <item name="android:popupBackground">@color/colorBackground</item>
         <item name="android:itemBackground">@color/colorItem</item>
-        <item name="fontPath">fonts/FranckerCYR-ExtraBold.otf</item>
+        <item name="fontPath">@string/font</item>
         <item name="android:textColor">@color/green</item>
     </style>
 

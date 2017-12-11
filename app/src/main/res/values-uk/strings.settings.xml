@@ -12,6 +12,6 @@
     <string name="settings_about">Про програму</string>
     <string name="settings_cheched_on">Увімкнено</string>
     <string name="settings_cheched_of">Вимкнено</string>
-    <string name="time_picker_from">Від</string>
-    <string name="time_picker_to">До</string>
+    <string name="time_picker_from">З</string>
+    <string name="time_picker_to">По</string>
 </resources>

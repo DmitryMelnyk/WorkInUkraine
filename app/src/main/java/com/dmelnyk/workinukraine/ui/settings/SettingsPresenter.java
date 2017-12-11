@@ -1,5 +1,7 @@
 package com.dmelnyk.workinukraine.ui.settings;
 
+import android.widget.Toast;
+
 import com.dmelnyk.workinukraine.ui.settings.business.ISettingsInteractor;
 import com.dmelnyk.workinukraine.ui.settings.Contract.ISettingsView;
 

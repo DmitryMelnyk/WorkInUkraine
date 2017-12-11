@@ -53,7 +53,7 @@
                         android:text="@string/settings_toolbar"
                         android:textSize="20sp"
                         android:textColor="@android:color/white"
-                        fontPath="fonts/FranckerCYR-ExtraBold.otf"
+                        fontPath="@string/font"
                         tools:ignore="MissingPrefix"
                         />
                 </RelativeLayout>
@@ -76,7 +76,7 @@
                     android:text="@string/settings_notification"
                     android:textColor="@color/colorPrimary"
                     android:padding="@dimen/settings_title_margin"
-                    fontPath="fonts/FranckerCYR-ExtraBold.otf"
+                    fontPath="@string/font"
                     tools:ignore="MissingPrefix"
                     />
 
@@ -261,7 +261,7 @@
                     android:text="@string/settings_support"
                     android:textColor="@color/colorPrimary"
                     android:padding="@dimen/settings_title_margin"
-                    fontPath="fonts/FranckerCYR-ExtraBold.otf"
+                    fontPath="@string/font"
                     tools:ignore="MissingPrefix"
                     />
 

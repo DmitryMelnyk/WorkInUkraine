@@ -36,7 +36,7 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textColor">@color/colorPrimary</item>
-        <item name="fontPath">fonts/FranckerCYR-ExtraBold.otf</item>
+        <item name="fontPath">@string/font</item>
     </style>
 
     <style name="TextView.SettingsItem.First" parent="TextView.SettingsItem">

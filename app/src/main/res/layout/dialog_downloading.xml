@@ -41,7 +41,7 @@
                 android:textColor="@color/colorPrimary"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                fontPath="fonts/FranckerCYR-ExtraBold.otf"
+                fontPath="@string/font"
                 tools:ignore="MissingPrefix" />
         </LinearLayout>
 
@@ -65,7 +65,7 @@
                 android:layout_height="wrap_content"
                 android:textColor="@color/colorPrimary"
                 android:text="Найдено вакансий:"
-                fontPath="fonts/FranckerCYR-ExtraBold.otf"
+                fontPath="@string/font"
                 tools:ignore="MissingPrefix" />
 
             <LinearLayout
@@ -82,7 +82,7 @@
                     android:textColor="@color/colorPrimary"
                     android:textStyle="bold"
                     android:textSize="42sp"
-                    fontPath="fonts/FranckerCYR-ExtraBold.otf"
+                    fontPath="@string/font"
                     tools:ignore="MissingPrefix" />
             </LinearLayout>
         </LinearLayout>
@@ -99,7 +99,7 @@
         android:text="@string/cancel"
         android:textColor="@color/white_soft"
         android:textSize="26sp"
-        fontPath="fonts/FranckerCYR-ExtraBold.otf"
+        fontPath="@string/font"
         tools:ignore="MissingPrefix"
         />
 
@@ -144,7 +144,7 @@
         android:textColor="@color/white_soft"
         android:textSize="26sp"
         android:visibility="gone"
-        fontPath="fonts/FranckerCYR-ExtraBold.otf"
+        fontPath="@string/font"
         tools:ignore="MissingPrefix"
         />
 

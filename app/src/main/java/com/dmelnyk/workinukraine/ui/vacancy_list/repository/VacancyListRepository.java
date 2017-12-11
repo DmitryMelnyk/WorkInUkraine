@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.dmelnyk.workinukraine.R;
 import com.dmelnyk.workinukraine.db.Db;
@@ -153,9 +154,10 @@ public class VacancyListRepository implements IVacancyListRepository {
 
         return Completable.fromCallable(() -> {
             ContentValues updatedVacancy = DbItems.createVacancyFavoriteItem(false, vacancy);
-            db.update(TABLE, updatedVacancy, DbContract.SearchSites.Columns.REQUEST
-                    + " ='" + vacancy.request() + DbContract.SearchSites.Columns.URL
-                    + " ='" + vacancy.url() + "'");
+            db.update(TABLE, updatedVacancy,
+                    DbContract.SearchSites.Columns.REQUEST + " = ? AND " +
+                    DbContract.SearchSites.Columns.URL + " = ?",
+                    new String[]{vacancy.request(), vacancy.url()});
             return true;
         });
     }

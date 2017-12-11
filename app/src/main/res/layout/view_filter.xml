@@ -2,6 +2,7 @@
 <android.support.constraint.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/filter_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -24,13 +25,13 @@
         android:text="@string/filter_title"
         android:textAppearance="@style/TextAppearance.AppCompat.Button"
         android:textColor="@color/white"
-        android:textStyle="bold"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
+        fontPath="@string/font"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        />
+        tools:ignore="MissingPrefix" />
 
     <Switch
         android:id="@+id/switcher"
@@ -55,14 +56,15 @@
         android:maxLines="1"
         android:inputType="text"
         android:nextFocusDown="@id/et_item"
-
         android:layout_marginLeft="8dp"
         android:layout_marginTop="15dp"
         android:layout_marginStart="8dp"
+        fontPath="@string/font"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView3"
         app:layout_constraintRight_toLeftOf="@+id/button_add"
-        app:layout_constraintHorizontal_bias="1.0" />
+        app:layout_constraintHorizontal_bias="1.0"
+        tools:ignore="MissingPrefix" />
 
     <Button
         android:id="@+id/button_add"
@@ -72,15 +74,17 @@
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
         android:textColor="@color/white"
-
         android:gravity="center"
         android:text="+"
         android:textSize="22sp"
+        fontPath="@string/font"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/et_item" />
+        app:layout_constraintTop_toTopOf="@+id/et_item"
+        tools:ignore="MissingPrefix" />
 
 
     <TextView
+        android:id="@+id/textView3"
         android:text="@string/filter_hide"
         style="@style/TextViewFilter"
         android:layout_height="wrap_content"
@@ -88,10 +92,10 @@
         android:layout_marginTop="8dp"
         android:layout_marginLeft="8dp"
         android:layout_marginStart="8dp"
+        fontPath="@string/font"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/filter_title"
-        android:id="@+id/textView3"
-        />
+        tools:ignore="MissingPrefix" />
 
 
     <android.support.v7.widget.RecyclerView
@@ -122,13 +126,14 @@
         android:layout_marginTop="@dimen/dimen_8dp"
         android:text="@string/filter_cancel"
         android:textSize="12sp"
+        fontPath="@string/font"
         app:layout_constraintTop_toBottomOf="@+id/recyclerView"
         app:layout_constraintRight_toLeftOf="@+id/button_ok"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintVertical_bias="0.0"
         app:layout_constraintHorizontal_chainStyle="packed"
 
-        />
+        tools:ignore="MissingPrefix" />
 
     <Button
         android:id="@+id/button_ok"

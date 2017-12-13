@@ -3,9 +3,7 @@ package com.dmelnyk.workinukraine.utils;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
-import com.dmelnyk.workinukraine.application.DaggerApplicationComponent;
 
 import java.lang.ref.WeakReference;
 import java.util.HashSet;

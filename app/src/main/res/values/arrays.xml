@@ -49,11 +49,6 @@
         <item>86400000</item>
     </integer-array>
 
-    <string-array name="settings_theme">
-        <item>Тёмная</item>
-        <item>Светлая</item>
-    </string-array>
-
     <string-array name="nav_titles">
         <item>Искать вакансиии</item>
         <item>Обновить вакансии</item>

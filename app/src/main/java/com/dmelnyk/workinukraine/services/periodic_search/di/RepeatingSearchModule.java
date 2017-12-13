@@ -1,11 +1,8 @@
 package com.dmelnyk.workinukraine.services.periodic_search.di;
 
-import android.content.Context;
-
 import com.dmelnyk.workinukraine.services.periodic_search.repo.IRepeatingSearchRepository;
 import com.dmelnyk.workinukraine.services.periodic_search.repo.RepeatingSearchRepository;
 import com.dmelnyk.workinukraine.ui.settings.repository.SettingsRepository;
-import com.dmelnyk.workinukraine.services.periodic_search.AlarmClockUtil;
 import com.dmelnyk.workinukraine.utils.SharedPrefUtil;
 import com.squareup.sqlbrite2.BriteDatabase;
 
@@ -18,12 +15,6 @@ import dagger.Provides;
 
 @Module
 public class RepeatingSearchModule {
-
-    @Provides
-    @RepeatingSearchScope
-    AlarmClockUtil proAlarmClockUtil(Context context) {
-        return new AlarmClockUtil(context);
-    }
 
     @Provides
     @RepeatingSearchScope

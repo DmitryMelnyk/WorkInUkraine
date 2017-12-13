@@ -136,9 +136,9 @@ public class SearchVacanciesService extends Service {
         Log.e(getClass().getSimpleName(), "onDestroy()");
     }
 
-    private void startSearching(List<RequestModel> requests) {
+    private synchronized void startSearching(List<RequestModel> requests) {
         Log.d(getClass().getSimpleName(), "startSearching. Requests=" + requests);
-        pool = Executors.newCachedThreadPool();
+        /*ExecutorService */pool = Executors.newCachedThreadPool();
         // Creating parallel search tasks for each search request
         long startTime = System.nanoTime();
 
@@ -244,7 +244,10 @@ public class SearchVacanciesService extends Service {
                 // after each of 5 request save cache to 'count'.
                 // Then save all cache in repository after getting all result from 5 sites
                 saveDataToMap(request, list, site);
-                sendBroadcastMessage(ACTION_DOWNLOADING_IN_PROGRESS, request, list.size());
+                int listSize = list != null
+                        ? list.size()
+                        : 0;
+                sendBroadcastMessage(ACTION_DOWNLOADING_IN_PROGRESS, request, listSize);
             }
 
             return list;
@@ -258,7 +261,9 @@ public class SearchVacanciesService extends Service {
     private volatile Map<String, Set<String>> sitesMap = new HashMap<>();
 
     private void saveDataToMap(String request, List<VacancyModel> list, String site) throws Exception {
-        totalVacanciesCount += list.size();
+        if (list != null) {
+            totalVacanciesCount += list.size();
+        }
 
         // adds response site to map for clearing only this old vacancies
         if (list != null) {
@@ -282,7 +287,9 @@ public class SearchVacanciesService extends Service {
         }
 
         // saving vacancies to cache
-        cache.get(request).addAll(list);
+        if (list != null) {
+            cache.get(request).addAll(list);
+        }
 
         // Saves vacancies to db after getting results from all 5 sites
         if (count.get(request) == 5) {

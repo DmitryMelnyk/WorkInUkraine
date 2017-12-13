@@ -1,8 +1,11 @@
 package com.dmelnyk.workinukraine.utils;
 
 import android.content.Context;
+import android.icu.text.LocaleDisplayNames;
 import android.util.Log;
+import android.widget.Toast;
 
+import com.dmelnyk.workinukraine.R;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 
@@ -15,6 +18,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.TreeSet;
 
@@ -50,8 +54,9 @@ public class CityUtils {
         StringBuilder text = new StringBuilder();
 
         try {
-            BufferedReader reader = new BufferedReader(
-                    new InputStreamReader(mContext.getAssets().open("files/sites_key.json")));
+            InputStreamReader is = new InputStreamReader(mContext.getAssets().open("files/sites_key.json"));
+
+                    BufferedReader reader = new BufferedReader(is);
             String line;
 
             while ((line = reader.readLine()) != null) {
@@ -101,7 +106,7 @@ public class CityUtils {
 
     private void createCityList(Collection<String> values) {
         TreeSet<String> treeSet = new TreeSet<>(values);
-        citiesList.add("Киев");
+        citiesList.add(mContext.getString(R.string.kiev));
         treeSet.remove("Киев");
         citiesList.addAll(treeSet);
         Log.d(TAG, "citiesList = " + citiesList);

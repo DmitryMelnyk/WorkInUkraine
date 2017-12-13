@@ -34,8 +34,6 @@ public class DialogDownloading extends BaseDialog {
     @BindView(R.id.downloadingStartedLayout) LinearLayout downloadingStartedLayout;
     @BindView(R.id.downloadingFinishedLayout) LinearLayout downloadingFinishedLayout;
     @BindView(R.id.vacancy_count_text_view) TextView mVacancyCountTextView;
-    @BindView(R.id.ll_vacancies_count) LinearLayout mVacanciesCountLinearLayout;
-    @BindView(R.id.tv_vacancies_count) TextView mVacanciesCountTextView;
     Unbinder unbinder;
     private CallbackLister mCallback;
 
@@ -74,14 +72,11 @@ public class DialogDownloading extends BaseDialog {
     public void downloadingFinished(int count) {
         Timber.d("downloadingFinished()");
         rotateLoading.stop();
-        mVacanciesCountLinearLayout.setVisibility(View.GONE);
         showFinishedView(count);
     }
 
     public void updateVacanciesCount(int count) {
-//        mVacanciesCountLinearLayout.setVisibility(View.VISIBLE);
-        mVacanciesCountTextView.setText("" + count);
-
+        // for displaying updating process
     }
 
     private void showFinishedView(int count) {

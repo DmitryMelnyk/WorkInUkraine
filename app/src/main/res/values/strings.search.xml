@@ -25,4 +25,6 @@
     <string name="card_view_adapter_job_exists_in_table">Вакансия уже существует в списке избранных!</string>
     <string name="card_view_adapter_job_removed_from_favorite">Вакансия удалена из списка избранных!</string>
     <string name="cancel">Отмена</string>
+    <string name="founded_vacancies">Найдено вакансий:</string>
+    <string name="search_empty_view_new_request">новый запрос</string>
 </resources>

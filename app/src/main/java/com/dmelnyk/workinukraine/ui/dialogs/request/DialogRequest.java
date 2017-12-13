@@ -9,6 +9,7 @@ import android.support.design.widget.TextInputLayout;
 import android.support.v4.content.ContextCompat;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -103,6 +104,15 @@ public class DialogRequest extends BaseDialog {
                 });
 
         observableEditText
+                // removing empty space at first position
+                .map(request -> {
+                    String trimedRequest = request.trim();
+                    if (trimedRequest.isEmpty()) {
+                        mRequestTextInputLayout.getText().clear();
+                    }
+
+                    return trimedRequest;
+                })
                 .filter(request -> {
                     enableButton(false);
                     if (!requestIsCorrect(request)) {
@@ -110,6 +120,7 @@ public class DialogRequest extends BaseDialog {
                         return false;
                     } else {
                         showError(false);
+
                         return request.length() >= 3;
                     }
                 })

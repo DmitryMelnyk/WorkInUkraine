@@ -419,6 +419,7 @@ public class ButtonTabs extends View {
         public void writeToParcel(Parcel out, int flags) {
             super.writeToParcel(out, flags);
             out.writeBooleanArray(buttonsStates);
+
         }
     }
 

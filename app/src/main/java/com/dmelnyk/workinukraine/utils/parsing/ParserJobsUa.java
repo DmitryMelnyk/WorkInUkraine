@@ -72,7 +72,8 @@ public class ParserJobsUa {
         for (Element link : links) {
             String title = link.select("a").attr("title");
             String url = link.select("a").attr("href");
-            String date = link.select("span").text();
+//            String date = link.select("span").text();
+            String date = ""; // after site updates there is no information about date on main page
 
             VacancyModel vacancyModel = VacancyModel.builder()
                     .setDate(date)

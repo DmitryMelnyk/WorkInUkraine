@@ -90,7 +90,7 @@ public class BaseTabFragment extends Fragment implements
         createProperAdapter();
 
         if (mCardAdapterType == VacancyCardViewAdapter.TYPE_FAVORITE) {
-            ((TextView) view.findViewById(R.id.empty_view)).setText(R.string.text_view_tab_is_empty);
+            ((TextView) view.findViewById(R.id.empty_text)).setText(R.string.text_view_tab_is_empty);
         }
 
         mRecyclerView = view.findViewById(R.id.recycler_view);

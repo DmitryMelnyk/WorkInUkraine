@@ -167,7 +167,7 @@ public class SettingsFragment extends BaseFragment implements
                 presenter.onDontDisturbTimeModeChose(SettingsPresenter.TIME_TO);
                 break;
             case R.id.sendFeedback:
-                // TODO
+                openInPlayMarket();
                 break;
             case R.id.about:
                 new MaterialDialog.Builder(getContext())
@@ -177,8 +177,7 @@ public class SettingsFragment extends BaseFragment implements
                         .show();
                 break;
             case R.id.thumbUp:
-                Intent openInWebStore = new Intent(Intent.ACTION_VIEW, Uri.parse(WEBSTORE_APP_ADDRESS));
-                startActivity(openInWebStore);
+                openInPlayMarket();
                 break;
             case R.id.share:
                 Intent share = new Intent(Intent.ACTION_SEND);
@@ -196,6 +195,11 @@ public class SettingsFragment extends BaseFragment implements
                 startActivity(mail);
                 break;
         }
+    }
+
+    private void openInPlayMarket() {
+        Intent openInWebStore = new Intent(Intent.ACTION_VIEW, Uri.parse(WEBSTORE_APP_ADDRESS));
+        startActivity(openInWebStore);
     }
 
     @Override

@@ -43,7 +43,7 @@
                 android:textColor="@color/colorPrimary"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                fontPath="fonts/FranckerCYR-ExtraBold.otf"
+                fontPath="@string/font"
                 tools:ignore="MissingPrefix" />
         </LinearLayout>
 
@@ -66,8 +66,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@color/colorPrimary"
-                android:text="Найдено вакансий:"
-                fontPath="fonts/FranckerCYR-ExtraBold.otf"
+                android:text="@string/founded_vacancies"
+                fontPath="@string/font"
+
                 tools:ignore="MissingPrefix" />
 
             <LinearLayout
@@ -86,10 +87,7 @@
                     fontPath="fonts/FranckerCYR-ExtraBold.otf"
                     tools:ignore="MissingPrefix" />
             </LinearLayout>
-
-
         </LinearLayout>
-
     </LinearLayout>
 
     <Button
@@ -106,33 +104,6 @@
         fontPath="fonts/FranckerCYR-ExtraBold.otf"
         tools:ignore="MissingPrefix"
         />
-
-    <LinearLayout
-        android:id="@+id/ll_vacancies_count"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_horizontal"
-        android:layout_margin="@dimen/dimen_16dp"
-        android:visibility="gone"
-        >
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Найдено вакансий:"
-            android:textSize="20sp"
-            android:textColor="@color/colorPrimary"
-            />
-
-        <TextView
-            android:id="@+id/tv_vacancies_count"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="0"
-            android:textSize="20sp"
-            android:textColor="@color/colorPrimary"
-            />
-    </LinearLayout>
 
     <Button
         android:id="@+id/button_ok"

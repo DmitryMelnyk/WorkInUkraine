@@ -221,8 +221,8 @@ public class VacancyListActivity extends BaseAnimationActivity implements
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        Log.d(getClass().getSimpleName(), "onRestoreInstanceState()");
         super.onRestoreInstanceState(savedInstanceState);
+        Log.d(getClass().getSimpleName(), "onRestoreInstanceState()");
         // restoring ButtonTab position
         if (savedInstanceState != null) {
             mCurrentTabPosition = savedInstanceState.getInt(KEY_CURRENT_POSITION);

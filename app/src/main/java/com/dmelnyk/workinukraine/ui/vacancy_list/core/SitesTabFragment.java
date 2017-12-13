@@ -102,7 +102,9 @@ public class SitesTabFragment extends Fragment {
 
         @Override
         public int getCount() {
-            return mTitles.size();
+            if (mTitles != null) {
+                return mTitles.size();
+            } else return 0;
         }
 
         @Override

@@ -4,7 +4,6 @@ import android.content.Context;
 
 import com.dmelnyk.workinukraine.ui.navigation.repository.INavigationRepository;
 import com.dmelnyk.workinukraine.ui.navigation.repository.NavigationRepository;
-import com.dmelnyk.workinukraine.services.periodic_search.AlarmClockUtil;
 import com.dmelnyk.workinukraine.ui.navigation.Contract;
 import com.dmelnyk.workinukraine.ui.navigation.NavUtil;
 import com.dmelnyk.workinukraine.ui.navigation.NavigationPresenter;
@@ -37,9 +36,9 @@ public class NavigationModule {
         return new NavUtil(context);
     }
 
-    @Provides
-    @NavigationScope
-    AlarmClockUtil providesAlarmClockUtil(Context context) {
-        return new AlarmClockUtil(context);
-    }
+//    @Provides
+//    @NavigationScope
+//    AlarmClockUtil providesAlarmClockUtil(Context context) {
+//        return new AlarmClockUtil(context);
+//    }
 }

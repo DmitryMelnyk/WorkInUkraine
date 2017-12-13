@@ -116,6 +116,8 @@ public class VacancyFragment extends Fragment implements SwipeRefreshLayout.OnRe
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        if (mWebView != null)
+            mWebView.destroy(); // remove webView, prevent chromium to crash
         unbinder.unbind();
     }
 
@@ -139,7 +141,6 @@ public class VacancyFragment extends Fragment implements SwipeRefreshLayout.OnRe
         mWebView.getSettings().setLoadsImagesAutomatically(true);
         mWebView.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
         mWebView.setWebChromeClient(createWebChromeClient());
-
 
         mWebView.setWebViewClient(new CustomWebViewClient());
 

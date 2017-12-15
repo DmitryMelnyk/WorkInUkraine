@@ -143,11 +143,13 @@
         android:layout_marginTop="@dimen/dimen_8dp"
         android:text="@string/filter_ok"
         android:textSize="12sp"
+        fontPath="@string/font"
+
         app:layout_constraintTop_toBottomOf="@+id/recyclerView"
         app:layout_constraintLeft_toRightOf="@+id/button_cancel"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintVertical_bias="0.0"
-        />
+        tools:ignore="MissingPrefix" />
 
     <View
         android:id="@+id/empty_view"

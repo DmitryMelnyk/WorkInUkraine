@@ -37,10 +37,8 @@ public class FavoriteTabFragment extends BaseTabFragment {
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        Log.e(getClass().getSimpleName(), "onViewCreated()");
+        Log.d(getClass().getSimpleName(), "onViewCreated()");
         super.onViewCreated(view, savedInstanceState);
-//        mRecyclerView = view.findViewById(R.id.recycler_view);
-//        mRecyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
     }
 
     @Override

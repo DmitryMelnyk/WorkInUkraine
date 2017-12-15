@@ -11,7 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:padding="@dimen/dimen_8dp"
-        android:background="@drawable/stroke_button_green"
+        android:background="@drawable/solid_button_green"
         android:text="@string/search_empty_view_new_request"
         android:textColor="@color/white"
         fontPath="@string/font"

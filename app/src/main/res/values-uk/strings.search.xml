@@ -21,7 +21,7 @@
     <string name="dialog_delete_remove">Видалити</string>
     <string name="dialog_delete_cancel">Скасувати</string>
     <string name="dialog_delete_clear_toast">Список вакансій очищено!</string>
-    <string name="card_view_adapter_job_added_to_favorite">Вакансія додана в спис в список обраних!</string>
+    <string name="card_view_adapter_job_added_to_favorite">Вакансія додана до обраних!</string>
     <string name="card_view_adapter_job_exists_in_table">Вакансія вже існує в списку обраних!</string>
     <string name="card_view_adapter_job_removed_from_favorite">Вакансія видалена зі списку обраних!</string>
     <string name="cancel">Скасувати</string>

@@ -63,7 +63,6 @@ public class VacancyCardViewAdapter extends RecyclerView.Adapter<VacancyCardView
                                   int cardViewType) {
         mDataSet = vacancies;
         mCardViewType = cardViewType;
-        Log.e("111", "Adapter Created. vacancies=" + vacancies);
     }
 
     @Override

@@ -34,8 +34,8 @@ import android.widget.Toast;
 import com.dmelnyk.workinukraine.R;
 import com.dmelnyk.workinukraine.db.di.DbModule;
 import com.dmelnyk.workinukraine.models.VacancyModel;
-import com.dmelnyk.workinukraine.ui.dialogs.loading.LoadingDialog;
 import com.dmelnyk.workinukraine.ui.vacancy_list.core.BaseTabFragment;
+import com.dmelnyk.workinukraine.ui.vacancy_list.core.EndAnimationListener;
 import com.dmelnyk.workinukraine.ui.vacancy_list.core.FilterAdapter;
 import com.dmelnyk.workinukraine.ui.vacancy_list.core.FilterView;
 import com.dmelnyk.workinukraine.ui.vacancy_list.core.ScreenSlidePagerAdapter;
@@ -100,9 +100,10 @@ public class VacancyListActivity extends BaseAnimationActivity implements
     private int[] mTabVacancyCount;
     private String[] mTabTitles;
     private int mButtonTabType; // look initializeButtonTabs() function
-    private FilterView animationLayout;
+    private FilterView filterView;
 
-    private Animation alphaAnim;
+    private Animation alphaShowAnim;
+    private Animation alphaHideAnim;
     private Animation rotateRightAnim;
     private Animation rotateLeftAnim;
     private boolean flag = true;
@@ -160,12 +161,6 @@ public class VacancyListActivity extends BaseAnimationActivity implements
     }
 
     @Override
-    protected void onStart() {
-        Log.e(getClass().getSimpleName(), "onStart()");
-        super.onStart();
-    }
-
-    @Override
     protected void onResume() {
         Log.e(getClass().getSimpleName(), "onResume()");
         super.onResume();
@@ -173,22 +168,10 @@ public class VacancyListActivity extends BaseAnimationActivity implements
     }
 
     @Override
-    protected void onPause() {
-        Log.e(getClass().getSimpleName(), "onPause()");
-        super.onPause();
-    }
-
-    @Override
     protected void onStop() {
         Log.e(getClass().getSimpleName(), "onStop()");
         super.onStop();
         presenter.onStop();
-    }
-
-    @Override
-    protected void onRestart() {
-        Log.e(getClass().getSimpleName(), "onRestart()");
-        super.onRestart();
     }
 
     @Override
@@ -251,10 +234,11 @@ public class VacancyListActivity extends BaseAnimationActivity implements
     }
 
     private void initializeFilterView(Bundle savedInstanceState) {
-        animationLayout = (FilterView) findViewById(R.id.filter_view);
-        animationLayout.setData(presenter.getFilterItems(), this);
+        filterView = (FilterView) findViewById(R.id.filter_view);
+        filterView.setData(presenter.getFilterItems(), this);
 
-        alphaAnim = AnimationUtils.loadAnimation(this, R.anim.alpha);
+        alphaShowAnim = AnimationUtils.loadAnimation(this, R.anim.alpha_show);
+        alphaHideAnim = AnimationUtils.loadAnimation(this, R.anim.alpha_hide);
         rotateRightAnim = AnimationUtils.loadAnimation(this, R.anim.rotate_right);
         rotateLeftAnim = AnimationUtils.loadAnimation(this, R.anim.rotate_left);
 
@@ -267,18 +251,18 @@ public class VacancyListActivity extends BaseAnimationActivity implements
         }
 
         // measuring height of filter view. Then hid it.
-        animationLayout.getViewTreeObserver().addOnGlobalLayoutListener(
+        filterView.getViewTreeObserver().addOnGlobalLayoutListener(
                 new ViewTreeObserver.OnGlobalLayoutListener() {
                     @Override
                     public void onGlobalLayout() {
-                        mExpandedFilterHeight = animationLayout.getHeight();
-                        animationLayout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                        mExpandedFilterHeight = filterView.getHeight();
+                        filterView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                         if (mExpandedFilterHeight < toolbarHeight) {
                             mExpandedFilterHeight = toolbarHeight;
                         }
 
                         if (flag) {
-                            animationLayout.setVisibility(View.INVISIBLE);
+                            filterView.setVisibility(View.INVISIBLE);
                             animationContainer.setVisibility(GONE);
                         }
                     }
@@ -454,7 +438,7 @@ public class VacancyListActivity extends BaseAnimationActivity implements
     // triggered by clicking imageButton
     public void launchFilterAnimation(View view) {
         // updates filter height (It may changes after adding / removing filter items)
-        mExpandedFilterHeight = animationLayout.getHeight();
+        mExpandedFilterHeight = filterView.getHeight();
 
         if (flag) {
             // start and end positions of image button (reveal starting point) are the same
@@ -472,35 +456,23 @@ public class VacancyListActivity extends BaseAnimationActivity implements
             animationContainer.setLayoutParams(params);
             animationContainer.setVisibility(View.VISIBLE);
 
-            final Animator revealAnim = ViewAnimationUtils.createCircularReveal(animationContainer, revealX, revealY, 0, hypotenuse);
-            revealAnim.setDuration(300);
-            revealAnim.setInterpolator(new AccelerateDecelerateInterpolator());
-            revealAnim.addListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    super.onAnimationEnd(animation);
-                    animationLayout.setVisibility(View.VISIBLE);
-                    animationLayout.startAnimation(alphaAnim);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                final Animator revealAnim = ViewAnimationUtils.createCircularReveal(animationContainer, revealX, revealY, 0, hypotenuse);
+                revealAnim.setDuration(300);
+                revealAnim.setInterpolator(new AccelerateDecelerateInterpolator());
+                revealAnim.addListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        super.onAnimationEnd(animation);
+                        showFilterAnimation();
+                    }
+                });
 
-                    createExpandingHeightAnimation(toolbarHeight, mExpandedFilterHeight);
-                    expandingHeightAnimator.start();
-                    expandingHeightAnimator.addListener(new AnimatorListenerAdapter() {
-                        @Override
-                        public void onAnimationEnd(Animator animation) {
-                            super.onAnimationEnd(animation);
-                            // Setting height to WRAP_CONTENT to enable changing size of filter view
-                            // after adding/removing items from filter.
-                            CollapsingToolbarLayout.LayoutParams params_ = new CollapsingToolbarLayout.LayoutParams(
-                                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                            animationContainer.setLayoutParams(params_);
-                            animationContainer.requestLayout();
-                        }
-                    });
-                    mSettingsImageButton.startAnimation(rotateRightAnim);
-                }
-            });
+                revealAnim.start();
+            } else {
+                showFilterAnimation();
+            }
 
-            revealAnim.start();
             flag = false;
 
         } else {
@@ -514,25 +486,62 @@ public class VacancyListActivity extends BaseAnimationActivity implements
             expandingHeightAnimator.addListener(new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationEnd(Animator animation) {
-                    int hypotenuse = (int) Math.hypot(animationContainer.getWidth(), animationContainer.getHeight());
-                    Animator revealAnim = ViewAnimationUtils.createCircularReveal(animationContainer, revealX, revealY, hypotenuse, 0);
-                    revealAnim.setDuration(300);
-                    revealAnim.addListener(new AnimatorListenerAdapter() {
-                        @Override
-                        public void onAnimationEnd(Animator animation) {
-                            animationContainer.setVisibility(GONE);
-                            animationLayout.setVisibility(View.INVISIBLE);
-
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        int hypotenuse = (int) Math.hypot(animationContainer.getWidth(), animationContainer.getHeight());
+                        Animator revealAnim = ViewAnimationUtils.createCircularReveal(animationContainer, revealX, revealY, hypotenuse, 0);
+                        revealAnim.setDuration(300);
+                        revealAnim.addListener(new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                animationContainer.setVisibility(GONE);
+                                filterView.setVisibility(View.INVISIBLE);
 //                            mSettingsImageButton.setBackgroundResource(R.drawable.rounded_button);
 //                            mSettingsImageButton.setImageResource(R.mipmap.ic_settings);
-                        }
-                    });
+                            }
+                        });
 
-                    revealAnim.start();
+                        revealAnim.start();
+                    } else {
+                        alphaHideAnim.setAnimationListener(new EndAnimationListener() {
+                            @Override
+                            public void onAnimationEnd(Animation animation) {
+                                animationContainer.setVisibility(GONE);
+                                filterView.setVisibility(View.INVISIBLE);
+                            }
+                        });
+                        filterView.startAnimation(alphaHideAnim);
+                    }
+
                     flag = true;
                 }
             });
         }
+    }
+
+    private void showFilterAnimation() {
+        filterView.setVisibility(View.VISIBLE);
+
+        alphaShowAnim.setAnimationListener(new EndAnimationListener() {
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                createExpandingHeightAnimation(toolbarHeight, mExpandedFilterHeight);
+                expandingHeightAnimator.start();
+                expandingHeightAnimator.addListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        super.onAnimationEnd(animation);
+                        // Setting height to WRAP_CONTENT to enable changing size of filter view
+                        // after adding/removing items from filter.
+                        CollapsingToolbarLayout.LayoutParams params_ = new CollapsingToolbarLayout.LayoutParams(
+                                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                        animationContainer.setLayoutParams(params_);
+                        animationContainer.requestLayout();
+                    }
+                });
+                mSettingsImageButton.startAnimation(rotateRightAnim);
+            }
+        });
+        filterView.startAnimation(alphaShowAnim);
     }
 
     private void createExpandingHeightAnimation(int startHeight, int finalHeight) {

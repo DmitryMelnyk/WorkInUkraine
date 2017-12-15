@@ -1,5 +1,6 @@
 package com.dmelnyk.workinukraine.ui.search;
 
+import android.os.Build;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -123,7 +124,11 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.MyViewHold
             ButterKnife.bind(this, itemView);
 
             PopupMenu popupMenu;
-            popupMenu = new PopupMenu(itemView.getContext(), mLetterTextView, Gravity.CENTER_VERTICAL);
+            if (Build.VERSION.SDK_INT >= 19) {
+                popupMenu = new PopupMenu(itemView.getContext(), mLetterTextView, Gravity.CENTER_VERTICAL);
+            } else {
+                popupMenu = new PopupMenu(itemView.getContext(), mLetterTextView);
+            }
 
             try {
                 Field field = popupMenu.getClass().getDeclaredField("mPopup");

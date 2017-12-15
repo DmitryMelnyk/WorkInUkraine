@@ -4,4 +4,7 @@
     <stroke android:color="@color/white"
         android:width="@dimen/dimen_1dp" />
     <corners android:radius="@dimen/dimen_2dp" />
+
+    <!-- This prevent background from black (BUG in16 API) -->
+    <solid android:color="@android:color/transparent"/>
 </shape>

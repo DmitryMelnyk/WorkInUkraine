@@ -27,7 +27,7 @@ android {
     buildToolsVersion "26.0.1"
     defaultConfig {
         applicationId "com.dmelnyk.workinukraine"
-        minSdkVersion 19
+        minSdkVersion 16
         targetSdkVersion 26
         versionCode 1
         versionName "1.0"
@@ -40,7 +40,7 @@ android {
             // dev utilizes minSDKVersion = 21 to allow the Android gradle plugin
             // to pre-dex each module and produce an APK that can be tested on
             // Android Lollipop without time consuming dex merging processes.
-            minSdkVersion 21
+            minSdkVersion 16
         }
         prod {
             // The actual minSdkVersion for the application.
@@ -140,6 +140,11 @@ dependencies {
     // Material Dialogs
     compile 'com.afollestad.material-dialogs:core:0.9.4.7'
     compile('com.crashlytics.sdk.android:crashlytics:2.7.1@aar') {
+        transitive = true;
+    }
+
+    // for circular reveal effect
+    compile ('com.github.ozodrukh:CircularReveal:2.0.1@aar') {
         transitive = true;
     }
 }

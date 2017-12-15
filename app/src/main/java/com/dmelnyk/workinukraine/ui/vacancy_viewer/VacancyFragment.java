@@ -251,7 +251,7 @@ public class VacancyFragment extends Fragment implements SwipeRefreshLayout.OnRe
             // When user clicks a hyperlink, load in the existing WebView
             if (url.startsWith("http")) {
                 view.loadUrl(url);
-                mNestedScrollView.scrollTo(0, 100);
+//                mNestedScrollView.scrollTo(0, 100);
                 return false;
             } else {
                 Intent i = new Intent(Intent.ACTION_VIEW);

@@ -19,6 +19,7 @@ import android.widget.TextView;
 
 import com.dmelnyk.workinukraine.R;
 import com.dmelnyk.workinukraine.models.VacancyModel;
+import com.dmelnyk.workinukraine.utils.LocaleUtil;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

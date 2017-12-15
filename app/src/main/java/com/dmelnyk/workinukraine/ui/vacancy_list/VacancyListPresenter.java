@@ -44,10 +44,6 @@ public class VacancyListPresenter implements Contract.IVacancyPresenter {
         this.mRequest = request;
         sTabVacancyCount = DEFAULT_TAV_VACANCY_COUNT;
         sButtonTabType = DEFAULT_BUTTON_TAB_TYPE;
-        // Don't get data from db if we have saved data
-//        if (sDataCache == null) {
-//            getAllVacancies(request);
-//        }
     }
 
     @Override
@@ -113,14 +109,6 @@ public class VacancyListPresenter implements Contract.IVacancyPresenter {
         int newVacanciesCount = vacanciesMap.get(IVacancyListInteractor.DATA_NEW).size();
         int recentVacanciesCount = vacanciesMap.get(IVacancyListInteractor.DATA_RECENT).size();
         int favoriteVacanciesCount = vacanciesMap.get(DATA_FAVORITE).size();
-
-        // Exit from activity if no vacancies found
-//        if (siteTabsCount == 0) {
-//            Log.d(getClass().getSimpleName(), "displayData(). No vacancy has found. Exit from activity!");
-//            view.exitActivity();
-//            clear();
-//            return;
-//        }
 
         if (true/*sTabVacancyCount == DEFAULT_TAV_VACANCY_COUNT*/) {
             sTabVacancyCount = newVacanciesCount > 0 && recentVacanciesCount > 0
@@ -192,6 +180,7 @@ public class VacancyListPresenter implements Contract.IVacancyPresenter {
         if (type == VacancyCardViewAdapter.MENU_SHARE) {
             view.createShareIntent(vacancy);
         } else {
+            // adding vacancy to favorite list
             compositeDisposable.add(
                     interactor.onPopupMenuClicked(vacancy, type)
                     .observeOn(AndroidSchedulers.mainThread())

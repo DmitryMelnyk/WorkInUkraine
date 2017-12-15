@@ -5,6 +5,7 @@ import android.os.Parcelable;
 
 import com.dmelnyk.workinukraine.db.Db;
 import com.dmelnyk.workinukraine.db.DbContract;
+import com.dmelnyk.workinukraine.utils.LocaleUtil;
 import com.google.auto.value.AutoValue;
 
 import java.util.List;
@@ -52,7 +53,7 @@ public abstract class VacancyModel implements Parcelable {
             int timeStatus = Db.getInt(cursor, DbContract.SearchSites.Columns.TIME_STATUS);
 
             return VacancyModel.builder()
-                    .setDate(date)
+                    .setDate(LocaleUtil.convertToProperLanguage(date))
                     .setIsFavorite(isFavorite)
                     .setRequest(request)
                     .setSite(site)

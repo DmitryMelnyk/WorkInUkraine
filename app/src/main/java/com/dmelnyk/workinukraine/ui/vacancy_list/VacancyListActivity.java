@@ -423,9 +423,16 @@ public class VacancyListActivity extends BaseAnimationActivity implements
         if (mSlideAdapter != null) {
             mSlideAdapter.updateFavoriteData(vacancies);
             // updating title manually if current tab is FAVORITE;
-            mTabVacancyCount[2] = vacancies.size();
-            if (mViewPager.getCurrentItem() == 2) {
-                updateTitleView(2);
+            if (mTabVacancyCount.length == 3) {
+                mTabVacancyCount[2] = vacancies.size();
+                if (mViewPager.getCurrentItem() == 2) {
+                    updateTitleView(2);
+                }
+            } else {
+                mTabVacancyCount[3] = vacancies.size();
+                if (mViewPager.getCurrentItem() == 3) {
+                    updateTitleView(3);
+                }
             }
         } else {
             Log.e(getClass().getSimpleName(), "Can't update favorites. mSlideAdapter=null.");

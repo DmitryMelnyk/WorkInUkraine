@@ -38,6 +38,7 @@
                 app:loading_width="5dp" />
 
             <TextView
+                android:id="@+id/tv_searching_in_progress"
                 android:layout_margin="25dp"
                 android:text="@string/dialog_search_processing"
                 android:textColor="@color/colorPrimary"
@@ -63,6 +64,7 @@
                 android:src="@drawable/ok" />
 
             <TextView
+                android:id="@+id/tv_founded_vacancies"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@color/colorPrimary"

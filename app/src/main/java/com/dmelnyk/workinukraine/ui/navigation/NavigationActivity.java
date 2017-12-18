@@ -28,7 +28,6 @@ import com.dmelnyk.workinukraine.ui.navigation.menu.SpaceItem;
 import com.dmelnyk.workinukraine.ui.search.SearchFragment;
 import com.dmelnyk.workinukraine.ui.settings.SettingsFragment;
 import com.dmelnyk.workinukraine.utils.BaseAnimationActivity;
-import com.dmelnyk.workinukraine.utils.BaseFragment;
 import com.yarolegovich.slidingrootnav.SlidingRootNav;
 import com.yarolegovich.slidingrootnav.SlidingRootNavBuilder;
 

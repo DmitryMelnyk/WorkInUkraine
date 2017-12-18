@@ -30,7 +30,6 @@
             android:launchMode="singleInstance">
         </activity>
 
-        <!-- <service android:name=".services.GetDataIntentService"/> -->
         <service android:name=".services.search.SearchVacanciesService" />
 
         <activity
@@ -41,8 +40,6 @@
             android:name=".ui.vacancy_viewer.VacancyViewerActivity"
             android:configChanges="orientation|screenSize" />
 
-        <!-- <receiver android:name=".services.periodic_search.AlarmReceiver" /> -->
-        <!--<receiver android:name=".services.periodic_search.BootReceiver" />-->
         <receiver
             android:name=".utils.NetworkChangeReceiver"
             android:label="NetworkChangeReceiver">
@@ -56,8 +53,6 @@
             android:name="io.fabric.ApiKey"
             android:value="d6d73607d880c21f41dea02e391a88fe56d55821" />
 
-        <activity android:name=".utils.ButtonActivity">
-        </activity>
     </application>
 
 </manifest>

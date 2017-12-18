@@ -71,6 +71,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
                 <TextView
+                    android:id="@+id/tv_msg_title"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/settings_notification"
@@ -105,6 +106,7 @@
                             android:layout_weight="85"
                             style="@style/LinearLayout.SettingsItem.TextViews">
                             <TextView
+                                android:id="@+id/tv_check_vacancies"
                                 style="@style/TextView.SettingsItem.First"
                                 android:text="@string/settings_item_period"
                                 />
@@ -147,6 +149,7 @@
                             android:layout_weight="85"
                             style="@style/LinearLayout.SettingsItem.TextViews">
                             <TextView
+                                android:id="@+id/tv_sound"
                                 style="@style/TextView.SettingsItem.First"
                                 android:text="@string/settings_sound_notification"
                                 />
@@ -190,6 +193,7 @@
                             android:layout_weight="85"
                             style="@style/LinearLayout.SettingsItem.TextViews">
                             <TextView
+                                android:id="@+id/tv_vibro"
                                 style="@style/TextView.SettingsItem.First"
                                 android:text="@string/settings_vibro_notification"
                                 />
@@ -227,6 +231,7 @@
                         android:layout_weight="85"
                         style="@style/LinearLayout.SettingsItem.TextViews">
                         <TextView
+                            android:id="@+id/tv_dont_disturb"
                             style="@style/TextView.SettingsItem.First"
                             android:text="@string/settings_dont_disturb"
                             />
@@ -256,6 +261,7 @@
 
                 <!-- SUPPORT -->
                 <TextView
+                    android:id="@+id/tv_support"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/settings_support"
@@ -281,8 +287,9 @@
                         android:src="@drawable/settings_feedback"
                         />
                     <TextView
-                        android:layout_margin="@dimen/settings_between_image_item_margin"
                         style="@style/TextView.SettingsItem.First"
+                        android:id="@+id/tv_feedback"
+                        android:layout_margin="@dimen/settings_between_image_item_margin"
                         android:text="@string/settings_send_feedback"
                         />
                 </LinearLayout>
@@ -303,6 +310,7 @@
                         android:src="@drawable/ic_nav_about"
                         />
                     <TextView
+                        android:id="@+id/tv_about"
                         android:layout_margin="@dimen/settings_between_image_item_margin"
                         style="@style/TextView.SettingsItem.First"
                         android:text="@string/settings_about"

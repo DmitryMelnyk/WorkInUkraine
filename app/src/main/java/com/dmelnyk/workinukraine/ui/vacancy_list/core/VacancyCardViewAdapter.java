@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.annotation.IntDef;
+import android.support.annotation.Keep;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -75,6 +76,7 @@ public class VacancyCardViewAdapter extends RecyclerView.Adapter<VacancyCardView
         return new MyViewHolder(view);
     }
 
+    @Keep
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
         final VacancyModel vacancyModel = mDataSet.get(position);

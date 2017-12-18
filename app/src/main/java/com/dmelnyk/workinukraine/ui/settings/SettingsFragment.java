@@ -2,11 +2,13 @@ package com.dmelnyk.workinukraine.ui.settings;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,11 +19,10 @@ import android.widget.TextView;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.dmelnyk.workinukraine.R;
 import com.dmelnyk.workinukraine.application.WorkInUaApplication;
-import com.dmelnyk.workinukraine.job.SearchVacanciesJob;
 import com.dmelnyk.workinukraine.ui.dialogs.time_picker.DialogTimePicker;
+import com.dmelnyk.workinukraine.ui.navigation.BaseFragment;
 import com.dmelnyk.workinukraine.ui.settings.Contract.ISettingsPresenter;
 import com.dmelnyk.workinukraine.ui.settings.di.SettingsModule;
-import com.dmelnyk.workinukraine.utils.BaseFragment;
 
 import javax.inject.Inject;
 
@@ -42,8 +43,9 @@ public class SettingsFragment extends BaseFragment implements
 
         DialogTimePicker.OnDialogTimePickerInteractionListener {
 
-    private static final String WEBSTORE_APP_ADDRESS = "http://www.example.com";
-    private static final String APP_EMAIL = "bugsupp0rt@yahoo.com                 ";
+    private static final String WEB_APP_ADDRESS = "http://play.google.com/store/apps/details?id=";
+    private static final String PLAYSTORE_APP_ADDRESS = "market://details?id=";
+    private static final String APP_SUPPORT_EMAIL = "bugsupp0rt@yahoo.com";
 
     @BindView(R.id.updatePeriod) TextView mUpdatePeriod;
     @BindView(R.id.periiodicSearchSwitcher) Switch mPeriodicSwitcher;
@@ -170,11 +172,7 @@ public class SettingsFragment extends BaseFragment implements
                 openInPlayMarket();
                 break;
             case R.id.about:
-                new MaterialDialog.Builder(getContext())
-                        .title(R.string.title_activity_vacancy)
-                        .content(R.string.version)
-                        .positiveText("OK")
-                        .show();
+                showVersionDialog();
                 break;
             case R.id.thumbUp:
                 openInPlayMarket();
@@ -182,24 +180,36 @@ public class SettingsFragment extends BaseFragment implements
             case R.id.share:
                 Intent share = new Intent(Intent.ACTION_SEND);
                 share.setType("text/plain");
-//                TODO: change address of app
-                share.putExtra(Intent.EXTRA_TEXT, WEBSTORE_APP_ADDRESS);
+                share.putExtra(Intent.EXTRA_TEXT, WEB_APP_ADDRESS + getContext().getPackageName());
                 startActivity(share);
                 break;
             case R.id.male:
                 Intent mail = new Intent(Intent.ACTION_SENDTO);
                 mail.setType("text/plain");
-//                mail.putExtra(Intent.EXTRA_EMAIL, "dmitrydev264@gmail.com");
                 mail.putExtra(Intent.EXTRA_SUBJECT, "From WorkInUkraine app");
-                mail.setData(Uri.parse("mailto:" + APP_EMAIL));
+                mail.setData(Uri.parse("mailto:" + APP_SUPPORT_EMAIL));
                 startActivity(mail);
                 break;
         }
     }
 
+    private void showVersionDialog() {
+        try {
+            PackageInfo pInfo = getContext().getPackageManager().getPackageInfo(getContext().getPackageName(), 0);
+            String version = pInfo.versionName;
+            new MaterialDialog.Builder(getContext())
+                    .title(R.string.title_activity_vacancy)
+                    .content(getString(R.string.version) + " " + version)
+                    .positiveText("OK")
+                    .show();
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
     private void openInPlayMarket() {
-        Intent openInWebStore = new Intent(Intent.ACTION_VIEW, Uri.parse(WEBSTORE_APP_ADDRESS));
-        startActivity(openInWebStore);
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(PLAYSTORE_APP_ADDRESS + getContext().getPackageName()));
+        startActivity(intent);
     }
 
     @Override

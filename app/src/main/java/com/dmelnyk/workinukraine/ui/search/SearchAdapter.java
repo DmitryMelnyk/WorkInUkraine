@@ -2,6 +2,7 @@ package com.dmelnyk.workinukraine.ui.search;
 
 import android.os.Build;
 import android.support.annotation.IntDef;
+import android.support.annotation.Keep;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
@@ -119,6 +120,7 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.MyViewHold
         @BindView(R.id.request_text_view) TextView mRequestTextView;
         @BindView(R.id.request_city_text_view) TextView mCityTextView;
 
+        @Keep
         public MyViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);

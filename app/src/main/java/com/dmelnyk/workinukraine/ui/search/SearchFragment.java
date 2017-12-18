@@ -9,6 +9,7 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.annotation.Keep;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -34,11 +35,11 @@ import com.dmelnyk.workinukraine.ui.dialogs.delete.DialogDelete;
 import com.dmelnyk.workinukraine.ui.dialogs.downloading.DialogDownloading;
 import com.dmelnyk.workinukraine.ui.dialogs.loading.LoadingDialog;
 import com.dmelnyk.workinukraine.ui.dialogs.request.DialogRequest;
+import com.dmelnyk.workinukraine.ui.navigation.BaseFragment;
 import com.dmelnyk.workinukraine.ui.search.Contract.ISearchPresenter;
 import com.dmelnyk.workinukraine.ui.search.di.DaggerSearchComponent;
 import com.dmelnyk.workinukraine.ui.search.di.SearchModule;
 import com.dmelnyk.workinukraine.ui.vacancy_list.VacancyListActivity;
-import com.dmelnyk.workinukraine.utils.BaseFragment;
 import com.dmelnyk.workinukraine.utils.NetUtils;
 import com.dmelnyk.workinukraine.utils.NetworkChangeReceiver;
 
@@ -124,7 +125,8 @@ public class SearchFragment extends BaseFragment implements
                     presenter.downloadingFinished(finalCount);
                     break;
                 case SearchVacanciesService.ACTION_DOWNLOADING_IN_PROGRESS:
-                    mFoundVacancyCunt += intent.getIntExtra(SearchVacanciesService.KEY_TOTAL_VACANCIES_COUNT, 0);
+                    int foundedVac = intent.getIntExtra(SearchVacanciesService.KEY_TOTAL_VACANCIES_COUNT, 0);
+                    mFoundVacancyCunt += foundedVac;
                     if (mDialogDownloading != null) {
                         mDialogDownloading.updateVacanciesCount(mFoundVacancyCunt);
                     }
@@ -286,6 +288,7 @@ public class SearchFragment extends BaseFragment implements
         mRecyclerView.setAdapter(mAdapter);
     }
 
+    @Keep
     private void createToolbarMenu() {
         final PopupMenu popupMenu = new PopupMenu(getContext(), mSettingsImageView);
         try {

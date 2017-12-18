@@ -21,5 +21,7 @@
 
 -keep class android.support.v4.app.** { *; }
 -keep interface android.support.v4.app.** { *; }
+-keeppackagenames org.jsoup.nodes
+
 
 

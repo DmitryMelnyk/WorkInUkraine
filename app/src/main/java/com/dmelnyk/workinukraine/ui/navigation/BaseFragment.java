@@ -1,4 +1,4 @@
-package com.dmelnyk.workinukraine.utils;
+package com.dmelnyk.workinukraine.ui.navigation;
 
 import android.content.Context;
 import android.support.v4.app.Fragment;

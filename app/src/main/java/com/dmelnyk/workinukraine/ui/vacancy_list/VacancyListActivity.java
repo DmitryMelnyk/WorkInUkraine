@@ -447,8 +447,6 @@ public class VacancyListActivity extends BaseAnimationActivity implements
 
             toolbarHeight = appBar.getHeight();
             int hypotenuse = (int) Math.hypot(appBar.getWidth(), appBar.getHeight());
-//            mSettingsImageButton.setBackgroundResource(R.drawable.rounded_cancell_button);
-//            mSettingsImageButton.setImageResource(R.mipmap.image_cancel);
 
             FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) animationContainer.getLayoutParams();
             params.width = appBar.getWidth();
@@ -470,7 +468,13 @@ public class VacancyListActivity extends BaseAnimationActivity implements
 
                 revealAnim.start();
             } else {
-                showFilterAnimation();
+                alphaShowAnim.setAnimationListener(new EndAnimationListener() {
+                    @Override
+                    public void onAnimationEnd(Animation animation) {
+                        showFilterAnimation();
+                    }
+                });
+                filterView.startAnimation(alphaShowAnim);
             }
 
             flag = false;
@@ -495,8 +499,6 @@ public class VacancyListActivity extends BaseAnimationActivity implements
                             public void onAnimationEnd(Animator animation) {
                                 animationContainer.setVisibility(GONE);
                                 filterView.setVisibility(View.INVISIBLE);
-//                            mSettingsImageButton.setBackgroundResource(R.drawable.rounded_button);
-//                            mSettingsImageButton.setImageResource(R.mipmap.ic_settings);
                             }
                         });
 
@@ -521,27 +523,22 @@ public class VacancyListActivity extends BaseAnimationActivity implements
     private void showFilterAnimation() {
         filterView.setVisibility(View.VISIBLE);
 
-        alphaShowAnim.setAnimationListener(new EndAnimationListener() {
+        createExpandingHeightAnimation(toolbarHeight, mExpandedFilterHeight);
+        expandingHeightAnimator.start();
+        expandingHeightAnimator.addListener(new AnimatorListenerAdapter() {
             @Override
-            public void onAnimationEnd(Animation animation) {
-                createExpandingHeightAnimation(toolbarHeight, mExpandedFilterHeight);
-                expandingHeightAnimator.start();
-                expandingHeightAnimator.addListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        super.onAnimationEnd(animation);
-                        // Setting height to WRAP_CONTENT to enable changing size of filter view
-                        // after adding/removing items from filter.
-                        CollapsingToolbarLayout.LayoutParams params_ = new CollapsingToolbarLayout.LayoutParams(
-                                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                        animationContainer.setLayoutParams(params_);
-                        animationContainer.requestLayout();
-                    }
-                });
-                mSettingsImageButton.startAnimation(rotateRightAnim);
+            public void onAnimationEnd(Animator animation) {
+                super.onAnimationEnd(animation);
+                // Setting height to WRAP_CONTENT to enable changing size of filter view
+                // after adding/removing items from filter.
+                CollapsingToolbarLayout.LayoutParams params_ = new CollapsingToolbarLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                animationContainer.setLayoutParams(params_);
+                animationContainer.requestLayout();
             }
         });
-        filterView.startAnimation(alphaShowAnim);
+
+        mSettingsImageButton.startAnimation(rotateRightAnim);
     }
 
     private void createExpandingHeightAnimation(int startHeight, int finalHeight) {
